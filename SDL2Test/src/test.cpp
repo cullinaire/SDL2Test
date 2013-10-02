@@ -36,17 +36,17 @@ int main(int argc, char **argv)
 	fontDim.y = 16;	//color of text: 0 = orange, 8 = gold, 16 = green
 	fontDim.w = 8;
 	fontDim.h = 8;
-	SpriteSheet *arcadeFont = new SpriteSheet("drbrfont.bmp", rend, fontDim, 1, 95, 95);
+	SpriteSheet *arcadeFont = new SpriteSheet("../assets/drbrfont.bmp", rend, fontDim, 1, 95, 95);
 	BMPText fontDraw(arcadeFont);
 
 	SDL_Event ev;
 	bool quit = false;
 
-	while(!false)
-	{
-		while(SDL_PollEvent(&ev)
-		{
-			if(ev
+	//while(!false)
+	//{
+	//	while(SDL_PollEvent(&ev)
+	//	{
+	//		if(ev
 
 	SDL_RenderClear(rend);
 	//Draw stuff now
