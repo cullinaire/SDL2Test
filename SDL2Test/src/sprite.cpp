@@ -57,6 +57,11 @@ SpriteSheet::SpriteSheet(const std::string bmpfilename, SDL_Renderer *renderer, 
 	}
 }
 
+SDL_Rect SpriteSheet::getCellSize()
+{
+	return sheetinfo->cell;
+}
+
 void SpriteSheet::Draw(int id, SDL_Rect dest)
 {
 	/*SDL_Rect testCell;

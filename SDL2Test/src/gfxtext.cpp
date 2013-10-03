@@ -36,6 +36,11 @@ BMPText::BMPText(SpriteSheet *font)
 	sheetIndex['~'] = 94;
 }
 
+SDL_Rect BMPText::getCharSize()
+{
+	return source->getCellSize();
+}
+
 void BMPText::PrintText(std::string text, int x, int y, SDL_Rect charsize)
 {
 	SDL_Rect srcRect;	//determines the beginning of the text, as well as spacing

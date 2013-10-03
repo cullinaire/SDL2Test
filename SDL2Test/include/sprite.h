@@ -35,6 +35,7 @@ class SpriteSheet
 {
 public:
 	SpriteSheet(const std::string bmpfilename, SDL_Renderer *renderer, SDL_Rect cell, int row, int col, int total);
+	SDL_Rect getCellSize();
 	void Draw(int id, SDL_Rect dest);
 	~SpriteSheet();
 private:

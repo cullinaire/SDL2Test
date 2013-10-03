@@ -3,6 +3,7 @@
 #include "logger.h"
 #include "sprite.h"
 #include "gfxtext.h"
+#include "menu.h"
 
 int main(int argc, char **argv)
 {
@@ -37,34 +38,53 @@ int main(int argc, char **argv)
 	fontDim.w = 8;
 	fontDim.h = 8;
 	SpriteSheet *arcadeFont = new SpriteSheet("../assets/drbrfont.bmp", rend, fontDim, 1, 95, 95);
-	BMPText fontDraw(arcadeFont);
+	BMPText fontDraw = BMPText(arcadeFont);
+	Menu testMenu = Menu(&fontDraw);
 
 	SDL_Event ev;
 	bool quit = false;
 
-	//while(!false)
-	//{
-	//	while(SDL_PollEvent(&ev)
-	//	{
-	//		if(ev
+	while(!quit)
+	{
+		while(SDL_PollEvent(&ev))
+		{
+			if(ev.type == SDL_QUIT)
+				quit = true;
+			if(ev.type == SDL_KEYDOWN)
+			{
+				if(ev.key.keysym.scancode == SDL_SCANCODE_UP)
+					testMenu.MoveCursor(false);
+				else if(ev.key.keysym.scancode == SDL_SCANCODE_DOWN)
+					testMenu.MoveCursor(true);
+				else if(ev.key.keysym.scancode == SDL_SCANCODE_RETURN)
+					testMenu.ExecuteItem();
+				else
+					quit = true;
+			}
+		}
 
-	SDL_RenderClear(rend);
-	//Draw stuff now
-	fontDraw.PrintText("i can sleep now.", 8, 8, fontDim);
-	SDL_RenderPresent(rend);
-	SDL_Delay(1000);
-	fontDraw.PrintText("the locals called him \"beast\"!0123456789", 8, 16, fontDim);
-	SDL_RenderPresent(rend);
-	SDL_Delay(1000);
-	fontDraw.PrintText("t('.')t #rofl::[][]{}8===d~~abcdefghijklmnopqrstuvwxyz", 8, 24, fontDim);
-	SDL_RenderPresent(rend);
-	SDL_Delay(1000);
-	fontDraw.PrintText("what gives us this \'challenge\'?", 8, 32, fontDim);
-	SDL_RenderPresent(rend);
-	SDL_Delay(1000);
-	fontDraw.PrintText("\\o/ victory (to the japanese since the backslash is a yen sign now)", 8, 40, fontDim);
-	SDL_RenderPresent(rend);
-	SDL_Delay(5000);
+		SDL_RenderClear(rend);
+		//Draw stuff now
+		testMenu.DisplayMenu(8, 8);
+		SDL_RenderPresent(rend);
+		SDL_Delay(5);
+	}
+
+		/*fontDraw.PrintText("i can sleep now.", 8, 8, fontDim);
+		SDL_RenderPresent(rend);
+		SDL_Delay(1000);
+		fontDraw.PrintText("the locals called him \"beast\"!0123456789", 8, 16, fontDim);
+		SDL_RenderPresent(rend);
+		SDL_Delay(1000);
+		fontDraw.PrintText("t('.')t #rofl::[][]{}8===d~~abcdefghijklmnopqrstuvwxyz", 8, 24, fontDim);
+		SDL_RenderPresent(rend);
+		SDL_Delay(1000);
+		fontDraw.PrintText("what gives us this \'challenge\'?", 8, 32, fontDim);
+		SDL_RenderPresent(rend);
+		SDL_Delay(1000);
+		fontDraw.PrintText("\\o/ victory (to the japanese since the backslash is a yen sign now)", 8, 40, fontDim);
+		SDL_RenderPresent(rend);
+		SDL_Delay(5000);*/
 
 	//Deinitialization
 	delete arcadeFont;
