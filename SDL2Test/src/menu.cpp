@@ -50,7 +50,7 @@ void Menu::MoveCursor(bool dir)
 		else
 		{
 			currentLocation = --items->end();
-			index = items->size();
+			index = items->size() - 1;
 		}
 	}
 }
