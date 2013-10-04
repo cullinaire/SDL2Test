@@ -41,6 +41,11 @@ SDL_Rect BMPText::getCharSize()
 	return source->getCellSize();
 }
 
+void BMPText::ChangeFont(SpriteSheet *newfont)
+{
+	source = newfont;
+}
+
 void BMPText::PrintText(std::string text, int x, int y, SDL_Rect charsize)
 {
 	SDL_Rect srcRect;	//determines the beginning of the text, as well as spacing

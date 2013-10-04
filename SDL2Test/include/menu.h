@@ -14,14 +14,18 @@
 class Menu
 {
 public:
-	Menu(BMPText *extrn_TextWriter);
+	//Specify a textsheet for drawing as well as a list of strings for the menu items themselves
+	Menu(BMPText *extrn_TextWriter, std::list<std::string> *menuitems); 
 	void DisplayMenu(int x, int y);
 	void MoveCursor(bool dir);
-	void ExecuteItem();	//Eventually will be returning an int or something so the owning object can use that.
+	//Simply return the index of the item being selected so that the calling object can do something
+	//specific in response.
+	int ExecuteItem();
 private:
-	std::list<std::string> rootmenu;
+	std::list<std::string> *items;	//DO NOT delete - instantiated elsewhere
 	std::list<std::string>::iterator itr;
 	std::list<std::string>::iterator currentLocation;	//location of selection cursor
+	int index;	//index to be returned by ExecuteItem();
 	BMPText *textWriter;	//DO NOT delete - instantiated elsewhere
 };	
 

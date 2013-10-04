@@ -15,6 +15,7 @@ class BMPText
 public:
 	BMPText(SpriteSheet *font);
 	SDL_Rect getCharSize();
+	void ChangeFont(SpriteSheet *newfont);
 	void PrintText(std::string text, int x, int y, SDL_Rect charsize);
 private:
 	SpriteSheet *source;	//Do not delete, this points to external object

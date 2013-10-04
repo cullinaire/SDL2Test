@@ -4,6 +4,8 @@
 #include "sprite.h"
 #include "gfxtext.h"
 #include "menu.h"
+#include <string>
+#include <list>
 
 int main(int argc, char **argv)
 {
@@ -34,12 +36,25 @@ int main(int argc, char **argv)
 	dest.h = 8;	//Failing to do so will result in mysterious results. Rarely amusing.
 	SDL_Rect fontDim;
 	fontDim.x = 0;
-	fontDim.y = 16;	//color of text: 0 = orange, 8 = gold, 16 = green
+	fontDim.y = 0;	//color of text: 0 = orange, 8 = gold, 16 = green
 	fontDim.w = 8;
 	fontDim.h = 8;
+
 	SpriteSheet *arcadeFont = new SpriteSheet("../assets/drbrfont.bmp", rend, fontDim, 1, 95, 95);
+	fontDim.y = 8;
+	SpriteSheet *goldFont = new SpriteSheet("../assets/drbrfont.bmp", rend, fontDim, 1, 95, 95);
+	fontDim.y = 16;
+	SpriteSheet *greenFont = new SpriteSheet("../assets/drbrfont.bmp", rend, fontDim, 1, 95, 95);
+
 	BMPText fontDraw = BMPText(arcadeFont);
-	Menu testMenu = Menu(&fontDraw);
+
+	std::list<std::string> testMenuItems;
+
+	testMenuItems.push_back("one");
+	testMenuItems.push_back("two");
+	testMenuItems.push_back("tree");
+
+	Menu testMenu = Menu(&fontDraw, &testMenuItems);
 
 	SDL_Event ev;
 	bool quit = false;
@@ -57,7 +72,23 @@ int main(int argc, char **argv)
 				else if(ev.key.keysym.scancode == SDL_SCANCODE_DOWN)
 					testMenu.MoveCursor(true);
 				else if(ev.key.keysym.scancode == SDL_SCANCODE_RETURN)
-					testMenu.ExecuteItem();
+				{
+					switch(testMenu.ExecuteItem())
+					{
+					case 0:
+						fontDraw.ChangeFont(arcadeFont);
+						break;
+					case 1:
+						fontDraw.ChangeFont(goldFont);
+						break;
+					case 2:
+						fontDraw.ChangeFont(greenFont);
+						break;
+					default:
+						fontDraw.ChangeFont(arcadeFont);
+						break;
+					}
+				}
 				else
 					quit = true;
 			}
@@ -88,6 +119,8 @@ int main(int argc, char **argv)
 
 	//Deinitialization
 	delete arcadeFont;
+	delete goldFont;
+	delete greenFont;
 	SDL_DestroyRenderer(rend);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
