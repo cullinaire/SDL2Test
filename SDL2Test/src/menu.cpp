@@ -1,24 +1,20 @@
 #include "menu.h"
 
-Menu::Menu(BMPText *extrn_TextWriter, std::list<std::string> *menuitems)
+Menu::Menu()
 {
-	textWriter = extrn_TextWriter;
-	items = menuitems;
-	currentLocation = items->begin();
+	currentLocation = items.begin();
 	index = 0;
+	cursor.assign(">");
 }
 
-void Menu::DisplayMenu(int x, int y)
+void Menu::OutputMenu(int x, int y)
 {
 	int cursorX = x;
 	int cursorY = y;
 
-	for(itr = items->begin();itr != items->end();++itr)
+	for(itr = items.begin();itr != items.end();++itr)
 	{
-		textWriter->PrintText(*itr, cursorX, cursorY, textWriter->getCharSize());
-		if(itr == currentLocation)	//draw selection cursor if currentLocation points to item
-			textWriter->PrintText(">", cursorX-8, cursorY, textWriter->getCharSize());
-		cursorY += textWriter->getCharSize().h;
+		//if(itr == currentLocation)	//draw selection cursor if currentLocation points to item
 	}
 }
 
@@ -28,9 +24,9 @@ void Menu::MoveCursor(bool dir)
 	if(dir)
 	{
 		//items->end() is a tail that does not point to any of the elements, so the -- is needed
-		if(currentLocation == --items->end())
+		if(currentLocation == --items.end())
 		{
-			currentLocation = items->begin();
+			currentLocation = items.begin();
 			index = 0;
 		}
 		else
@@ -42,15 +38,15 @@ void Menu::MoveCursor(bool dir)
 	else
 	{
 		//Similarly, currentLocation needs to wrap to one element before items->end()
-		if(currentLocation != items->begin())
+		if(currentLocation != items.begin())
 		{
 			--currentLocation;
 			--index;
 		}
 		else
 		{
-			currentLocation = --items->end();
-			index = items->size() - 1;
+			currentLocation = --items.end();
+			index = items.size() - 1;
 		}
 	}
 }
