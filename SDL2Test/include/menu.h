@@ -23,7 +23,6 @@ typedef struct menuItem
 class Menu
 {
 public:
-	//Specify a textsheet for drawing as well as a list of strings for the menu items themselves
 	Menu(TxtLayer *txtOut);
 	void InsertItem(std::string item, void (*itemFunc) (), BMPText *p_font);
 	void OutputMenu(int x, int y);

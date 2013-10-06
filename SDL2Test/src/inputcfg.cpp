@@ -7,8 +7,6 @@ InputCfg::InputCfg(InputMap *playerMap, SDL_Renderer *rend)
 	fontDim.h = 8;
 	SpriteSheet arcadeFont("../assets/drbrfont.bmp", rend, fontDim, 1, 95, 95);
 	BMPText textWriter(&arcadeFont);
-	playerMap->getInputNames(&inputList);
-	//inputMenu = new Menu(&textWriter, &inputList);
 }
 
 InputCfg::~InputCfg()

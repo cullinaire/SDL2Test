@@ -2,7 +2,14 @@
 
 InputMap::InputMap()
 {
-	playerInput[0] = MOVE_LEFT;
+	for(int i=0;i < MAXINPUTS;++i)
+		playerInput[i] = UNDEFINED;	//The default state
+}
+
+void InputMap::ClearMap()
+{
+	for(int i=0;i < MAXINPUTS;++i)
+		playerInput[i] = UNDEFINED;	//The default state
 }
 
 //Define a game input by inputting a keyboard code to associate with it
@@ -19,20 +26,4 @@ int InputMap::DefineInput(SDL_Scancode scancode, gameInput desiredInput)
 gameInput InputMap::returnInput(SDL_Scancode scancode)
 {
 	return playerInput[scancode];
-}
-
-//Returns a list of human readable form of the gameInput values
-//Current implementation is a hack - not sure how to automatically
-//convert enum labels to string but something tells me this is a fundamentally
-//flawed design. A shame since an enum is so appropriate for this type
-//of usage otherwise.
-void InputMap::getInputNames(std::list<std::string> *listOfNames)
-{
-	listOfNames->push_back("move_left");
-	listOfNames->push_back("move_right");
-	listOfNames->push_back("move_up");
-	listOfNames->push_back("move_down");
-	listOfNames->push_back("jump");
-	listOfNames->push_back("crouch");
-	listOfNames->push_back("shoot");
 }
