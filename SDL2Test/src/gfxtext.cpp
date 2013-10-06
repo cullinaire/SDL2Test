@@ -46,7 +46,7 @@ void BMPText::ChangeFont(SpriteSheet *newfont)
 	source = newfont;
 }
 
-void BMPText::PrintText(std::string text, int x, int y, SDL_Rect charsize)
+void BMPText::PrintText(const std::string &text, int x, int y, SDL_Rect charsize)
 {
 	SDL_Rect srcRect;	//determines the beginning of the text, as well as spacing
 	srcRect.x = x;
@@ -69,22 +69,7 @@ void BMPText::PrintText(std::string text, int x, int y, SDL_Rect charsize)
 			source->Draw(text[i]-64, srcRect);
 		else
 			source->Draw(sheetIndex[text[i]], srcRect);
-		//else if(text[i] == '!')
-		//	source->Draw(1, srcRect);
-		//else if(text[i] == '"')
-		//	source->Draw(2, srcRect);
-		//else if(text[i] == '#')
-		//	source->Draw(3, srcRect);
-		//else if(text[i] == '$')
-		//	source->Draw(4, srcRect);
-		//else if(text[i] == '%')
-		//	source->Draw(5, srcRect);
-		//else if(text[i] == '\'')
-		//	source->Draw(7, srcRect);
-		//else if(text[i] == ',')
-		//	source->Draw(12, srcRect);
-		//else if(text[i] == '.')
-		//	source->Draw(14, srcRect);
+
 		srcRect.x += srcRect.w;	//advance print location
 	}
 }

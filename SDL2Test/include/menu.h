@@ -6,27 +6,35 @@
 //Eventually, this menu class will be instantiated with the ingredients for a given
 //menu by the object that owns the menu instance. Then ExecuteItem would just return the appropriate
 //index and the owning object could react based on that value.
+//Display is handled by txtlayer.
 
+#include "txtlayer.h"
 #include "gfxtext.h"
 #include <list>
 #include <string>
+
+typedef struct menuItem
+{
+	std::string text;
+	void (*itemFunc) ();
+	BMPText *font;
+} menuItem;
 
 class Menu
 {
 public:
 	//Specify a textsheet for drawing as well as a list of strings for the menu items themselves
-	Menu(BMPText *extrn_TextWriter, std::list<std::string> *menuitems); 
-	void DisplayMenu(int x, int y);
+	Menu(TxtLayer *txtOut);
+	void InsertItem(std::string item, void (*itemFunc) (), BMPText *p_font);
+	void OutputMenu(int x, int y);
 	void MoveCursor(bool dir);
-	//Simply return the index of the item being selected so that the calling object can do something
-	//specific in response.
-	int ExecuteItem();
+	void ExecuteItem();
 private:
-	std::list<std::string> *items;	//DO NOT delete - instantiated elsewhere
-	std::list<std::string>::iterator itr;
-	std::list<std::string>::iterator currentLocation;	//location of selection cursor
-	int index;	//index to be returned by ExecuteItem();
-	BMPText *textWriter;	//DO NOT delete - instantiated elsewhere
+	std::list<menuItem> items;
+	std::list<menuItem>::iterator itr;	//Used for looping through list
+	std::list<menuItem>::iterator cursor;	//Maintains "current" menu selection
+	std::string cursorText;
+	TxtLayer *output;	//Do not delete, instantiated elsewhere
 };	
 
 #endif

@@ -1,24 +1,36 @@
 #include "menu.h"
 
-Menu::Menu(BMPText *extrn_TextWriter, std::list<std::string> *menuitems)
+Menu::Menu(TxtLayer *txtOut)
 {
-	textWriter = extrn_TextWriter;
-	items = menuitems;
-	currentLocation = items->begin();
-	index = 0;
+	cursor = items.begin();
+	cursorText.assign(">");
+	output = txtOut;
 }
 
-void Menu::DisplayMenu(int x, int y)
+void Menu::InsertItem(std::string item, void (*itemFunc) (), BMPText *p_font)
 {
-	int cursorX = x;
-	int cursorY = y;
+	menuItem element;
+	element.text = item;
+	element.itemFunc = itemFunc;
+	element.font = p_font;
+	items.push_back(element);
+	cursor = items.begin();
+}
 
-	for(itr = items->begin();itr != items->end();++itr)
+void Menu::OutputMenu(int x, int y)
+{
+	int menuX = x;
+	int menuY = y;
+
+	for(itr = items.begin();itr != items.end();++itr)
 	{
-		textWriter->PrintText(*itr, cursorX, cursorY, textWriter->getCharSize());
-		if(itr == currentLocation)	//draw selection cursor if currentLocation points to item
-			textWriter->PrintText(">", cursorX-8, cursorY, textWriter->getCharSize());
-		cursorY += textWriter->getCharSize().h;
+		output->ReceiveString(itr->text, menuX, menuY, itr->font->getCharSize(), itr->font);
+		if(itr == cursor)	//draw selection cursor if currentLocation points to item
+		{
+			output->ReceiveString(cursorText, menuX - itr->font->getCharSize().w,
+				menuY, itr->font->getCharSize(), itr->font);
+		}
+		menuY += itr->font->getCharSize().h;	//Go to next line
 	}
 }
 
@@ -28,40 +40,37 @@ void Menu::MoveCursor(bool dir)
 	if(dir)
 	{
 		//items->end() is a tail that does not point to any of the elements, so the -- is needed
-		if(currentLocation == --items->end())
+		if(cursor == --items.end())
 		{
-			currentLocation = items->begin();
-			index = 0;
+			cursor = items.begin();
 		}
 		else
 		{
-			++currentLocation;
-			++index;
+			++cursor;
 		}
 	}
 	else
 	//Moving backwards
 	{
-		//Similarly, currentLocation needs to wrap to one element before items->end()
-		if(currentLocation != items->begin())
+		//Similarly, itr needs to wrap to one element before items->end()
+		if(cursor != items.begin())
 		{
-			--currentLocation;
-			--index;
+			--cursor;
 		}
 		else
 		//Moving backwards from beginning of list, wrap to end of list
 		{
+<<<<<<< HEAD
 			currentLocation = --items->end();	//Note that the actual items->end() does not point to the last element
 			index = items->size() - 1;
+=======
+			cursor = --items.end();
+>>>>>>> de17dd0049d55425b53e0ad65153622fcdd28de5
 		}
 	}
 }
 
-int Menu::ExecuteItem()
+void Menu::ExecuteItem()
 {
-	/*if(*currentLocation == "first item")
-		items->push_front("pushed first yeah");
-	else
-		items->push_front("pushed ssomething else yea yea");*/
-	return index;
+	cursor->itemFunc();
 }

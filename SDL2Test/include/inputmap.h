@@ -9,19 +9,29 @@
 //be known in advance, there is no need for a map or anything like that.
 
 #include "SDL.h"
+#include <string>
+#include <list>
 
-typedef enum
+typedef enum gameInput
+{
+	MOVE_LEFT,
+	MOVE_RIGHT,
+	MOVE_UP,
+	MOVE_DOWN,
+	JUMP,
+	CROUCH,
+	SHOOT
+} gameInput;
 
 class InputMap
 {
 public:
 	InputMap();
-	void DefineInput();
-
-	~InputMap();
+	int DefineInput(SDL_Scancode scancode, gameInput desiredInput);
+	gameInput returnInput(SDL_Scancode scancode);
+	void getInputNames(std::list<std::string> *listOfNames);
 private:
-}
-
-
+	gameInput playerInput[256];
+};
 
 #endif
