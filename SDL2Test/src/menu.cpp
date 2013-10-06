@@ -60,12 +60,7 @@ void Menu::MoveCursor(bool dir)
 		else
 		//Moving backwards from beginning of list, wrap to end of list
 		{
-<<<<<<< HEAD
-			currentLocation = --items->end();	//Note that the actual items->end() does not point to the last element
-			index = items->size() - 1;
-=======
 			cursor = --items.end();
->>>>>>> de17dd0049d55425b53e0ad65153622fcdd28de5
 		}
 	}
 }
