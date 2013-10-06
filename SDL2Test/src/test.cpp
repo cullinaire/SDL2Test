@@ -71,6 +71,7 @@ int main(int argc, char **argv)
 
 	SDL_Event ev;
 	bool quit = false;
+	bool menuactive = false;
 
 	while(!quit)
 	{
@@ -89,7 +90,7 @@ int main(int argc, char **argv)
 				case SDL_SCANCODE_RETURN:
 					break;
 				case SDL_SCANCODE_ESCAPE:
-					quit = true;
+					menuactive = true;
 					break;
 				}
 			}
