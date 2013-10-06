@@ -1,20 +1,36 @@
 #include "menu.h"
 
-Menu::Menu()
+Menu::Menu(TxtLayer *txtOut)
 {
-	currentLocation = items.begin();
-	index = 0;
-	cursor.assign(">");
+	cursor = items.begin();
+	cursorText.assign(">");
+	output = txtOut;
+}
+
+void Menu::InsertItem(std::string item, void (*itemFunc) (), BMPText *p_font)
+{
+	menuItem element;
+	element.text = item;
+	element.itemFunc = itemFunc;
+	element.font = p_font;
+	items.push_back(element);
+	cursor = items.begin();
 }
 
 void Menu::OutputMenu(int x, int y)
 {
-	int cursorX = x;
-	int cursorY = y;
+	int menuX = x;
+	int menuY = y;
 
 	for(itr = items.begin();itr != items.end();++itr)
 	{
-		//if(itr == currentLocation)	//draw selection cursor if currentLocation points to item
+		output->ReceiveString(itr->text, menuX, menuY, itr->font->getCharSize(), itr->font);
+		if(itr == cursor)	//draw selection cursor if currentLocation points to item
+		{
+			output->ReceiveString(cursorText, menuX - itr->font->getCharSize().w,
+				menuY, itr->font->getCharSize(), itr->font);
+		}
+		menuY += itr->font->getCharSize().h;	//Go to next line
 	}
 }
 
@@ -24,38 +40,30 @@ void Menu::MoveCursor(bool dir)
 	if(dir)
 	{
 		//items->end() is a tail that does not point to any of the elements, so the -- is needed
-		if(currentLocation == --items.end())
+		if(cursor == --items.end())
 		{
-			currentLocation = items.begin();
-			index = 0;
+			cursor = items.begin();
 		}
 		else
 		{
-			++currentLocation;
-			++index;
+			++cursor;
 		}
 	}
 	else
 	{
-		//Similarly, currentLocation needs to wrap to one element before items->end()
-		if(currentLocation != items.begin())
+		//Similarly, itr needs to wrap to one element before items->end()
+		if(cursor != items.begin())
 		{
-			--currentLocation;
-			--index;
+			--cursor;
 		}
 		else
 		{
-			currentLocation = --items.end();
-			index = items.size() - 1;
+			cursor = --items.end();
 		}
 	}
 }
 
-int Menu::ExecuteItem()
+void Menu::ExecuteItem()
 {
-	/*if(*currentLocation == "first item")
-		items->push_front("pushed first yeah");
-	else
-		items->push_front("pushed ssomething else yea yea");*/
-	return index;
+	cursor->itemFunc();
 }

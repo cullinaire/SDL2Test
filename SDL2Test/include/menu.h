@@ -9,25 +9,32 @@
 //Display is handled by txtlayer.
 
 #include "txtlayer.h"
+#include "gfxtext.h"
 #include <list>
 #include <string>
+
+typedef struct menuItem
+{
+	std::string text;
+	void (*itemFunc) ();
+	BMPText *font;
+} menuItem;
 
 class Menu
 {
 public:
 	//Specify a textsheet for drawing as well as a list of strings for the menu items themselves
-	Menu();
+	Menu(TxtLayer *txtOut);
+	void InsertItem(std::string item, void (*itemFunc) (), BMPText *p_font);
 	void OutputMenu(int x, int y);
 	void MoveCursor(bool dir);
-	//Simply return the index of the item being selected so that the calling object can do something
-	//specific in response.
-	int ExecuteItem();
+	void ExecuteItem();
 private:
-	std::list<std::string> items;
-	std::list<std::string>::iterator itr;
-	std::list<std::string>::iterator currentLocation;	//location of selection cursor
-	std::string cursor;
-	int index;	//index to be returned by ExecuteItem();
+	std::list<menuItem> items;
+	std::list<menuItem>::iterator itr;	//Used for looping through list
+	std::list<menuItem>::iterator cursor;	//Maintains "current" menu selection
+	std::string cursorText;
+	TxtLayer *output;	//Do not delete, instantiated elsewhere
 };	
 
 #endif

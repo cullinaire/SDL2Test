@@ -3,16 +3,14 @@
 TxtLayer::TxtLayer()
 {
 	for(int i=0;i < TXTLAYER_CAPACITY;++i)
-	{
 		textList[i].empty = true;
-	}
 }
 
-int TxtLayer::ReceiveString(std::string text, int x, int y, SDL_Rect charsize, BMPText *font)
+void TxtLayer::ReceiveString(std::string text, int x, int y, SDL_Rect charsize, BMPText *font)
 {
 	for(int i=0;i < TXTLAYER_CAPACITY;++i)
 	{
-		if(textList[i].empty = true)
+		if(textList[i].empty == true)
 		{
 			textList[i].userString = text;
 			textList[i].font = font;
@@ -20,15 +18,15 @@ int TxtLayer::ReceiveString(std::string text, int x, int y, SDL_Rect charsize, B
 			textList[i].y = y;
 			textList[i].charsize = charsize;
 			textList[i].empty = false;
-			return i;
+			break;
 		}
 	}
-	return -1;	//this should not happen, time to expand array size!
 }
 
-void TxtLayer::RemoveString(int index)
+void TxtLayer::Clear()
 {
-	textList[index].empty = true;
+	for(int i=0;i < TXTLAYER_CAPACITY;++i)
+		textList[i].empty = true;
 }
 
 void TxtLayer::OutputFrame(SDL_Renderer *rend)
@@ -40,5 +38,7 @@ void TxtLayer::OutputFrame(SDL_Renderer *rend)
 			textList[i].font->PrintText(textList[i].userString,
 				textList[i].x, textList[i].y, textList[i].charsize);
 		}
+		else
+			break;	//This is ok since all elements in textList should be contiguous
 	}
 }

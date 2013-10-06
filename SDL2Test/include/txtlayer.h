@@ -30,8 +30,8 @@ class TxtLayer
 {
 public:
 	TxtLayer();
-	int ReceiveString(std::string text, int x, int y, SDL_Rect charsize, BMPText *font);
-	void RemoveString(int index);
+	void ReceiveString(std::string text, int x, int y, SDL_Rect charsize, BMPText *font);
+	void Clear();
 	void OutputFrame(SDL_Renderer *rend);
 private:
 	textElement textList[TXTLAYER_CAPACITY];

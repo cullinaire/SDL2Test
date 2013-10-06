@@ -34,6 +34,21 @@
 #include <list>
 #include <sstream>
 
+void testFunc1()
+{
+	std::cout << "ONE!!" << std::endl;
+}
+
+void testFunc2()
+{
+	std::cout << "TWO!!" << std::endl;
+}
+
+void testFunc3()
+{
+	std::cout << "THREE..." << std::endl;
+}
+
 int main(int argc, char **argv)
 {
 	if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO) != 0)
@@ -56,6 +71,8 @@ int main(int argc, char **argv)
 		return 3;
 	}
 
+	//END OF INIT//////////////////////////////////////////////////////////////
+
 	SDL_Rect fontDim;
 	fontDim.x = 0;
 	fontDim.y = 0;	//color of text: 0 = orange, 8 = gold, 16 = green
@@ -66,9 +83,13 @@ int main(int argc, char **argv)
 
 	BMPText fontDraw(&arcadeFont);
 
-	std::string happyString = "happy";
 	TxtLayer mainText;
-	mainText.ReceiveString(happyString, 64, 64, fontDim, &fontDraw);
+
+	Menu testMenu(&mainText);
+
+	testMenu.InsertItem("one", testFunc1, &fontDraw);
+	testMenu.InsertItem("two", testFunc2, &fontDraw);
+	testMenu.InsertItem("tree", testFunc3, &fontDraw);
 
 	InputMap player1Input;
 
@@ -86,8 +107,13 @@ int main(int argc, char **argv)
 				switch(ev.key.keysym.scancode)
 				{
 				case SDL_SCANCODE_DOWN:
+					testMenu.MoveCursor(true);
 					break;
 				case SDL_SCANCODE_UP:
+					testMenu.MoveCursor(false);
+					break;
+				case SDL_SCANCODE_RETURN:
+					testMenu.ExecuteItem();
 					break;
 				case SDL_SCANCODE_ESCAPE:
 					quit = true;
@@ -98,6 +124,8 @@ int main(int argc, char **argv)
 
 		SDL_RenderClear(rend);
 		//Draw stuff now
+		mainText.Clear();	//What happens if I forget this?!
+		testMenu.OutputMenu(64, 64);
 		mainText.OutputFrame(rend);
 		//End draw stuff
 		SDL_RenderPresent(rend);
