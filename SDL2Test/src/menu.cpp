@@ -40,6 +40,7 @@ void Menu::MoveCursor(bool dir)
 		}
 	}
 	else
+	//Moving backwards
 	{
 		//Similarly, currentLocation needs to wrap to one element before items->end()
 		if(currentLocation != items->begin())
@@ -48,8 +49,9 @@ void Menu::MoveCursor(bool dir)
 			--index;
 		}
 		else
+		//Moving backwards from beginning of list, wrap to end of list
 		{
-			currentLocation = --items->end();
+			currentLocation = --items->end();	//Note that the actual items->end() does not point to the last element
 			index = items->size() - 1;
 		}
 	}
