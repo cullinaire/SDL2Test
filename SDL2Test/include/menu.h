@@ -16,7 +16,8 @@
 typedef struct menuItem
 {
 	std::string text;
-	void (*itemFunc) ();
+	//void (*itemFunc) (int);
+	int index;
 	BMPText *font;
 } menuItem;
 
@@ -24,16 +25,18 @@ class Menu
 {
 public:
 	Menu(TxtLayer *txtOut);
-	void InsertItem(std::string item, void (*itemFunc) (), BMPText *p_font);
+	void InsertItem(std::string item, int index, BMPText *p_font);
 	void OutputMenu(int x, int y);
 	void MoveCursor(bool dir);
-	void ExecuteItem();
+	int ExecuteItem();
 private:
 	std::list<menuItem> items;
 	std::list<menuItem>::iterator itr;	//Used for looping through list
 	std::list<menuItem>::iterator cursor;	//Maintains "current" menu selection
 	std::string cursorText;
 	TxtLayer *output;	//Do not delete, instantiated elsewhere
+	//int index;
+	//int numItems;
 };	
 
 #endif

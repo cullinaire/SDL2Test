@@ -30,6 +30,7 @@
 #include "menu.h"
 #include "inputmap.h"
 #include "txtlayer.h"
+#include "inputcfg.h"
 
 int main(int argc, char **argv)
 {
@@ -69,9 +70,12 @@ int main(int argc, char **argv)
 
 	InputMap player1Input;
 
+	InputCfg inputConfig(&player1Input, rend, &mainText, &fontDraw);
+
 	SDL_Event ev;
 	bool quit = false;
 	bool menuactive = false;
+	bool waitingForInput = false;
 
 	while(!quit)
 	{
@@ -81,17 +85,38 @@ int main(int argc, char **argv)
 				quit = true;
 			if(ev.type == SDL_KEYDOWN)
 			{
-				switch(ev.key.keysym.scancode)
+				if(waitingForInput)
 				{
-				case SDL_SCANCODE_DOWN:
-					break;
-				case SDL_SCANCODE_UP:
-					break;
-				case SDL_SCANCODE_RETURN:
-					break;
-				case SDL_SCANCODE_ESCAPE:
-					menuactive = true;
-					break;
+					//do the key assignment here
+					inputConfig.assignInput(ev.key.keysym.scancode);
+					waitingForInput = false;
+				}
+				else
+				{
+					switch(ev.key.keysym.scancode)
+					{
+					case SDL_SCANCODE_DOWN:
+						if(menuactive)
+							inputConfig.menuDown();
+						break;
+					case SDL_SCANCODE_UP:
+						if(menuactive)
+							inputConfig.menuUp();
+						break;
+					case SDL_SCANCODE_RETURN:
+						if(menuactive)
+						{
+							inputConfig.menuSelect();
+							waitingForInput = true;
+						}
+						break;
+					case SDL_SCANCODE_ESCAPE:
+						if(!menuactive)
+							menuactive = true;
+						else
+							menuactive = false;
+						break;
+					}
 				}
 			}
 		}
@@ -99,7 +124,11 @@ int main(int argc, char **argv)
 		SDL_RenderClear(rend);
 		//Draw stuff now
 		mainText.Clear();	//What happens if I forget this?!
-
+		if(menuactive)
+		{
+			inputConfig.showMenu();
+			inputConfig.showStatus();
+		}
 		mainText.OutputFrame(rend);
 		//End draw stuff
 		SDL_RenderPresent(rend);

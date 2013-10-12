@@ -4,6 +4,7 @@
 //inputcfg.h - routines that interactively configure game inputs
 
 #include "inputmap.h"
+#include "txtlayer.h"
 #include "gfxtext.h"
 #include "sprite.h"
 #include "menu.h"
@@ -14,12 +15,21 @@
 class InputCfg
 {
 public:
-	InputCfg(InputMap *playerMap, SDL_Renderer *rend);
-	void startConfig();
+	InputCfg(InputMap *p_playerMap, SDL_Renderer *rend, TxtLayer *txtOut, BMPText *bmpFont);
+	void showMenu();
+	void showStatus();
+	void menuDown();
+	void menuUp();
+	void menuSelect();
+	void assignInput(SDL_Scancode scancode);
 	~InputCfg();
 private:
 	Menu *inputMenu;
-	std::list<std::string> inputList;
+	InputMap *playerMap;	//Do not delete - instantiated elsewhere
+	std::string statusMsg;
+	TxtLayer *textOutput;	//Do not delete - instantiated elsewhere
+	BMPText *font;			//Do not delete - instantiated elsewhere
+	gameInput currentInput;
 };
 
 #endif

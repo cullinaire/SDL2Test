@@ -5,16 +5,19 @@ Menu::Menu(TxtLayer *txtOut)
 	cursor = items.begin();
 	cursorText.assign(">");
 	output = txtOut;
+	//index = 0;
+	//numItems = 0;
 }
 
-void Menu::InsertItem(std::string item, void (*itemFunc) (), BMPText *p_font)
+void Menu::InsertItem(std::string item, int index, BMPText *p_font)
 {
 	menuItem element;
 	element.text = item;
-	element.itemFunc = itemFunc;
+	element.index = index;
 	element.font = p_font;
 	items.push_back(element);
 	cursor = items.begin();
+	//++numItems;
 }
 
 void Menu::OutputMenu(int x, int y)
@@ -43,10 +46,12 @@ void Menu::MoveCursor(bool dir)
 		if(cursor == --items.end())
 		{
 			cursor = items.begin();
+			//index = 0;
 		}
 		else
 		{
 			++cursor;
+			//++index;
 		}
 	}
 	else
@@ -56,16 +61,19 @@ void Menu::MoveCursor(bool dir)
 		if(cursor != items.begin())
 		{
 			--cursor;
+			//--index;
 		}
 		else
 		//Moving backwards from beginning of list, wrap to end of list
 		{
 			cursor = --items.end();
+			//index = numItems;
 		}
 	}
 }
 
-void Menu::ExecuteItem()
+int Menu::ExecuteItem()
 {
-	cursor->itemFunc();
+	return cursor->index;
+	//cursor->itemFunc(index);
 }

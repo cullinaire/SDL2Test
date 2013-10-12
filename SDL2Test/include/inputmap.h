@@ -32,6 +32,7 @@ public:
 	void ClearMap();
 	int DefineInput(SDL_Scancode scancode, gameInput desiredInput);
 	gameInput returnInput(SDL_Scancode scancode);
+	std::string returnInputName(gameInput input);
 private:
 	gameInput playerInput[MAXINPUTS];
 };

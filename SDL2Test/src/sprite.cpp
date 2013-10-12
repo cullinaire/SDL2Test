@@ -64,14 +64,7 @@ SDL_Rect SpriteSheet::getCellSize()
 
 void SpriteSheet::Draw(int id, SDL_Rect dest)
 {
-	/*SDL_Rect testCell;
-	testCell.x = 16;
-	testCell.y = 16;
-	testCell.w = 8;
-	testCell.h = 8;
-	source->Draw(testCell, dest);*/
 	source->Draw(sheetinfo[id].cell, dest);
-	
 }
 
 SpriteSheet::~SpriteSheet()

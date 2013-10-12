@@ -67,6 +67,8 @@ void BMPText::PrintText(const std::string &text, int x, int y, SDL_Rect charsize
 			source->Draw(text[i]-32, srcRect);
 		else if(text[i] >= 97 && text[i] <= 122) //is a lowercase letter
 			source->Draw(text[i]-64, srcRect);
+		else if(text[i] >= 65 && text[i] <= 90)	//is an uppercase letter
+			source->Draw(text[i]-32, srcRect);	//current fontsheet only has one case so use same
 		else
 			source->Draw(sheetIndex[text[i]], srcRect);
 

@@ -27,3 +27,34 @@ gameInput InputMap::returnInput(SDL_Scancode scancode)
 {
 	return playerInput[scancode];
 }
+
+std::string InputMap::returnInputName(gameInput input)
+{
+	switch(input)
+	{
+	case UNDEFINED:
+		return "undefined";
+		break;
+	case MOVE_LEFT:
+		return "move left";
+		break;
+	case MOVE_RIGHT:
+		return "move right";
+		break;
+	case MOVE_DOWN:
+		return "move down";
+		break;
+	case MOVE_UP:
+		return "move up";
+		break;
+	case JUMP:
+		return "jump";
+		break;
+	case CROUCH:
+		return "crouch";
+		break;
+	case SHOOT:
+		return "shoot";
+		break;
+	}
+}
