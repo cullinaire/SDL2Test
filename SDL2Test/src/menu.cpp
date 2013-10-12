@@ -20,6 +20,15 @@ void Menu::InsertItem(std::string item, int index, BMPText *p_font)
 	//++numItems;
 }
 
+void Menu::ReplaceItem(std::string replacement, int index, BMPText *p_font)
+{
+	itr = items.begin();
+	for(int i = 0;i < index;++i)
+		++itr;
+	itr->text = replacement;
+	itr->font = p_font;
+}
+
 void Menu::OutputMenu(int x, int y)
 {
 	int menuX = x;
@@ -70,6 +79,11 @@ void Menu::MoveCursor(bool dir)
 			//index = numItems;
 		}
 	}
+}
+
+void Menu::DefineCursor(std::string cText)
+{
+	cursorText = cText;
 }
 
 int Menu::ExecuteItem()

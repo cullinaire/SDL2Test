@@ -26,8 +26,10 @@ class Menu
 public:
 	Menu(TxtLayer *txtOut);
 	void InsertItem(std::string item, int index, BMPText *p_font);
+	void ReplaceItem(std::string replacement, int index, BMPText *p_font);
 	void OutputMenu(int x, int y);
 	void MoveCursor(bool dir);
+	void DefineCursor(std::string cText);
 	int ExecuteItem();
 private:
 	std::list<menuItem> items;

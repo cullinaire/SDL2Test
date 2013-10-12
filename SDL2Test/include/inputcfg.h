@@ -16,6 +16,7 @@ class InputCfg
 {
 public:
 	InputCfg(InputMap *p_playerMap, SDL_Renderer *rend, TxtLayer *txtOut, BMPText *bmpFont);
+	void registerQuit(bool *quit);
 	void showMenu();
 	void showStatus();
 	void menuDown();
@@ -25,11 +26,14 @@ public:
 	~InputCfg();
 private:
 	Menu *inputMenu;
+	Menu *statusMenu;
 	InputMap *playerMap;	//Do not delete - instantiated elsewhere
 	std::string statusMsg;
 	TxtLayer *textOutput;	//Do not delete - instantiated elsewhere
 	BMPText *font;			//Do not delete - instantiated elsewhere
 	gameInput currentInput;
+	int currentIndex;
+	bool *quit;				//Do not delete - instantiated elsewhere
 };
 
 #endif

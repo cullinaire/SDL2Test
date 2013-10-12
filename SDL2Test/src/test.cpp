@@ -73,9 +73,16 @@ int main(int argc, char **argv)
 	InputCfg inputConfig(&player1Input, rend, &mainText, &fontDraw);
 
 	SDL_Event ev;
+	SDL_Scancode lastKey;
+
+	std::string lastKeyStateMsg;
+	lastKeyStateMsg.assign("Press ESC to view menu");
+
 	bool quit = false;
 	bool menuactive = false;
 	bool waitingForInput = false;
+
+	inputConfig.registerQuit(&quit);
 
 	while(!quit)
 	{
@@ -85,15 +92,16 @@ int main(int argc, char **argv)
 				quit = true;
 			if(ev.type == SDL_KEYDOWN)
 			{
+				lastKey = ev.key.keysym.scancode;
 				if(waitingForInput)
 				{
 					//do the key assignment here
-					inputConfig.assignInput(ev.key.keysym.scancode);
+					inputConfig.assignInput(lastKey);
 					waitingForInput = false;
 				}
 				else
 				{
-					switch(ev.key.keysym.scancode)
+					switch(lastKey)
 					{
 					case SDL_SCANCODE_DOWN:
 						if(menuactive)
@@ -117,6 +125,8 @@ int main(int argc, char **argv)
 							menuactive = false;
 						break;
 					}
+					lastKeyStateMsg.assign("Last input: ");
+					lastKeyStateMsg.append(player1Input.returnInputName(player1Input.returnInput(lastKey)));
 				}
 			}
 		}
@@ -124,6 +134,7 @@ int main(int argc, char **argv)
 		SDL_RenderClear(rend);
 		//Draw stuff now
 		mainText.Clear();	//What happens if I forget this?!
+		mainText.ReceiveString(lastKeyStateMsg, 256, 32, fontDim, &fontDraw);
 		if(menuactive)
 		{
 			inputConfig.showMenu();
