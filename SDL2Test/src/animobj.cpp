@@ -4,14 +4,17 @@ AnimObj::AnimObj(SpriteSheet *p_animSheet)
 {
 	animSheet = p_animSheet;
 	playing = false;
+	backNforth = false;
+	forwards = true;
 }
 
-void AnimObj::defineAnim(int index, int numFrames, std::list<aniFrame> p_frames)
+void AnimObj::defineAnim(int index, int numFrames, std::list<aniFrame> p_frames, bool p_backNforth)
 {
 	aniList newFrames;
 	newFrames.index = index;
 	newFrames.numFrames = numFrames;
 	newFrames.frames = p_frames;
+	backNforth = p_backNforth;
 
 	animations.push_back(newFrames);
 }
@@ -46,10 +49,36 @@ void AnimObj::playAnim(int x, int y)
 			//I can't use iterators here because they just simply will not work
 			//Which is odd, since their values have not changed since startAnim was called.
 			//Oh well I guess.
-			if(drawFrame->frameID < selAnim->numFrames-1)
-				++drawFrame;	//Advance the frame if frame duration is exceeded
+			if(backNforth)
+			{
+				if(forwards)
+				{
+					if(drawFrame->frameID < selAnim->numFrames-1)
+						++drawFrame;	//Advance the frame if frame duration is exceeded
+					else
+					{
+						forwards = false;	//Change directions since end frame was reached
+						--drawFrame;	//Without this the end frame will render twice
+					}
+				}
+				else
+				{
+					if(drawFrame->frameID > 0)
+						--drawFrame;	//Advance in the opposite direction if duration is exceeded
+					else
+					{
+						forwards = true;	//Change directions since beginning frame was reached
+						++drawFrame;	//Without this the beginning frame will render twice
+					}
+				}
+			}
 			else
-				drawFrame = selAnim->frames.begin();	//Loop back to beginning of animation
+			{
+				if(drawFrame->frameID < selAnim->numFrames-1)
+					++drawFrame;	//Advance the frame if frame duration is exceeded
+				else
+					drawFrame = selAnim->frames.begin();	//Loop back to beginning of animation
+			}
 		}
 		dst.w = drawFrame->frameSize.w;
 		dst.h = drawFrame->frameSize.h;

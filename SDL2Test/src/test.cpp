@@ -63,147 +63,48 @@ int main(int argc, char **argv)
 	fontDim.w = 8;
 	fontDim.h = 8;
 
-	std::list<SheetInfo> princeCells;
-	SheetInfo princeCell;
-	SDL_Rect princeSrc;
+	std::list<SheetInfo> mm1Cells;
+	SheetInfo mm1Cell;
+	SDL_Rect mm1Src;
 
 	std::list<aniFrame> popFrames;
 	aniFrame popFrame;
 
-	princeCell.id = popFrame.frameID = 0;
-	princeSrc.x = 624;
-	princeSrc.y = 758;
-	princeSrc.w = 24;
-	princeSrc.h = 83;
-	princeCell.cell = princeSrc;
-	popFrame.frameSize = princeSrc;
-	popFrame.duration = 100;
+	mm1Cell.id = popFrame.frameID = 0;
+	mm1Src.x = 98;
+	mm1Src.y = 94;
+	mm1Src.w = 32;
+	mm1Src.h = 25;
+	mm1Cell.cell = mm1Src;
+	popFrame.frameSize = mm1Src;
+	popFrame.duration = 200;
 	popFrames.push_back(popFrame);
-	princeCells.push_back(princeCell);
+	mm1Cells.push_back(mm1Cell);
 
-	princeCell.id = popFrame.frameID = 1;
-	princeSrc.x = 580;
-	princeSrc.y = 758;
-	princeSrc.w = 28;
-	princeSrc.h = 83;
-	princeCell.cell = princeSrc;
-	popFrame.frameSize = princeSrc;
-	popFrame.duration = 100;
+	mm1Cell.id = popFrame.frameID = 1;
+	mm1Src.x = 67;
+	mm1Src.y = 94;
+	mm1Src.w = 32;
+	mm1Src.h = 25;
+	mm1Cell.cell = mm1Src;
+	popFrame.frameSize = mm1Src;
+	popFrame.duration = 200;
 	popFrames.push_back(popFrame);
-	princeCells.push_back(princeCell);
+	mm1Cells.push_back(mm1Cell);
 
-	princeCell.id = popFrame.frameID = 2;
-	princeSrc.x = 525;
-	princeSrc.y = 758;
-	princeSrc.w = 41;
-	princeSrc.h = 83;
-	princeCell.cell = princeSrc;
-	popFrame.frameSize = princeSrc;
-	popFrame.duration = 100;
+	mm1Cell.id = popFrame.frameID = 2;
+	mm1Src.x = 35;
+	mm1Src.y = 94;
+	mm1Src.w = 32;
+	mm1Src.h = 25;
+	mm1Cell.cell = mm1Src;
+	popFrame.frameSize = mm1Src;
+	popFrame.duration = 200;
 	popFrames.push_back(popFrame);
-	princeCells.push_back(princeCell);
-
-	princeCell.id = popFrame.frameID = 3;
-	princeSrc.x = 463;
-	princeSrc.y = 758;
-	princeSrc.w = 51;
-	princeSrc.h = 83;
-	princeCell.cell = princeSrc;
-	popFrame.frameSize = princeSrc;
-	popFrame.duration = 100;
-	popFrames.push_back(popFrame);
-	princeCells.push_back(princeCell);
-
-	princeCell.id = popFrame.frameID = 4;
-	princeSrc.x = 399;
-	princeSrc.y = 758;
-	princeSrc.w = 54;
-	princeSrc.h = 83;
-	princeCell.cell = princeSrc;
-	popFrame.frameSize = princeSrc;
-	popFrame.duration = 100;
-	popFrames.push_back(popFrame);
-	princeCells.push_back(princeCell);
-
-	princeCell.id = popFrame.frameID = 5;
-	princeSrc.x = 331;
-	princeSrc.y = 758;
-	princeSrc.w = 58;
-	princeSrc.h = 83;
-	princeCell.cell = princeSrc;
-	popFrame.frameSize = princeSrc;
-	popFrame.duration = 100;
-	popFrames.push_back(popFrame);
-	princeCells.push_back(princeCell);
-
-	princeCell.id = popFrame.frameID = 6;
-	princeSrc.x = 262;
-	princeSrc.y = 758;
-	princeSrc.w = 59;
-	princeSrc.h = 83;
-	princeCell.cell = princeSrc;
-	popFrame.frameSize = princeSrc;
-	popFrame.duration = 100;
-	popFrames.push_back(popFrame);
-	princeCells.push_back(princeCell);
-
-	princeCell.id = popFrame.frameID = 7;
-	princeSrc.x = 201;
-	princeSrc.y = 758;
-	princeSrc.w = 54;
-	princeSrc.h = 83;
-	princeCell.cell = princeSrc;
-	popFrame.frameSize = princeSrc;
-	popFrame.duration = 100;
-	popFrames.push_back(popFrame);
-	princeCells.push_back(princeCell);
-
-	princeCell.id = popFrame.frameID = 8;
-	princeSrc.x = 145;
-	princeSrc.y = 758;
-	princeSrc.w = 42;
-	princeSrc.h = 83;
-	princeCell.cell = princeSrc;
-	popFrame.frameSize = princeSrc;
-	popFrame.duration = 100;
-	popFrames.push_back(popFrame);
-	princeCells.push_back(princeCell);
-
-	princeCell.id = popFrame.frameID = 9;
-	princeSrc.x = 105;
-	princeSrc.y = 758;
-	princeSrc.w = 28;
-	princeSrc.h = 83;
-	princeCell.cell = princeSrc;
-	popFrame.frameSize = princeSrc;
-	popFrame.duration = 100;
-	popFrames.push_back(popFrame);
-	princeCells.push_back(princeCell);
-
-	princeCell.id = popFrame.frameID = 10;
-	princeSrc.x = 66;
-	princeSrc.y = 758;
-	princeSrc.w = 23;
-	princeSrc.h = 83;
-	princeCell.cell = princeSrc;
-	popFrame.frameSize = princeSrc;
-	popFrame.duration = 100;
-	popFrames.push_back(popFrame);
-	princeCells.push_back(princeCell);
-
-	princeCell.id = popFrame.frameID = 11;
-	princeSrc.x = 23;
-	princeSrc.y = 758;
-	princeSrc.w = 25;
-	princeSrc.h = 83;
-	princeCell.cell = princeSrc;
-	popFrame.frameSize = princeSrc;
-	popFrame.duration = 100;
-	popFrames.push_back(popFrame);
-	princeCells.push_back(princeCell);
+	mm1Cells.push_back(mm1Cell);
 
 	SpriteSheet arcadeFont("../assets/drbrfont.bmp", rend, fontDim, 1, 95, 95);
-	SpriteSheet prince("../assets/pop.bmp", rend, princeCells, 12);
+	SpriteSheet mm1("../assets/mm1.bmp", rend, mm1Cells, 3);
 
 	BMPText fontDraw(&arcadeFont);
 
@@ -213,8 +114,8 @@ int main(int argc, char **argv)
 
 	InputCfg inputConfig(&player1Input, rend, &mainText, &fontDraw);
 
-	AnimObj pop(&prince);
-	pop.defineAnim(0, 12, popFrames);
+	AnimObj pop(&mm1);
+	pop.defineAnim(0, 3, popFrames, true);
 	pop.startAnim(0);
 
 	SDL_Event ev;
@@ -285,7 +186,7 @@ int main(int argc, char **argv)
 
 		SDL_RenderClear(rend);
 		//Draw stuff now
-		pop.playAnim(64, 64);
+		pop.playAnim(256, 64);
 		mainText.Clear();	//What happens if I forget this?!
 		mainText.ReceiveString(lastKeyStateMsg, 256, 32, fontDim, &fontDraw);
 		if(menuactive)

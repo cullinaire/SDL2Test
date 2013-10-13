@@ -29,13 +29,15 @@ class AnimObj
 {
 public:
 	AnimObj(SpriteSheet *p_animSheet);
-	void defineAnim(int index, int numFrames, std::list<aniFrame> p_frames);
+	void defineAnim(int index, int numFrames, std::list<aniFrame> p_frames, bool p_backNforth);
 	void startAnim(int index);
 	void playAnim(int x, int y);
 
 private:
 	SpriteSheet *animSheet;		//Do not delete - instantiated elsewhere
 	bool playing;
+	bool backNforth;	//instead of traditional looping, bounce backwards when end is reached
+	bool forwards;		//direction animation is playing in - only used if backNforth is true
 	Uint32 elapsed;
 	int curAnimIndex;
 	std::list<aniList> animations;
