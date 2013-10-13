@@ -99,24 +99,19 @@ int main(int argc, char **argv)
 					inputConfig.assignInput(lastKey);
 					waitingForInput = false;
 				}
-				else
+				else if(menuactive)
 				{
 					switch(lastKey)
 					{
 					case SDL_SCANCODE_DOWN:
-						if(menuactive)
-							inputConfig.menuDown();
+						inputConfig.menuDown();
 						break;
 					case SDL_SCANCODE_UP:
-						if(menuactive)
-							inputConfig.menuUp();
+						inputConfig.menuUp();
 						break;
 					case SDL_SCANCODE_RETURN:
-						if(menuactive)
-						{
-							inputConfig.menuSelect();
-							waitingForInput = true;
-						}
+						inputConfig.menuSelect();
+						waitingForInput = true;
 						break;
 					case SDL_SCANCODE_ESCAPE:
 						if(!menuactive)
@@ -127,6 +122,18 @@ int main(int argc, char **argv)
 					}
 					lastKeyStateMsg.assign("Last input: ");
 					lastKeyStateMsg.append(player1Input.returnInputName(player1Input.returnInput(lastKey)));
+				}
+				else
+				{
+					switch(lastKey)
+					{
+					case SDL_SCANCODE_ESCAPE:
+						if(!menuactive)
+							menuactive = true;
+						else
+							menuactive = false;
+						break;
+					}
 				}
 			}
 		}
