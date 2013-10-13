@@ -57,4 +57,5 @@ std::string InputMap::returnInputName(gameInput input)
 		return "shoot";
 		break;
 	}
+	return "somethingwentwrong";
 }

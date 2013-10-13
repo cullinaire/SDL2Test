@@ -8,6 +8,7 @@ InputCfg::InputCfg(InputMap *p_playerMap, SDL_Renderer *rend, TxtLayer *txtOut, 
 	statusMenu = new Menu(textOutput);
 	statusMenu->DefineCursor(" ");
 	font = bmpFont;
+	alreadyAssigned.clear();	//Maybe build this list from an external config file later
 	currentInput = UNDEFINED;
 
 	inputMenu->InsertItem("left", 0, bmpFont);
@@ -19,13 +20,13 @@ InputCfg::InputCfg(InputMap *p_playerMap, SDL_Renderer *rend, TxtLayer *txtOut, 
 	inputMenu->InsertItem("shoot", 6, bmpFont);
 	inputMenu->InsertItem("quit", 7, bmpFont);
 
-	statusMenu->InsertItem("left:", 0, bmpFont);
-	statusMenu->InsertItem("right:", 1, bmpFont);
-	statusMenu->InsertItem("up:", 2, bmpFont);
-	statusMenu->InsertItem("down:", 3, bmpFont);
-	statusMenu->InsertItem("jump:", 4, bmpFont);
-	statusMenu->InsertItem("crouch:", 5, bmpFont);
-	statusMenu->InsertItem("shoot:", 6, bmpFont);
+	statusMenu->InsertItem("left is undefined", 0, bmpFont);
+	statusMenu->InsertItem("right is undefined", 1, bmpFont);
+	statusMenu->InsertItem("up is undefined", 2, bmpFont);
+	statusMenu->InsertItem("down is undefined", 3, bmpFont);
+	statusMenu->InsertItem("jump is undefined", 4, bmpFont);
+	statusMenu->InsertItem("crouch is undefined", 5, bmpFont);
+	statusMenu->InsertItem("shoot is undefined", 6, bmpFont);
 }
 
 void InputCfg::registerQuit(bool *quit)
@@ -105,8 +106,45 @@ void InputCfg::menuSelect()
 
 void InputCfg::assignInput(SDL_Scancode scancode)
 {
+	bool duplicate = false;
+	gameInput oldInput;
+
 	if(currentInput != UNDEFINED)
 	{
+		//search to see if scancode is already assigned
+		for(itr = alreadyAssigned.begin();itr != alreadyAssigned.end();++itr)
+		{
+			if(itr->scancode == scancode)
+			{
+				statusMsg.assign(SDL_GetScancodeName(scancode));
+				statusMsg.append(" has already been assigned to ");
+				statusMsg.append(playerMap->returnInputName(itr->associatedInput));
+				statusMsg.append(", overwriting.");
+				duplicate = true;
+				break;
+			}
+		}
+
+		assignedInput newInput;
+		newInput.associatedInput = currentInput;
+		newInput.scancode = scancode;
+
+		//If input is already assigned, overwrite with new assignment
+		if(duplicate)
+		{
+			oldInput = itr->associatedInput;
+			itr->associatedInput = currentInput;
+			itr->scancode = scancode;
+			playerMap->DefineInput(scancode, UNDEFINED);	//unnecessary since the defineinput later on will just overwrite
+			statusMsg.assign(playerMap->returnInputName(oldInput));
+			statusMsg.append(" is undefined");
+			statusMenu->ReplaceItem(statusMsg, oldInput, font);	//hopefully the enum will suffice as the index of the old input
+		}
+		else
+		{
+			alreadyAssigned.push_back(newInput);
+		}
+
 		playerMap->DefineInput(scancode, currentInput);
 		statusMsg.assign(playerMap->returnInputName(currentInput));
 		statusMsg.append(" has been assigned to key: ");

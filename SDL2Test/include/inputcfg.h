@@ -12,6 +12,12 @@
 #include <string>
 #include <list>
 
+typedef struct assignedInput
+{
+	SDL_Scancode scancode;
+	gameInput associatedInput;
+} assignedInput;
+
 class InputCfg
 {
 public:
@@ -32,6 +38,8 @@ private:
 	TxtLayer *textOutput;	//Do not delete - instantiated elsewhere
 	BMPText *font;			//Do not delete - instantiated elsewhere
 	gameInput currentInput;
+	std::list<assignedInput> alreadyAssigned;
+	std::list<assignedInput>::iterator itr;
 	int currentIndex;
 	bool *quit;				//Do not delete - instantiated elsewhere
 };

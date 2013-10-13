@@ -15,7 +15,7 @@
 
 typedef enum gameInput
 {
-	UNDEFINED,
+	UNDEFINED = -1,	//Needed to assign -1 to preserve the indices of the remaining members for various purposes
 	MOVE_LEFT,
 	MOVE_RIGHT,
 	MOVE_UP,
