@@ -31,10 +31,11 @@
 #include "inputmap.h"
 #include "txtlayer.h"
 #include "inputcfg.h"
+#include "animobj.h"
 
 int main(int argc, char **argv)
 {
-	if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO) != 0)
+	if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO|SDL_INIT_TIMER) != 0)
 	{
 		logSDLError(std::cout, "SDL_Init Error");
 		return 1;
@@ -62,7 +63,147 @@ int main(int argc, char **argv)
 	fontDim.w = 8;
 	fontDim.h = 8;
 
+	std::list<SheetInfo> princeCells;
+	SheetInfo princeCell;
+	SDL_Rect princeSrc;
+
+	std::list<aniFrame> popFrames;
+	aniFrame popFrame;
+
+	princeCell.id = popFrame.frameID = 0;
+	princeSrc.x = 624;
+	princeSrc.y = 758;
+	princeSrc.w = 24;
+	princeSrc.h = 83;
+	princeCell.cell = princeSrc;
+	popFrame.frameSize = princeSrc;
+	popFrame.duration = 100;
+	popFrames.push_back(popFrame);
+	princeCells.push_back(princeCell);
+
+	princeCell.id = popFrame.frameID = 1;
+	princeSrc.x = 580;
+	princeSrc.y = 758;
+	princeSrc.w = 28;
+	princeSrc.h = 83;
+	princeCell.cell = princeSrc;
+	popFrame.frameSize = princeSrc;
+	popFrame.duration = 100;
+	popFrames.push_back(popFrame);
+	princeCells.push_back(princeCell);
+
+	princeCell.id = popFrame.frameID = 2;
+	princeSrc.x = 525;
+	princeSrc.y = 758;
+	princeSrc.w = 41;
+	princeSrc.h = 83;
+	princeCell.cell = princeSrc;
+	popFrame.frameSize = princeSrc;
+	popFrame.duration = 100;
+	popFrames.push_back(popFrame);
+	princeCells.push_back(princeCell);
+
+	princeCell.id = popFrame.frameID = 3;
+	princeSrc.x = 463;
+	princeSrc.y = 758;
+	princeSrc.w = 51;
+	princeSrc.h = 83;
+	princeCell.cell = princeSrc;
+	popFrame.frameSize = princeSrc;
+	popFrame.duration = 100;
+	popFrames.push_back(popFrame);
+	princeCells.push_back(princeCell);
+
+	princeCell.id = popFrame.frameID = 4;
+	princeSrc.x = 399;
+	princeSrc.y = 758;
+	princeSrc.w = 54;
+	princeSrc.h = 83;
+	princeCell.cell = princeSrc;
+	popFrame.frameSize = princeSrc;
+	popFrame.duration = 100;
+	popFrames.push_back(popFrame);
+	princeCells.push_back(princeCell);
+
+	princeCell.id = popFrame.frameID = 5;
+	princeSrc.x = 331;
+	princeSrc.y = 758;
+	princeSrc.w = 58;
+	princeSrc.h = 83;
+	princeCell.cell = princeSrc;
+	popFrame.frameSize = princeSrc;
+	popFrame.duration = 100;
+	popFrames.push_back(popFrame);
+	princeCells.push_back(princeCell);
+
+	princeCell.id = popFrame.frameID = 6;
+	princeSrc.x = 262;
+	princeSrc.y = 758;
+	princeSrc.w = 59;
+	princeSrc.h = 83;
+	princeCell.cell = princeSrc;
+	popFrame.frameSize = princeSrc;
+	popFrame.duration = 100;
+	popFrames.push_back(popFrame);
+	princeCells.push_back(princeCell);
+
+	princeCell.id = popFrame.frameID = 7;
+	princeSrc.x = 201;
+	princeSrc.y = 758;
+	princeSrc.w = 54;
+	princeSrc.h = 83;
+	princeCell.cell = princeSrc;
+	popFrame.frameSize = princeSrc;
+	popFrame.duration = 100;
+	popFrames.push_back(popFrame);
+	princeCells.push_back(princeCell);
+
+	princeCell.id = popFrame.frameID = 8;
+	princeSrc.x = 145;
+	princeSrc.y = 758;
+	princeSrc.w = 42;
+	princeSrc.h = 83;
+	princeCell.cell = princeSrc;
+	popFrame.frameSize = princeSrc;
+	popFrame.duration = 100;
+	popFrames.push_back(popFrame);
+	princeCells.push_back(princeCell);
+
+	princeCell.id = popFrame.frameID = 9;
+	princeSrc.x = 105;
+	princeSrc.y = 758;
+	princeSrc.w = 28;
+	princeSrc.h = 83;
+	princeCell.cell = princeSrc;
+	popFrame.frameSize = princeSrc;
+	popFrame.duration = 100;
+	popFrames.push_back(popFrame);
+	princeCells.push_back(princeCell);
+
+	princeCell.id = popFrame.frameID = 10;
+	princeSrc.x = 66;
+	princeSrc.y = 758;
+	princeSrc.w = 23;
+	princeSrc.h = 83;
+	princeCell.cell = princeSrc;
+	popFrame.frameSize = princeSrc;
+	popFrame.duration = 100;
+	popFrames.push_back(popFrame);
+	princeCells.push_back(princeCell);
+
+	princeCell.id = popFrame.frameID = 11;
+	princeSrc.x = 23;
+	princeSrc.y = 758;
+	princeSrc.w = 25;
+	princeSrc.h = 83;
+	princeCell.cell = princeSrc;
+	popFrame.frameSize = princeSrc;
+	popFrame.duration = 100;
+	popFrames.push_back(popFrame);
+	princeCells.push_back(princeCell);
+
 	SpriteSheet arcadeFont("../assets/drbrfont.bmp", rend, fontDim, 1, 95, 95);
+	SpriteSheet prince("../assets/pop.bmp", rend, princeCells, 12);
 
 	BMPText fontDraw(&arcadeFont);
 
@@ -71,6 +212,10 @@ int main(int argc, char **argv)
 	InputMap player1Input;
 
 	InputCfg inputConfig(&player1Input, rend, &mainText, &fontDraw);
+
+	AnimObj pop(&prince);
+	pop.defineAnim(0, 12, popFrames);
+	pop.startAnim(0);
 
 	SDL_Event ev;
 	SDL_Scancode lastKey;
@@ -140,6 +285,7 @@ int main(int argc, char **argv)
 
 		SDL_RenderClear(rend);
 		//Draw stuff now
+		pop.playAnim(64, 64);
 		mainText.Clear();	//What happens if I forget this?!
 		mainText.ReceiveString(lastKeyStateMsg, 256, 32, fontDim, &fontDraw);
 		if(menuactive)

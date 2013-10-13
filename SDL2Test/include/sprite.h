@@ -5,6 +5,7 @@
 
 #include "SDL.h"
 #include <string>
+#include <list>
 
 //Class Sprite - Just defines a single sprite with a single image loaded as texture
 //that is hooked to whatever renderer is active in the window being used.
@@ -35,6 +36,7 @@ class SpriteSheet
 {
 public:
 	SpriteSheet(const std::string bmpfilename, SDL_Renderer *renderer, SDL_Rect cell, int row, int col, int total);
+	SpriteSheet(const std::string bmpfilename, SDL_Renderer *renderer, std::list<SheetInfo> cells, int total);
 	SDL_Rect getCellSize();
 	void Draw(int id, SDL_Rect dest);
 	~SpriteSheet();

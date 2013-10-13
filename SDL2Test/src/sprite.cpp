@@ -31,6 +31,7 @@ Sprite::~Sprite()
 	SDL_DestroyTexture(texture);
 }
 
+//Constructor for constant cell size sheets
 SpriteSheet::SpriteSheet(const std::string bmpfilename, SDL_Renderer *renderer, SDL_Rect cell, int row, int col, int total)
 {
 	source = new Sprite(bmpfilename.c_str(), renderer);
@@ -54,6 +55,26 @@ SpriteSheet::SpriteSheet(const std::string bmpfilename, SDL_Renderer *renderer, 
 		sheetinfo[i].cell = currentCell;
 		currentCell.x += cell.w;
 		rowindex++;
+	}
+}
+
+//Constructor for arbitrary cell size (and location) sheets
+SpriteSheet::SpriteSheet(const std::string bmpfilename, SDL_Renderer *renderer, std::list<SheetInfo> cells, int total)
+{
+	source = new Sprite(bmpfilename.c_str(), renderer);
+	sheetinfo = new SheetInfo[total];
+	int i = 0;
+
+	for(std::list<SheetInfo>::iterator itr = cells.begin();itr != cells.end();++itr)
+	{
+		sheetinfo[i].cell = itr->cell;
+		sheetinfo[i].id = i;
+		++i;
+		if(i > total)
+		{
+			logSDLError(std::cout, "Number of defined animation cells exceeds provided total!!");
+			break;
+		}
 	}
 }
 
