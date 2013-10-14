@@ -247,11 +247,17 @@ int main(int argc, char **argv)
 
 	std::string lastKeyStateMsg;
 	lastKeyStateMsg.assign("Press ESC to view menu");
+	std::string leftKeyState;
+	leftKeyState.assign("left Key not pressed");
+	std::string rightKeyState;
+	rightKeyState.assign("right Key not pressed");
 
 	bool quit = false;
 	bool menuactive = false;
 	bool waitingForInput = false;	//Used for input mapping
-	bool keyDownFirstTime = true;	//Used to mitigate key-repeat issues
+	bool keyPressed[256];	//Used to mitigate key-repeat issues
+	for(int i=0;i < 256;++i)
+		keyPressed[i] = false;
 
 	inputConfig.registerQuit(&quit);	//So the menu can modify the quit variable...shaky I know
 
@@ -261,7 +267,7 @@ int main(int argc, char **argv)
 		{
 			if(ev.type == SDL_QUIT)
 				quit = true;
-			if(ev.type == SDL_KEYDOWN && keyDownFirstTime)
+			if(ev.type == SDL_KEYDOWN)
 			{
 				lastKey = ev.key.keysym.scancode;
 				if(waitingForInput)
@@ -296,33 +302,37 @@ int main(int argc, char **argv)
 				}
 				else
 				{
-					switch(lastKey)
+					if(keyPressed[lastKey] == false)
 					{
-					case SDL_SCANCODE_ESCAPE:
-						if(!menuactive)
-							menuactive = true;
-						else
-							menuactive = false;
-						break;
-					}
-					switch(player1Input.returnInput(lastKey))
-					{
-					case MOVE_LEFT:
-						mm1.startAnim(0);
-						lastAnimMsg.assign("Running Left playing");
-						break;
-					case MOVE_RIGHT:
-						mm1.startAnim(1);
-						lastAnimMsg.assign("Running Right playing");
-						break;
+						switch(lastKey)
+						{
+						case SDL_SCANCODE_ESCAPE:
+							if(!menuactive)
+								menuactive = true;
+							else
+								menuactive = false;
+							break;
+						}
+						switch(player1Input.returnInput(lastKey))
+						{
+						case MOVE_LEFT:
+								mm1.startAnim(0);
+								lastAnimMsg.assign("Running Left playing");
+								leftKeyState.assign("left Key pressed");
+							break;
+						case MOVE_RIGHT:
+								mm1.startAnim(1);
+								lastAnimMsg.assign("Running Right playing");
+								rightKeyState.assign("right Key pressed");
+							break;
+						}
+						keyPressed[lastKey] = true;
 					}
 				}
-				keyDownFirstTime = false;
 			}
 			if(ev.type == SDL_KEYUP)
 			{
-				keyDownFirstTime = true;
-
+				keyPressed[lastKey] = false;
 				if(!menuactive)
 				{
 					switch(player1Input.returnInput(lastKey))
@@ -330,10 +340,12 @@ int main(int argc, char **argv)
 					case MOVE_LEFT:
 						mm1.startAnim(2);
 						lastAnimMsg.assign("Standing facing left playing");
+						leftKeyState.assign("left Key not pressed");
 						break;
 					case MOVE_RIGHT:
 						mm1.startAnim(3);
 						lastAnimMsg.assign("Standing facing right playing");
+						rightKeyState.assign("right Key not pressed");
 						break;
 					}
 				}
@@ -344,6 +356,8 @@ int main(int argc, char **argv)
 		//Draw stuff now
 		mm1.playAnim(256, 64);
 		mainText.Clear();	//What happens if I forget this?!
+		mainText.ReceiveString(leftKeyState, 256, 128, fontDim, &fontDraw);
+		mainText.ReceiveString(rightKeyState, 256, 144, fontDim, &fontDraw);
 		mainText.ReceiveString(lastAnimMsg, 256, 16, fontDim, &fontDraw);
 		mainText.ReceiveString(lastKeyStateMsg, 256, 32, fontDim, &fontDraw);
 		if(menuactive)
