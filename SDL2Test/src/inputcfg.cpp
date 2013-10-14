@@ -116,10 +116,6 @@ void InputCfg::assignInput(SDL_Scancode scancode)
 		{
 			if(itr->scancode == scancode)
 			{
-				statusMsg.assign(SDL_GetScancodeName(scancode));
-				statusMsg.append(" has already been assigned to ");
-				statusMsg.append(playerMap->returnInputName(itr->associatedInput));
-				statusMsg.append(", overwriting.");
 				duplicate = true;
 				break;
 			}
