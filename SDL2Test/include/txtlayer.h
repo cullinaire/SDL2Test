@@ -12,7 +12,7 @@
 //Will I be able to do it?
 //The class will receive as input:
 //strings to draw, the starting location of each string, font to use for each string
-//Since the number of strings received will be arbitrary, the strings will be stored in
+//Since the number of strings received per frame will be arbitrary, the strings will be stored in
 //an array in the form of a struct, which will also contain the other attributes
 //like location and font.
 

@@ -14,7 +14,6 @@
 typedef struct aniFrame
 {
 	Uint32 duration;	//in ms
-	SDL_Rect frameSize;
 	int frameID;	//used by SheetInfo to determine which cell to draw
 } aniFrame;
 

@@ -67,44 +67,41 @@ int main(int argc, char **argv)
 	SheetInfo mm1Cell;
 	SDL_Rect mm1Src;
 
-	std::list<aniFrame> popFrames;
-	aniFrame popFrame;
+	std::list<aniFrame> mm1Frames;
+	aniFrame mm1Frame;
 
-	mm1Cell.id = popFrame.frameID = 0;
+	mm1Cell.id = mm1Frame.frameID = 0;
 	mm1Src.x = 98;
 	mm1Src.y = 94;
 	mm1Src.w = 32;
 	mm1Src.h = 25;
 	mm1Cell.cell = mm1Src;
-	popFrame.frameSize = mm1Src;
-	popFrame.duration = 200;
-	popFrames.push_back(popFrame);
+	mm1Frame.duration = 200;
+	mm1Frames.push_back(mm1Frame);
 	mm1Cells.push_back(mm1Cell);
 
-	mm1Cell.id = popFrame.frameID = 1;
+	mm1Cell.id = mm1Frame.frameID = 1;
 	mm1Src.x = 67;
 	mm1Src.y = 94;
 	mm1Src.w = 32;
 	mm1Src.h = 25;
 	mm1Cell.cell = mm1Src;
-	popFrame.frameSize = mm1Src;
-	popFrame.duration = 200;
-	popFrames.push_back(popFrame);
+	mm1Frame.duration = 200;
+	mm1Frames.push_back(mm1Frame);
 	mm1Cells.push_back(mm1Cell);
 
-	mm1Cell.id = popFrame.frameID = 2;
+	mm1Cell.id = mm1Frame.frameID = 2;
 	mm1Src.x = 35;
 	mm1Src.y = 94;
 	mm1Src.w = 32;
 	mm1Src.h = 25;
 	mm1Cell.cell = mm1Src;
-	popFrame.frameSize = mm1Src;
-	popFrame.duration = 200;
-	popFrames.push_back(popFrame);
+	mm1Frame.duration = 200;
+	mm1Frames.push_back(mm1Frame);
 	mm1Cells.push_back(mm1Cell);
 
 	SpriteSheet arcadeFont("../assets/drbrfont.bmp", rend, fontDim, 1, 95, 95);
-	SpriteSheet mm1("../assets/mm1.bmp", rend, mm1Cells, 3);
+	SpriteSheet mm1sheet("../assets/mm1.bmp", rend, mm1Cells, 3);
 
 	BMPText fontDraw(&arcadeFont);
 
@@ -114,9 +111,9 @@ int main(int argc, char **argv)
 
 	InputCfg inputConfig(&player1Input, rend, &mainText, &fontDraw);
 
-	AnimObj pop(&mm1);
-	pop.defineAnim(0, 3, popFrames, true);
-	pop.startAnim(0);
+	AnimObj mm1(&mm1sheet);
+	mm1.defineAnim(0, 3, mm1Frames, true);
+	mm1.startAnim(0);
 
 	SDL_Event ev;
 	SDL_Scancode lastKey;
@@ -186,7 +183,7 @@ int main(int argc, char **argv)
 
 		SDL_RenderClear(rend);
 		//Draw stuff now
-		pop.playAnim(256, 64);
+		mm1.playAnim(256, 64);
 		mainText.Clear();	//What happens if I forget this?!
 		mainText.ReceiveString(lastKeyStateMsg, 256, 32, fontDim, &fontDraw);
 		if(menuactive)

@@ -109,6 +109,9 @@ SDL_Rect SpriteSheet::getCellSize()
 
 void SpriteSheet::Draw(int id, SDL_Rect dest)
 {
+	dest.w = sheetinfo[id].cell.w;
+	dest.h = sheetinfo[id].cell.h;
+
 	source->Draw(sheetinfo[id].cell, dest);
 }
 

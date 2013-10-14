@@ -80,8 +80,6 @@ void AnimObj::playAnim(int x, int y)
 					drawFrame = selAnim->frames.begin();	//Loop back to beginning of animation
 			}
 		}
-		dst.w = drawFrame->frameSize.w;
-		dst.h = drawFrame->frameSize.h;
 
 		animSheet->Draw(drawFrame->frameID, dst);
 	}
