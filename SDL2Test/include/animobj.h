@@ -21,6 +21,7 @@ typedef struct aniList
 {
 	int index;
 	int numFrames;
+	int offset;		//FrameID always starts from 0, so this is needed to map
 	std::list<aniFrame> frames;
 } aniList;
 
@@ -28,7 +29,8 @@ class AnimObj
 {
 public:
 	AnimObj(SpriteSheet *p_animSheet);
-	void defineAnim(int index, int numFrames, std::list<aniFrame> p_frames, bool p_backNforth);
+	void defineAnim(int index, int numFrames, std::list<aniFrame> p_frames, bool p_backNforth,
+		int p_offset);
 	void startAnim(int index);
 	void playAnim(int x, int y);
 

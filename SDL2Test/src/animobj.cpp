@@ -8,13 +8,15 @@ AnimObj::AnimObj(SpriteSheet *p_animSheet)
 	forwards = true;
 }
 
-void AnimObj::defineAnim(int index, int numFrames, std::list<aniFrame> p_frames, bool p_backNforth)
+void AnimObj::defineAnim(int index, int numFrames, std::list<aniFrame> p_frames, bool p_backNforth,
+						 int p_offset)
 {
 	aniList newFrames;
 	newFrames.index = index;
 	newFrames.numFrames = numFrames;
 	newFrames.frames = p_frames;
 	backNforth = p_backNforth;
+	newFrames.offset = p_offset;
 
 	animations.push_back(newFrames);
 }
@@ -81,6 +83,6 @@ void AnimObj::playAnim(int x, int y)
 			}
 		}
 
-		animSheet->Draw(drawFrame->frameID, dst);
+		animSheet->Draw(drawFrame->frameID + selAnim->offset, dst);
 	}
 }

@@ -70,38 +70,96 @@ int main(int argc, char **argv)
 	std::list<aniFrame> mm1Frames;
 	aniFrame mm1Frame;
 
-	mm1Cell.id = mm1Frame.frameID = 0;
+	//Run facing left
+
+	mm1Cell.id = 0;
 	mm1Src.x = 98;
 	mm1Src.y = 94;
 	mm1Src.w = 32;
 	mm1Src.h = 25;
 	mm1Cell.cell = mm1Src;
-	mm1Frame.duration = 200;
-	mm1Frames.push_back(mm1Frame);
 	mm1Cells.push_back(mm1Cell);
 
-	mm1Cell.id = mm1Frame.frameID = 1;
+	mm1Cell.id = 1;
 	mm1Src.x = 67;
 	mm1Src.y = 94;
 	mm1Src.w = 32;
 	mm1Src.h = 25;
 	mm1Cell.cell = mm1Src;
-	mm1Frame.duration = 200;
-	mm1Frames.push_back(mm1Frame);
 	mm1Cells.push_back(mm1Cell);
 
-	mm1Cell.id = mm1Frame.frameID = 2;
+	mm1Cell.id = 2;
 	mm1Src.x = 35;
 	mm1Src.y = 94;
 	mm1Src.w = 32;
 	mm1Src.h = 25;
 	mm1Cell.cell = mm1Src;
-	mm1Frame.duration = 200;
-	mm1Frames.push_back(mm1Frame);
+	mm1Cells.push_back(mm1Cell);
+
+	//Run facing right
+
+	mm1Cell.id = 3;
+	mm1Src.x = 204;
+	mm1Src.y = 94;
+	mm1Src.w = 32;
+	mm1Src.h = 25;
+	mm1Cell.cell = mm1Src;
+	mm1Cells.push_back(mm1Cell);
+
+	mm1Cell.id = 4;
+	mm1Src.x = 236;
+	mm1Src.y = 94;
+	mm1Src.w = 32;
+	mm1Src.h = 25;
+	mm1Cell.cell = mm1Src;
+	mm1Cells.push_back(mm1Cell);
+
+	mm1Cell.id = 5;
+	mm1Src.x = 266;
+	mm1Src.y = 94;
+	mm1Src.w = 32;
+	mm1Src.h = 25;
+	mm1Cell.cell = mm1Src;
+	mm1Cells.push_back(mm1Cell);
+
+	//Stand and blink facing left
+
+	mm1Cell.id = 6;
+	mm1Src.x = 51;
+	mm1Src.y = 10;
+	mm1Src.w = 23;
+	mm1Src.h = 25;
+	mm1Cell.cell = mm1Src;
+	mm1Cells.push_back(mm1Cell);
+
+	mm1Cell.id = 7;
+	mm1Src.x = 76;
+	mm1Src.y = 10;
+	mm1Src.w = 23;
+	mm1Src.h = 25;
+	mm1Cell.cell = mm1Src;
+	mm1Cells.push_back(mm1Cell);
+
+	//Stand and blink facing right
+
+	mm1Cell.id = 8;
+	mm1Src.x = 235;
+	mm1Src.y = 10;
+	mm1Src.w = 23;
+	mm1Src.h = 25;
+	mm1Cell.cell = mm1Src;
+	mm1Cells.push_back(mm1Cell);
+
+	mm1Cell.id = 9;
+	mm1Src.x = 260;
+	mm1Src.y = 10;
+	mm1Src.w = 23;
+	mm1Src.h = 25;
+	mm1Cell.cell = mm1Src;
 	mm1Cells.push_back(mm1Cell);
 
 	SpriteSheet arcadeFont("../assets/drbrfont.bmp", rend, fontDim, 1, 95, 95);
-	SpriteSheet mm1sheet("../assets/mm1.bmp", rend, mm1Cells, 3);
+	SpriteSheet mm1sheet("../assets/mm1.bmp", rend, mm1Cells, mm1Cells.size());
 
 	BMPText fontDraw(&arcadeFont);
 
@@ -112,20 +170,90 @@ int main(int argc, char **argv)
 	InputCfg inputConfig(&player1Input, rend, &mainText, &fontDraw);
 
 	AnimObj mm1(&mm1sheet);
-	mm1.defineAnim(0, 3, mm1Frames, true);
-	mm1.startAnim(0);
+
+	//Run facing left, anim id = 0
+
+	mm1Frame.frameID = 0;
+	mm1Frame.duration = 200;
+	mm1Frames.push_back(mm1Frame);
+
+	mm1Frame.frameID = 1;
+	mm1Frame.duration = 200;
+	mm1Frames.push_back(mm1Frame);
+
+	mm1Frame.frameID = 2;
+	mm1Frame.duration = 200;
+	mm1Frames.push_back(mm1Frame);
+
+	mm1.defineAnim(0, 3, mm1Frames, true, 0);
+	
+	mm1Frames.clear();
+
+	//Run facing right, anim id = 1
+
+	mm1Frame.frameID = 0;
+	mm1Frame.duration = 200;
+	mm1Frames.push_back(mm1Frame);
+
+	mm1Frame.frameID = 1;
+	mm1Frame.duration = 200;
+	mm1Frames.push_back(mm1Frame);
+
+	mm1Frame.frameID = 2;
+	mm1Frame.duration = 200;
+	mm1Frames.push_back(mm1Frame);
+
+	mm1.defineAnim(1, 3, mm1Frames, true, 3);
+	
+	mm1Frames.clear();
+
+	//Stand facing left, anim id = 2
+
+	mm1Frame.frameID = 0;
+	mm1Frame.duration = 100;
+	mm1Frames.push_back(mm1Frame);
+
+	mm1Frame.frameID = 1;
+	mm1Frame.duration = 1500;
+	mm1Frames.push_back(mm1Frame);
+
+	mm1.defineAnim(2, 2, mm1Frames, true, 6);
+	
+	mm1Frames.clear();
+
+	//Stand facing right, anim id = 3
+
+	mm1Frame.frameID = 0;
+	mm1Frame.duration = 1500;
+	mm1Frames.push_back(mm1Frame);
+
+	mm1Frame.frameID = 1;
+	mm1Frame.duration = 100;
+	mm1Frames.push_back(mm1Frame);
+
+	mm1.defineAnim(3, 2, mm1Frames, true, 8);
+	
+	mm1Frames.clear();
+
+	//Done defining animations
+
+	std::string lastAnimMsg;
+	lastAnimMsg.assign("Standing facing Left playing");
+
+	mm1.startAnim(2);
 
 	SDL_Event ev;
-	SDL_Scancode lastKey;
+	SDL_Scancode lastKey;	//Keeps track of last key pressed
 
 	std::string lastKeyStateMsg;
 	lastKeyStateMsg.assign("Press ESC to view menu");
 
 	bool quit = false;
 	bool menuactive = false;
-	bool waitingForInput = false;
+	bool waitingForInput = false;	//Used for input mapping
+	bool keyDownFirstTime = true;	//Used to mitigate key-repeat issues
 
-	inputConfig.registerQuit(&quit);
+	inputConfig.registerQuit(&quit);	//So the menu can modify the quit variable...shaky I know
 
 	while(!quit)
 	{
@@ -133,7 +261,7 @@ int main(int argc, char **argv)
 		{
 			if(ev.type == SDL_QUIT)
 				quit = true;
-			if(ev.type == SDL_KEYDOWN)
+			if(ev.type == SDL_KEYDOWN && keyDownFirstTime)
 			{
 				lastKey = ev.key.keysym.scancode;
 				if(waitingForInput)
@@ -177,6 +305,37 @@ int main(int argc, char **argv)
 							menuactive = false;
 						break;
 					}
+					switch(player1Input.returnInput(lastKey))
+					{
+					case MOVE_LEFT:
+						mm1.startAnim(0);
+						lastAnimMsg.assign("Running Left playing");
+						break;
+					case MOVE_RIGHT:
+						mm1.startAnim(1);
+						lastAnimMsg.assign("Running Right playing");
+						break;
+					}
+				}
+				keyDownFirstTime = false;
+			}
+			if(ev.type == SDL_KEYUP)
+			{
+				keyDownFirstTime = true;
+
+				if(!menuactive)
+				{
+					switch(player1Input.returnInput(lastKey))
+					{
+					case MOVE_LEFT:
+						mm1.startAnim(2);
+						lastAnimMsg.assign("Standing facing left playing");
+						break;
+					case MOVE_RIGHT:
+						mm1.startAnim(3);
+						lastAnimMsg.assign("Standing facing right playing");
+						break;
+					}
 				}
 			}
 		}
@@ -185,6 +344,7 @@ int main(int argc, char **argv)
 		//Draw stuff now
 		mm1.playAnim(256, 64);
 		mainText.Clear();	//What happens if I forget this?!
+		mainText.ReceiveString(lastAnimMsg, 256, 16, fontDim, &fontDraw);
 		mainText.ReceiveString(lastKeyStateMsg, 256, 32, fontDim, &fontDraw);
 		if(menuactive)
 		{
