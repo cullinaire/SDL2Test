@@ -22,8 +22,12 @@
 //function is waiting, but continue on with the rest of the loop. If the player finally enters the
 //key, then do whatever with it.
 
+#ifdef __linux
+	#include "SDL2/SDL.h"
+#elif __WIN32
+	#include "SDL.h"
+#endif
 #include <iostream>
-#include <SDL.h>
 #include "logger.h"
 #include "sprite.h"
 #include "gfxtext.h"

@@ -4,11 +4,15 @@
 //inputcfg.h - routines that interactively configure game inputs
 
 #include "inputmap.h"
+#ifdef __linux
+	#include "SDL2/SDL.h"
+#elif __WIN32
+	#include "SDL.h"
+#endif
 #include "txtlayer.h"
 #include "gfxtext.h"
 #include "sprite.h"
 #include "menu.h"
-#include "SDL.h"
 #include <string>
 #include <list>
 

@@ -7,9 +7,13 @@
 //Does not do collision detection, input, or anything other than just switching pictures
 //around on screen!
 
+#ifdef __linux
+	#include "SDL2/SDL.h"
+#elif __WIN32
+	#include "SDL.h"
+#endif
 #include "sprite.h"
 #include <list>
-#include "SDL.h"
 
 typedef struct aniFrame
 {

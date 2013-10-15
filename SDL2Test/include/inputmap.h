@@ -9,7 +9,11 @@
 //Since the ordering of the array containing the supported keys/buttons/actions will
 //be known in advance, there is no need for a map or anything like that.
 
-#include "SDL.h"
+#ifdef __linux
+	#include "SDL2/SDL.h"
+#elif __WIN32
+	#include "SDL.h"
+#endif
 #include <string>
 #include <list>
 

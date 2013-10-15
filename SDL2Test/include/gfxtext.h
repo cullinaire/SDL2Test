@@ -3,8 +3,12 @@
 
 //gfxtext.h - routines for printing bitmapped text strings
 
+#ifdef __linux
+	#include "SDL2/SDL.h"
+#elif __WIN32
+	#include "SDL.h"
+#endif
 #include "sprite.h"
-#include "SDL.h"
 #include <string>
 #include <map>
 
