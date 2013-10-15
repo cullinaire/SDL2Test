@@ -323,14 +323,36 @@ int main(int argc, char **argv)
 						}
 						switch(player1Input.returnInput(lastKey))
 						{
+							//Thinking about implementing a Spelunky style approach to simultaneous
+							//keydowns for left and right move inputs. That is, if one is pressed
+							//while the other was already being held down, then the response is for
+							//the player to stop in his tracks, without turning around.
+							//If a key is released, the player begins moving in the direction of the
+							//key that is still held down.
 						case MOVE_LEFT:
+							if(keyPressed[player1Input.returnScancode(MOVE_RIGHT)] == true)
+							{
+								mm1.startAnim(3);
+								lastAnimMsg.assign("Standing facing right playing");
+							}
+							else
+							{
 								mm1.startAnim(0);
 								lastAnimMsg.assign("Running Left playing");
+							}
 								leftKeyState.assign("left Key pressed");
 							break;
 						case MOVE_RIGHT:
+							if(keyPressed[player1Input.returnScancode(MOVE_LEFT)] == true)
+							{
+								mm1.startAnim(2);
+								lastAnimMsg.assign("Standing facing left playing");
+							}
+							else
+							{
 								mm1.startAnim(1);
 								lastAnimMsg.assign("Running Right playing");
+							}
 								rightKeyState.assign("right Key pressed");
 							break;
 						default:
@@ -349,13 +371,29 @@ int main(int argc, char **argv)
 					switch(player1Input.returnInput(lastKey))
 					{
 					case MOVE_LEFT:
-						mm1.startAnim(2);
-						lastAnimMsg.assign("Standing facing left playing");
+						if(keyPressed[player1Input.returnScancode(MOVE_RIGHT)] == true)
+						{
+							mm1.startAnim(1);
+							lastAnimMsg.assign("Running Right playing");
+						}
+						else
+						{
+							mm1.startAnim(2);
+							lastAnimMsg.assign("Standing facing left playing");
+						}
 						leftKeyState.assign("left Key not pressed");
 						break;
 					case MOVE_RIGHT:
-						mm1.startAnim(3);
-						lastAnimMsg.assign("Standing facing right playing");
+						if(keyPressed[player1Input.returnScancode(MOVE_LEFT)] == true)
+						{
+							mm1.startAnim(0);
+							lastAnimMsg.assign("Running Left playing");
+						}
+						else
+						{
+							mm1.startAnim(3);
+							lastAnimMsg.assign("Standing facing right playing");
+						}
 						rightKeyState.assign("right Key not pressed");
 						break;
 					default:

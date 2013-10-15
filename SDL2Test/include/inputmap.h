@@ -37,6 +37,7 @@ public:
 	int DefineInput(SDL_Scancode scancode, gameInput desiredInput);
 	gameInput returnInput(SDL_Scancode scancode);
 	std::string returnInputName(gameInput input);
+	SDL_Scancode returnScancode(gameInput input);
 private:
 	gameInput playerInput[MAXINPUTS];
 };

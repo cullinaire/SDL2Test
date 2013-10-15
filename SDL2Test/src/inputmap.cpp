@@ -68,3 +68,13 @@ std::string InputMap::returnInputName(gameInput input)
 	}
 	return "somethingwentwrong";
 }
+
+SDL_Scancode InputMap::returnScancode(gameInput input)
+{
+	for(int i=0;i < MAXINPUTS;++i)
+	{
+		if(playerInput[i] == input)
+			return (SDL_Scancode)i;
+	}
+	return (SDL_Scancode)0;	//This corresponds to SDL_SCANCODE_UNKNOWN
+}
