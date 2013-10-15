@@ -300,6 +300,8 @@ int main(int argc, char **argv)
 						else
 							menuactive = false;
 						break;
+					default:
+						break;
 					}
 					lastKeyStateMsg.assign("Last input: ");
 					lastKeyStateMsg.append(player1Input.returnInputName(player1Input.returnInput(lastKey)));
@@ -316,6 +318,8 @@ int main(int argc, char **argv)
 							else
 								menuactive = false;
 							break;
+						default:
+							break;
 						}
 						switch(player1Input.returnInput(lastKey))
 						{
@@ -328,6 +332,8 @@ int main(int argc, char **argv)
 								mm1.startAnim(1);
 								lastAnimMsg.assign("Running Right playing");
 								rightKeyState.assign("right Key pressed");
+							break;
+						default:
 							break;
 						}
 						keyPressed[lastKey] = true;
@@ -351,6 +357,8 @@ int main(int argc, char **argv)
 						mm1.startAnim(3);
 						lastAnimMsg.assign("Standing facing right playing");
 						rightKeyState.assign("right Key not pressed");
+						break;
+					default:
 						break;
 					}
 				}
