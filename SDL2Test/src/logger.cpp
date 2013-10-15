@@ -1,6 +1,6 @@
 #ifdef __linux
 	#include "SDL2/SDL.h"
-#elif __WIN32
+#elif _WIN32
 	#include "SDL.h"
 #endif
 #include "logger.h"
