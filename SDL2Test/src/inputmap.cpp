@@ -17,6 +17,12 @@ void InputMap::ClearMap()
 //scancode according to the SDL_Scancode enum
 int InputMap::DefineInput(SDL_Scancode scancode, gameInput desiredInput)
 {
+	//Clear the old key-input mapping, if any
+	for(int i=0;i < MAXINPUTS;++i)
+	{
+		if(playerInput[i] == desiredInput)
+			playerInput[i] = UNDEFINED;
+	}
 	playerInput[scancode] = desiredInput;
 	return scancode;
 }
@@ -55,6 +61,9 @@ std::string InputMap::returnInputName(gameInput input)
 		break;
 	case SHOOT:
 		return "shoot";
+		break;
+	default:
+		return "nonono";
 		break;
 	}
 	return "somethingwentwrong";
