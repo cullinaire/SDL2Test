@@ -269,7 +269,7 @@ int main(int argc, char **argv)
 				quit = true;
 			if(ev.type == SDL_KEYDOWN)
 			{
-				lastKey = ev.key.keysym.scancode;
+				lastKey = ev.key.keysym.scancode;	//Also need to do this for Key Up event
 				if(waitingForInput)
 				{
 					//do the key assignment here
@@ -332,6 +332,7 @@ int main(int argc, char **argv)
 			}
 			if(ev.type == SDL_KEYUP)
 			{
+				lastKey = ev.key.keysym.scancode;	//This might be the fix
 				keyPressed[lastKey] = false;
 				if(!menuactive)
 				{
