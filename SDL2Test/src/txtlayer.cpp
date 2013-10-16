@@ -6,7 +6,7 @@ TxtLayer::TxtLayer()
 		textList[i].empty = true;
 }
 
-void TxtLayer::ReceiveString(std::string text, int x, int y, SDL_Rect charsize, BMPText *font)
+void TxtLayer::ReceiveString(std::string text, int x, int y, BMPText *font)
 {
 	for(int i=0;i < TXTLAYER_CAPACITY;++i)
 	{
@@ -16,7 +16,6 @@ void TxtLayer::ReceiveString(std::string text, int x, int y, SDL_Rect charsize, 
 			textList[i].font = font;
 			textList[i].x = x;
 			textList[i].y = y;
-			textList[i].charsize = charsize;
 			textList[i].empty = false;
 			break;
 		}
@@ -36,7 +35,7 @@ void TxtLayer::OutputFrame(SDL_Renderer *rend)
 		if(textList[i].empty == false)
 		{
 			textList[i].font->PrintText(textList[i].userString,
-				textList[i].x, textList[i].y, textList[i].charsize);
+				textList[i].x, textList[i].y);
 		}
 		else
 			break;	//This is ok since all elements in textList should be contiguous

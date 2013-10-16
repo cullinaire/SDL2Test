@@ -407,10 +407,10 @@ int main(int argc, char **argv)
 		//Draw stuff now
 		mm1.playAnim(256, 64);
 		mainText.Clear();	//What happens if I forget this?!
-		mainText.ReceiveString(leftKeyState, 256, 128, fontDim, &fontDraw);
-		mainText.ReceiveString(rightKeyState, 256, 144, fontDim, &fontDraw);
-		mainText.ReceiveString(lastAnimMsg, 256, 16, fontDim, &fontDraw);
-		mainText.ReceiveString(lastKeyStateMsg, 256, 32, fontDim, &fontDraw);
+		mainText.ReceiveString(leftKeyState, 256, 128, &fontDraw);
+		mainText.ReceiveString(rightKeyState, 256, 144, &fontDraw);
+		mainText.ReceiveString(lastAnimMsg, 256, 16, &fontDraw);
+		mainText.ReceiveString(lastKeyStateMsg, 256, 32, &fontDraw);
 		if(menuactive)
 		{
 			inputConfig.showMenu();

@@ -44,7 +44,7 @@ void InputCfg::showStatus()
 	SDL_Rect fontDim;
 	fontDim.w = fontDim.h = 8;
 
-	textOutput->ReceiveString(statusMsg, 128, 64, fontDim, font);
+	textOutput->ReceiveString(statusMsg, 128, 64, font);
 	statusMenu->OutputMenu(256, 256);
 }
 

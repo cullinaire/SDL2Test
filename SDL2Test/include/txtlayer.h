@@ -22,7 +22,6 @@ typedef struct textElement
 	BMPText *font;
 	int x;
 	int y;
-	SDL_Rect charsize;
 	bool empty;	//If true, textElement is invalid and is not drawn (and can be overwritten)
 } textElement;
 
@@ -30,7 +29,7 @@ class TxtLayer
 {
 public:
 	TxtLayer();
-	void ReceiveString(std::string text, int x, int y, SDL_Rect charsize, BMPText *font);
+	void ReceiveString(std::string text, int x, int y, BMPText *font);
 	void Clear();
 	void OutputFrame(SDL_Renderer *rend);
 private:

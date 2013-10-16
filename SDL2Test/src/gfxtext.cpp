@@ -46,13 +46,11 @@ void BMPText::ChangeFont(SpriteSheet *newfont)
 	source = newfont;
 }
 
-void BMPText::PrintText(const std::string &text, int x, int y, SDL_Rect charsize)
+void BMPText::PrintText(const std::string &text, int x, int y)
 {
 	SDL_Rect srcRect;	//determines the beginning of the text, as well as spacing
 	srcRect.x = x;
 	srcRect.y = y;
-	srcRect.w = charsize.w;
-	srcRect.h = charsize.h;
 
 	//decoding which char is which will obviously depend on sprite sheet used. Basically the offset
 	//of the ABC... from the beginning of the file will need to be determined in advance.
@@ -72,6 +70,6 @@ void BMPText::PrintText(const std::string &text, int x, int y, SDL_Rect charsize
 		else
 			source->Draw(sheetIndex[text[i]], srcRect);
 
-		srcRect.x += srcRect.w;	//advance print location
+		srcRect.x += source->getCellSize().w;	//advance print location
 	}
 }

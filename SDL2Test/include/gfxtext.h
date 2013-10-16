@@ -20,7 +20,7 @@ public:
 	BMPText(SpriteSheet *font);
 	SDL_Rect getCharSize();
 	void ChangeFont(SpriteSheet *newfont);
-	void PrintText(const std::string &text, int x, int y, SDL_Rect charsize);
+	void PrintText(const std::string &text, int x, int y);
 private:
 	SpriteSheet *source;	//Do not delete, this points to external object
 	std::map<char, int> sheetIndex;

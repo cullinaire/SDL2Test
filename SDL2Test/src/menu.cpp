@@ -36,11 +36,11 @@ void Menu::OutputMenu(int x, int y)
 
 	for(itr = items.begin();itr != items.end();++itr)
 	{
-		output->ReceiveString(itr->text, menuX, menuY, itr->font->getCharSize(), itr->font);
+		output->ReceiveString(itr->text, menuX, menuY, itr->font);
 		if(itr == cursor)	//draw selection cursor if currentLocation points to item
 		{
 			output->ReceiveString(cursorText, menuX - itr->font->getCharSize().w,
-				menuY, itr->font->getCharSize(), itr->font);
+				menuY, itr->font);
 		}
 		menuY += itr->font->getCharSize().h;	//Go to next line
 	}
