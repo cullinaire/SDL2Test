@@ -38,7 +38,7 @@ BMPText::BMPText(SpriteSheet *font)
 
 SDL_Rect BMPText::getCharSize()
 {
-	return source->getCellSize();
+	return source->getCellSize(0);
 }
 
 void BMPText::ChangeFont(SpriteSheet *newfont)
@@ -70,6 +70,6 @@ void BMPText::PrintText(const std::string &text, int x, int y)
 		else
 			source->Draw(sheetIndex[text[i]], srcRect);
 
-		srcRect.x += source->getCellSize().w;	//advance print location
+		srcRect.x += source->getCellSize(0).w;	//advance print location
 	}
 }

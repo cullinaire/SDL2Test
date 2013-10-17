@@ -82,29 +82,97 @@ SpriteSheet::SpriteSheet(const std::string bmpfilename, SDL_Renderer *renderer, 
 	}
 }
 
-//Constructor for arbitrary cell size (and location) sheets
-SpriteSheet::SpriteSheet(const std::string bmpfilename, SDL_Renderer *renderer, std::list<SheetInfo> cells, int total)
+//Constructor for arbitrary cell size (and location) sheets. Reads info from a text file.
+SpriteSheet::SpriteSheet(const std::string bmpfilename, SDL_Renderer *renderer, const std::string sprdeffilename)
 {
-	source = new Sprite(bmpfilename.c_str(), renderer);
-	sheetinfo = new SheetInfo[total];
-	int i = 0;
+	std::ifstream sprdeffile;
+	sprdeffile.open(sprdeffilename, std::ios::in);
+	std::list<SheetInfo> cells;
+	std::string::iterator itr;
+	SheetInfo cell;
+	int id = 0;
+	int cellElement = 0;	//chooses which element of sheetinfo to fill out
 
-	for(std::list<SheetInfo>::iterator itr = cells.begin();itr != cells.end();++itr)
+	if(sprdeffile.is_open())
 	{
-		sheetinfo[i].cell = itr->cell;
-		sheetinfo[i].id = i;
-		++i;
-		if(i > total)
+		std::string line, number;
+		number.clear();
+		while(std::getline(sprdeffile, line))
 		{
-			logSDLError(std::cout, "Number of defined animation cells exceeds provided total!!");
-			break;
+			//if the line begins with #, it's a comment, do nothing
+			//Also skip blank lines
+			if(line[0] != '#' && line.size() > 0)
+			{
+				for(itr = line.begin();itr != line.end();++itr)
+				{
+					if(*itr != ' ' && *itr != '\t')	//skip initial whitespace (incl. tabs)
+						break;
+				}
+				if(*itr == '[')	//denotes beginning of frame block
+				{
+					cellElement = 0;
+					++itr;
+					for(;itr != line.end();++itr)	//begin reading values
+					{
+						if(*itr != ' ')	//skip whitespace between values
+						{
+							if(*itr == ',')	//save current number to appropriate value and advance
+							{
+								switch(cellElement)
+								{
+								case 0:
+									cell.cell.x = std::stoi(number, NULL, 10);
+									break;
+								case 1:
+									cell.cell.y = std::stoi(number, NULL, 10);
+									break;
+								case 2:
+									cell.cell.w = std::stoi(number, NULL, 10);
+									break;
+								}
+								++cellElement;
+								number.clear();
+							}
+							else if(*itr ==']')	//end of block, write last value and exit
+							{
+								cell.cell.h = std::stoi(number, NULL, 10);
+								number.clear();
+								break;
+							}
+
+							if(*itr != ' ' && *itr != ',')
+								number.push_back(*itr);	//append() does not work with chars, so using push_back()
+						}
+					}
+					cell.id = id;
+					cells.push_back(cell);
+					++id;
+				}	//end of one block
+			}
 		}
+	}
+	else
+	{
+		std::cout << "Could not open sprite definition file " << sprdeffilename << "." << std::endl;
+	}
+
+	sprdeffile.close();
+
+	source = new Sprite(bmpfilename.c_str(), renderer);
+	sheetinfo = new SheetInfo[cells.size()];
+
+	int i = 0;
+	for(std::list<SheetInfo>::iterator sitr = cells.begin();sitr != cells.end();++sitr)
+	{
+		sheetinfo[i].cell = sitr->cell;
+		sheetinfo[i].id = sitr->id;
+		++i;
 	}
 }
 
-SDL_Rect SpriteSheet::getCellSize()
+SDL_Rect SpriteSheet::getCellSize(int idx)
 {
-	return sheetinfo->cell;
+	return sheetinfo[idx].cell;
 }
 
 void SpriteSheet::Draw(int id, SDL_Rect dest)

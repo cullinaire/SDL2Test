@@ -67,103 +67,11 @@ int main(int argc, char **argv)
 	fontDim.w = 8;
 	fontDim.h = 8;
 
-	std::list<SheetInfo> mm1Cells;
-	SheetInfo mm1Cell;
-	SDL_Rect mm1Src;
-
 	std::list<aniFrame> mm1Frames;
 	aniFrame mm1Frame;
 
-	//Run facing left
-
-	mm1Cell.id = 0;
-	mm1Src.x = 98;
-	mm1Src.y = 94;
-	mm1Src.w = 32;
-	mm1Src.h = 25;
-	mm1Cell.cell = mm1Src;
-	mm1Cells.push_back(mm1Cell);
-
-	mm1Cell.id = 1;
-	mm1Src.x = 67;
-	mm1Src.y = 94;
-	mm1Src.w = 32;
-	mm1Src.h = 25;
-	mm1Cell.cell = mm1Src;
-	mm1Cells.push_back(mm1Cell);
-
-	mm1Cell.id = 2;
-	mm1Src.x = 35;
-	mm1Src.y = 94;
-	mm1Src.w = 32;
-	mm1Src.h = 25;
-	mm1Cell.cell = mm1Src;
-	mm1Cells.push_back(mm1Cell);
-
-	//Run facing right
-
-	mm1Cell.id = 3;
-	mm1Src.x = 204;
-	mm1Src.y = 94;
-	mm1Src.w = 32;
-	mm1Src.h = 25;
-	mm1Cell.cell = mm1Src;
-	mm1Cells.push_back(mm1Cell);
-
-	mm1Cell.id = 4;
-	mm1Src.x = 236;
-	mm1Src.y = 94;
-	mm1Src.w = 32;
-	mm1Src.h = 25;
-	mm1Cell.cell = mm1Src;
-	mm1Cells.push_back(mm1Cell);
-
-	mm1Cell.id = 5;
-	mm1Src.x = 266;
-	mm1Src.y = 94;
-	mm1Src.w = 32;
-	mm1Src.h = 25;
-	mm1Cell.cell = mm1Src;
-	mm1Cells.push_back(mm1Cell);
-
-	//Stand and blink facing left
-
-	mm1Cell.id = 6;
-	mm1Src.x = 51;
-	mm1Src.y = 10;
-	mm1Src.w = 23;
-	mm1Src.h = 25;
-	mm1Cell.cell = mm1Src;
-	mm1Cells.push_back(mm1Cell);
-
-	mm1Cell.id = 7;
-	mm1Src.x = 76;
-	mm1Src.y = 10;
-	mm1Src.w = 23;
-	mm1Src.h = 25;
-	mm1Cell.cell = mm1Src;
-	mm1Cells.push_back(mm1Cell);
-
-	//Stand and blink facing right
-
-	mm1Cell.id = 8;
-	mm1Src.x = 235;
-	mm1Src.y = 10;
-	mm1Src.w = 23;
-	mm1Src.h = 25;
-	mm1Cell.cell = mm1Src;
-	mm1Cells.push_back(mm1Cell);
-
-	mm1Cell.id = 9;
-	mm1Src.x = 260;
-	mm1Src.y = 10;
-	mm1Src.w = 23;
-	mm1Src.h = 25;
-	mm1Cell.cell = mm1Src;
-	mm1Cells.push_back(mm1Cell);
-
 	SpriteSheet arcadeFont("../assets/drbrfont.bmp", rend, fontDim, 1, 95, 95);
-	SpriteSheet mm1sheet("../assets/mm1.bmp", rend, mm1Cells, mm1Cells.size());
+	SpriteSheet mm1sheet("../assets/mm1.bmp", rend, "../assets/mm1.def");
 
 	BMPText fontDraw(&arcadeFont);
 

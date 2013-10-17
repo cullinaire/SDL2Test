@@ -1,0 +1,44 @@
+#Sprite definition file for megaman sprite sheet
+#format: { [frame1], [frame2], ..., [frameX] }
+#each set of frames within curly braces is grouped as an animation.
+#The actual grouping isn't strictly defined right now - all frames for a
+#given sheet will all be lumped into one big list, and it's up to the
+#animobj to divvy them up as it needs to. Perhaps one day the braces will
+#serve as a marker to explicitly assign names to each animation...but for
+#now they are just there for looks.
+#format of each frame within the brackets: [x, y, w, h]
+#where x and y represent the upper left corner of the bounding rectangle,
+#and w and h represent the dimensions of the bounding rectangle.
+#I was going to add a field for frameID, but realized that it always counts
+#up from 0 to n-1 (for every defined rect within a given sheet) so it can be
+#added while parsing.
+
+#Megaman run facing left
+
+{
+	[98, 94, 32, 25]
+	[67, 94, 32, 25]
+	[35, 94, 32, 25]
+}
+
+#Megaman run facing right
+
+{
+	[204, 94, 32, 25]
+	[236, 94, 32, 25]
+	[266, 94, 32, 25]
+}
+
+#Megaman stand and blink facing left
+
+{
+	[51, 10, 23, 25]
+	[76, 10, 23, 25]
+}
+
+#Megaman stand and blink facing right
+
+{
+	[235, 10, 23, 25]
+	[260, 10, 23, 25]
+}
