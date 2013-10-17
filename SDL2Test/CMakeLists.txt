@@ -4,7 +4,7 @@ project(SDL2Test)
 #include(MacroEnsureOutOfSourceBuild)
 #macro_ensure_out_of_source_build("SDL2Test requires an out of source build. Please create a separate build directory and run 'cmake /path/to/SDL2TEST [options]' there.")
 
-set(CMAKE_CXX_FLAGS "-g -Wall")
+set(CMAKE_CXX_FLAGS "-g -Wall -std=c++11")
 
 file(GLOB_RECURSE SDL2Test_SRC "src/*.cpp")
 file(GLOB_RECURSE SDL2TEST_INC "include/*.h")
