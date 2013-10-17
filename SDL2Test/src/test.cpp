@@ -67,9 +67,6 @@ int main(int argc, char **argv)
 	fontDim.w = 8;
 	fontDim.h = 8;
 
-	std::list<aniFrame> mm1Frames;
-	aniFrame mm1Frame;
-
 	SpriteSheet arcadeFont("../assets/drbrfont.bmp", rend, fontDim, 1, 95, 95);
 	SpriteSheet mm1sheet("../assets/mm1.bmp", rend, "../assets/mm1.def");
 
@@ -83,71 +80,7 @@ int main(int argc, char **argv)
 
 	AnimObj mm1(&mm1sheet);
 
-	//Run facing left, anim id = 0
-
-	mm1Frame.frameID = 0;
-	mm1Frame.duration = 200;
-	mm1Frames.push_back(mm1Frame);
-
-	mm1Frame.frameID = 1;
-	mm1Frame.duration = 200;
-	mm1Frames.push_back(mm1Frame);
-
-	mm1Frame.frameID = 2;
-	mm1Frame.duration = 200;
-	mm1Frames.push_back(mm1Frame);
-
-	mm1.defineAnim(0, 3, mm1Frames, true, 0);
-	
-	mm1Frames.clear();
-
-	//Run facing right, anim id = 1
-
-	mm1Frame.frameID = 0;
-	mm1Frame.duration = 200;
-	mm1Frames.push_back(mm1Frame);
-
-	mm1Frame.frameID = 1;
-	mm1Frame.duration = 200;
-	mm1Frames.push_back(mm1Frame);
-
-	mm1Frame.frameID = 2;
-	mm1Frame.duration = 200;
-	mm1Frames.push_back(mm1Frame);
-
-	mm1.defineAnim(1, 3, mm1Frames, true, 3);
-	
-	mm1Frames.clear();
-
-	//Stand facing left, anim id = 2
-
-	mm1Frame.frameID = 0;
-	mm1Frame.duration = 100;
-	mm1Frames.push_back(mm1Frame);
-
-	mm1Frame.frameID = 1;
-	mm1Frame.duration = 1500;
-	mm1Frames.push_back(mm1Frame);
-
-	mm1.defineAnim(2, 2, mm1Frames, true, 6);
-	
-	mm1Frames.clear();
-
-	//Stand facing right, anim id = 3
-
-	mm1Frame.frameID = 0;
-	mm1Frame.duration = 1500;
-	mm1Frames.push_back(mm1Frame);
-
-	mm1Frame.frameID = 1;
-	mm1Frame.duration = 100;
-	mm1Frames.push_back(mm1Frame);
-
-	mm1.defineAnim(3, 2, mm1Frames, true, 8);
-	
-	mm1Frames.clear();
-
-	//Done defining animations
+	mm1.defineAnim("../assets/mm1ani.def");
 
 	std::string lastAnimMsg;
 	lastAnimMsg.assign("Standing facing Left playing");

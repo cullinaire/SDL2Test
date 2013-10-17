@@ -13,6 +13,8 @@
 	#include "SDL.h"
 #endif
 #include "sprite.h"
+#include <iostream>
+#include <fstream>
 #include <list>
 
 typedef struct aniFrame
@@ -26,6 +28,7 @@ typedef struct aniList
 	int index;
 	int numFrames;
 	int offset;		//FrameID always starts from 0, so this is needed to map
+	bool backNforth;	//instead of traditional looping, bounce backwards when end is reached
 	std::list<aniFrame> frames;
 } aniList;
 
@@ -33,16 +36,15 @@ class AnimObj
 {
 public:
 	AnimObj(SpriteSheet *p_animSheet);
-	void defineAnim(int index, int numFrames, std::list<aniFrame> p_frames, bool p_backNforth,
-		int p_offset);
+	void defineAnim(std::string anifilename);
 	void startAnim(int index);
 	void playAnim(int x, int y);
 
 private:
 	SpriteSheet *animSheet;		//Do not delete - instantiated elsewhere
 	bool playing;
-	bool backNforth;	//instead of traditional looping, bounce backwards when end is reached
 	bool forwards;		//direction animation is playing in - only used if backNforth is true
+	bool isbNf;		//mode is back and forth
 	Uint32 elapsed;
 	int curAnimIndex;
 	std::list<aniList> animations;

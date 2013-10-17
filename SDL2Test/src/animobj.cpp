@@ -4,21 +4,92 @@ AnimObj::AnimObj(SpriteSheet *p_animSheet)
 {
 	animSheet = p_animSheet;
 	playing = false;
-	backNforth = false;
 	forwards = true;
+	isbNf = false;
 }
 
-void AnimObj::defineAnim(int index, int numFrames, std::list<aniFrame> p_frames, bool p_backNforth,
-						 int p_offset)
+void AnimObj::defineAnim(std::string anifilename)
 {
 	aniList newFrames;
-	newFrames.index = index;
-	newFrames.numFrames = numFrames;
-	newFrames.frames = p_frames;
-	backNforth = p_backNforth;
-	newFrames.offset = p_offset;
+	aniFrame newFrame;
 
-	animations.push_back(newFrames);
+	std::ifstream anideffile;
+	anideffile.open(anifilename, std::ios::in);
+	std::string::iterator itr;
+	int frameid = 0;
+	int animid = 0;
+	int offset = 0;
+
+	if(anideffile.is_open())
+	{
+		std::string line, number;
+		number.clear();
+		while(std::getline(anideffile, line))
+		{
+			//if the line begins with #, it's a comment, do nothing
+			//Also skip blank lines
+			if(line[0] != '#' && line.size() > 0)
+			{
+				for(itr = line.begin();itr != line.end();++itr)
+				{
+					if(*itr != ' ' && *itr != '\t')	//skip initial whitespace (incl. tabs)
+						break;
+				}
+				if(*itr == '[')	//denotes beginning of frame
+				{
+					++itr;
+					for(;itr != line.end();++itr)	//begin reading values
+					{
+						if(*itr == ']')	//end of block, write value and exit loop (line)
+						{
+							newFrame.duration = std::stoi(number, NULL, 10);
+							newFrame.frameID = frameid;
+							newFrames.frames.push_back(newFrame);
+							++frameid;
+							++offset;
+							number.clear();
+							break;
+						}
+						number.push_back(*itr);
+					}
+				}
+				else if(*itr == '{')	//denotes anim definition
+				{
+					++itr;
+					for(;itr != line.end();++itr)
+					{
+						if(*itr == '}')	//end of block
+						{
+							if(number == "true")
+							{
+								newFrames.backNforth = true;
+								newFrames.index = animid;
+								newFrames.numFrames = frameid;
+								newFrames.offset = offset - newFrames.numFrames;
+								frameid = 0;
+								++animid;
+							}
+							else if(number == "false")
+							{
+								newFrames.backNforth = false;
+								newFrames.index = animid;
+								newFrames.numFrames = frameid;
+								newFrames.offset = offset - newFrames.numFrames;
+								frameid = 0;
+								++animid;
+							}
+
+							number.clear();
+							break;
+						}
+						number.push_back(*itr);
+					}
+					animations.push_back(newFrames);
+					newFrames.frames.clear();	//Don't forget this!!
+				}
+			}
+		}
+	}
 }
 
 void AnimObj::startAnim(int index)
@@ -31,6 +102,7 @@ void AnimObj::startAnim(int index)
 		if(selAnim->index == index)	//Found the animation to play
 		{
 			drawFrame = selAnim->frames.begin();	//Set the iterator for later (actually this doesn't seem to work)
+			isbNf = selAnim->backNforth;
 			break;	//also need to preserve selAnim iterator as well (also doesn't work across method calls)
 		}
 	}
@@ -51,7 +123,7 @@ void AnimObj::playAnim(int x, int y)
 			//I can't use iterators here because they just simply will not work
 			//Which is odd, since their values have not changed since startAnim was called.
 			//Oh well I guess.
-			if(backNforth)
+			if(isbNf)
 			{
 				if(forwards)
 				{

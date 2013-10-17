@@ -133,7 +133,7 @@ SpriteSheet::SpriteSheet(const std::string bmpfilename, SDL_Renderer *renderer, 
 								++cellElement;
 								number.clear();
 							}
-							else if(*itr ==']')	//end of block, write last value and exit
+							else if(*itr == ']')	//end of block, write last value and exit
 							{
 								cell.cell.h = std::stoi(number, NULL, 10);
 								number.clear();
