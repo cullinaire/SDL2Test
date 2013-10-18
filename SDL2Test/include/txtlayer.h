@@ -28,12 +28,14 @@ typedef struct textElement
 class TxtLayer
 {
 public:
-	TxtLayer();
+	TxtLayer(BMPText *defaultFont);
 	void ReceiveString(std::string text, int x, int y, BMPText *font);
+	void ReceiveString(std::string text, SDL_Rect dest);
 	void Clear();
 	void OutputFrame(SDL_Renderer *rend);
 private:
 	textElement textList[TXTLAYER_CAPACITY];
+	BMPText *e_defaultFont;
 };
 
 #endif

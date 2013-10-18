@@ -73,7 +73,7 @@ int main(int argc, char **argv)
 
 	BMPText fontDraw(&arcadeFont);
 
-	TxtLayer mainText;
+	TxtLayer mainText(&fontDraw);
 
 	InputMap player1Input;
 
@@ -85,22 +85,10 @@ int main(int argc, char **argv)
 
 	mm1.defineAnim("../assets/mm1ani.def");
 
-	std::string lastAnimMsg;
-	lastAnimMsg.assign("Standing facing Left playing");
-
-	mm1.startAnim(2);
-
 	Player player1(&mm1, &inputConfig, 1);
 
 	SDL_Event ev;
 	SDL_Scancode lastKey;	//Keeps track of last key pressed
-
-	std::string lastKeyStateMsg;
-	lastKeyStateMsg.assign("Press ESC to view menu");
-	std::string leftKeyState;
-	leftKeyState.assign("left Key not pressed");
-	std::string rightKeyState;
-	rightKeyState.assign("right Key not pressed");
 
 	bool quit = false;
 	bool menuactive = false;
@@ -111,8 +99,20 @@ int main(int argc, char **argv)
 
 	inputConfig.registerQuit(&quit);	//So the menu can modify the quit variable...shaky I know
 
+	std::string lastInputMsg;
+
+	SDL_Rect lastInputMsgPos;
+	lastInputMsgPos.x = 256;
+	lastInputMsgPos.y = 24;
+
+	SDL_Rect advicePos;
+	advicePos.x = 8;
+	advicePos.y = 8;
+
 	while(!quit)
 	{
+		mainText.ReceiveString("Press ESC to view menu", advicePos);
+
 		while(SDL_PollEvent(&ev))
 		{
 			if(ev.type == SDL_QUIT)
@@ -123,17 +123,12 @@ int main(int argc, char **argv)
 				if(waitingForInput)
 				{
 					//do the key assignment here
-					//inputConfig.assignInput(lastKey);
 					player1.assignInput(lastKey);
 					waitingForInput = false;
 				}
 				else if(menuactive)
 				{
-					//inputConfig.processInput(lastKey, &waitingForInput, &menuactive);
 					player1.configInput(lastKey, &waitingForInput, &menuactive);
-					lastKeyStateMsg.assign("Last input: ");
-					//lastKeyStateMsg.append(player1Input.returnInputName(player1Input.returnInput(lastKey)));
-					lastKeyStateMsg.append(player1.getInputName(lastKey));
 				}
 				else
 				{
@@ -150,47 +145,12 @@ int main(int argc, char **argv)
 						default:
 							break;
 						}
-						//switch(player1Input.returnInput(lastKey))
-						//{
-						//	//Thinking about implementing a Spelunky style approach to simultaneous
-						//	//keydowns for left and right move inputs. That is, if one is pressed
-						//	//while the other was already being held down, then the response is for
-						//	//the player to stop in his tracks, without turning around.
-						//	//If a key is released, the player begins moving in the direction of the
-						//	//key that is still held down.
-						//case MOVE_LEFT:
-						//	if(keyPressed[player1Input.returnScancode(MOVE_RIGHT)] == true)
-						//	{
-						//		mm1.startAnim(3);
-						//		lastAnimMsg.assign("Standing facing right playing");
-						//	}
-						//	else
-						//	{
-						//		mm1.startAnim(0);
-						//		lastAnimMsg.assign("Running Left playing");
-						//	}
-						//		leftKeyState.assign("left Key pressed");
-						//	break;
-						//case MOVE_RIGHT:
-						//	if(keyPressed[player1Input.returnScancode(MOVE_LEFT)] == true)
-						//	{
-						//		mm1.startAnim(2);
-						//		lastAnimMsg.assign("Standing facing left playing");
-						//	}
-						//	else
-						//	{
-						//		mm1.startAnim(1);
-						//		lastAnimMsg.assign("Running Right playing");
-						//	}
-						//		rightKeyState.assign("right Key pressed");
-						//	break;
-						//default:
-						//	break;
-						//}
 						player1.processKeyDown(lastKey, keyPressed);
 						keyPressed[lastKey] = true;
 					}
 				}
+				lastInputMsg.assign("Last input: ");
+				lastInputMsg.append(player1.getInputName(lastKey));
 			}
 			if(ev.type == SDL_KEYUP)
 			{
@@ -199,55 +159,24 @@ int main(int argc, char **argv)
 				if(!menuactive)
 				{
 					player1.processKeyUp(lastKey, keyPressed);
-					/*switch(player1Input.returnInput(lastKey))
-					{
-					case MOVE_LEFT:
-						if(keyPressed[player1Input.returnScancode(MOVE_RIGHT)] == true)
-						{
-							mm1.startAnim(1);
-							lastAnimMsg.assign("Running Right playing");
-						}
-						else
-						{
-							mm1.startAnim(2);
-							lastAnimMsg.assign("Standing facing left playing");
-						}
-						leftKeyState.assign("left Key not pressed");
-						break;
-					case MOVE_RIGHT:
-						if(keyPressed[player1Input.returnScancode(MOVE_LEFT)] == true)
-						{
-							mm1.startAnim(0);
-							lastAnimMsg.assign("Running Left playing");
-						}
-						else
-						{
-							mm1.startAnim(3);
-							lastAnimMsg.assign("Standing facing right playing");
-						}
-						rightKeyState.assign("right Key not pressed");
-						break;
-					default:
-						break;
-					}*/
 				}
+				/*lastInputMsg.assign("Last input: ");
+				lastInputMsg.append(player1.getInputName(lastKey));*/
 			}
 		}
+		mainText.ReceiveString(lastInputMsg, lastInputMsgPos);
+		player1.emitInfo(&mainText);
 
 		SDL_RenderClear(rend);
 		//Draw stuff now
 		mm1.playAnim(256, 64);
-		mainText.Clear();	//What happens if I forget this?!
-		mainText.ReceiveString(leftKeyState, 256, 128, &fontDraw);
-		mainText.ReceiveString(rightKeyState, 256, 144, &fontDraw);
-		mainText.ReceiveString(lastAnimMsg, 256, 16, &fontDraw);
-		mainText.ReceiveString(lastKeyStateMsg, 256, 32, &fontDraw);
 		if(menuactive)
 		{
 			inputConfig.showMenu();
 			inputConfig.showStatus();
 		}
 		mainText.OutputFrame(rend);
+		mainText.Clear();
 		//End draw stuff
 		SDL_RenderPresent(rend);
 		SDL_Delay(5);	//Don't peg the CPU

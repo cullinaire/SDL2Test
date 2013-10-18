@@ -19,6 +19,7 @@
 #include "inputmap.h"
 #include "inputcfg.h"
 #include "animobj.h"
+#include "txtlayer.h"
 
 class Player
 {
@@ -29,11 +30,18 @@ public:
 	std::string getInputName(SDL_Scancode lastKey);
 	void processKeyDown(SDL_Scancode p_scancode, bool *keyPressed);
 	void processKeyUp(SDL_Scancode p_scancode, bool *keyPressed);
+	void emitInfo(TxtLayer *txtOut);
 private:
 	int playerID;
 	InputMap keyMap;
 	InputCfg *e_inputCfg;	//Do not delete - the e_ prefix denotes external object
 	AnimObj *e_animobj;
+	std::string animInfo;
+	std::string leftKeyInfo;
+	std::string rightKeyInfo;
+	SDL_Rect animDest;
+	SDL_Rect leftKeyDest;
+	SDL_Rect rightKeyDest;
 };
 
 #endif

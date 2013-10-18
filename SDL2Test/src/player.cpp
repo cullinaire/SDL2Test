@@ -3,8 +3,20 @@
 Player::Player(AnimObj *p_animobj, InputCfg *p_inputCfg, int p_id)
 {
 	playerID = p_id;
+
+	animDest.x = 256;
+	animDest.y = 16;
+	leftKeyDest.x = 256;
+	leftKeyDest.y = 128;
+	rightKeyDest.x = 256;
+	rightKeyDest.y = 136;
+
 	e_inputCfg = p_inputCfg;
 	e_animobj = p_animobj;
+
+	e_animobj->startAnim(2);
+	animInfo.assign("Standing facing left playing");
+	
 	keyMap.ClearMap();
 }
 
@@ -38,27 +50,27 @@ void Player::processKeyDown(SDL_Scancode p_scancode, bool *keyPressed)
 		if(keyPressed[keyMap.returnScancode(MOVE_RIGHT)] == true)
 		{
 			e_animobj->startAnim(3);
-			//lastAnimMsg.assign("Standing facing right playing");
+			animInfo.assign("Standing facing right playing");
 		}
 		else
 		{
 			e_animobj->startAnim(0);
-			//lastAnimMsg.assign("Running Left playing");
+			animInfo.assign("Running Left playing");
 		}
-			//leftKeyState.assign("left Key pressed");
+		leftKeyInfo.assign("left Key pressed");
 		break;
 	case MOVE_RIGHT:
 		if(keyPressed[keyMap.returnScancode(MOVE_LEFT)] == true)
 		{
 			e_animobj->startAnim(2);
-			//lastAnimMsg.assign("Standing facing left playing");
+			animInfo.assign("Standing facing left playing");
 		}
 		else
 		{
 			e_animobj->startAnim(1);
-			//lastAnimMsg.assign("Running Right playing");
+			animInfo.assign("Running Right playing");
 		}
-			//rightKeyState.assign("right Key pressed");
+		rightKeyInfo.assign("right Key pressed");
 		break;
 	default:
 		break;
@@ -73,29 +85,36 @@ void Player::processKeyUp(SDL_Scancode p_scancode, bool *keyPressed)
 		if(keyPressed[keyMap.returnScancode(MOVE_RIGHT)] == true)
 		{
 			e_animobj->startAnim(1);
-			//lastAnimMsg.assign("Running Right playing");
+			animInfo.assign("Running Right playing");
 		}
 		else
 		{
 			e_animobj->startAnim(2);
-			//lastAnimMsg.assign("Standing facing left playing");
+			animInfo.assign("Standing facing left playing");
 		}
-		//leftKeyState.assign("left Key not pressed");
+		leftKeyInfo.assign("left Key not pressed");
 		break;
 	case MOVE_RIGHT:
 		if(keyPressed[keyMap.returnScancode(MOVE_LEFT)] == true)
 		{
 			e_animobj->startAnim(0);
-			//lastAnimMsg.assign("Running Left playing");
+			animInfo.assign("Running Left playing");
 		}
 		else
 		{
 			e_animobj->startAnim(3);
-			//lastAnimMsg.assign("Standing facing right playing");
+			animInfo.assign("Standing facing right playing");
 		}
-		//rightKeyState.assign("right Key not pressed");
+		rightKeyInfo.assign("right Key not pressed");
 		break;
 	default:
 		break;
 	}
+}
+
+void Player::emitInfo(TxtLayer *txtOut)
+{
+	txtOut->ReceiveString(animInfo, animDest);
+	txtOut->ReceiveString(leftKeyInfo, leftKeyDest);
+	txtOut->ReceiveString(rightKeyInfo, rightKeyDest);
 }
