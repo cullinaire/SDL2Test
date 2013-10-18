@@ -1,8 +1,7 @@
 #include "inputcfg.h"
 
-InputCfg::InputCfg(InputMap *p_playerMap, SDL_Renderer *rend, TxtLayer *txtOut, BMPText *bmpFont)
+InputCfg::InputCfg(SDL_Renderer *rend, TxtLayer *txtOut, BMPText *bmpFont)
 {
-	playerMap = p_playerMap;
 	textOutput = txtOut;
 	inputMenu = new Menu(textOutput);
 	statusMenu = new Menu(textOutput);
@@ -27,6 +26,11 @@ InputCfg::InputCfg(InputMap *p_playerMap, SDL_Renderer *rend, TxtLayer *txtOut, 
 	statusMenu->InsertItem("jump is undefined", 4, bmpFont);
 	statusMenu->InsertItem("crouch is undefined", 5, bmpFont);
 	statusMenu->InsertItem("shoot is undefined", 6, bmpFont);
+}
+
+void InputCfg::assignPlayerMap(InputMap *p_playerMap)
+{
+	e_playerMap = p_playerMap;
 }
 
 void InputCfg::registerQuit(bool *quit)
@@ -64,37 +68,37 @@ void InputCfg::processInput(SDL_Scancode lastKey, bool *waitingForInput, bool *m
 		{
 		case 0:
 			statusMsg.assign("press a key to assign to : ");
-			statusMsg.append(playerMap->returnInputName(MOVE_LEFT));
+			statusMsg.append(e_playerMap->returnInputName(MOVE_LEFT));
 			currentInput = MOVE_LEFT;
 			break;
 		case 1:
 			statusMsg.assign("press a key to assign to : ");
-			statusMsg.append(playerMap->returnInputName(MOVE_RIGHT));
+			statusMsg.append(e_playerMap->returnInputName(MOVE_RIGHT));
 			currentInput = MOVE_RIGHT;
 			break;
 		case 2:
 			statusMsg.assign("press a key to assign to : ");
-			statusMsg.append(playerMap->returnInputName(MOVE_UP));
+			statusMsg.append(e_playerMap->returnInputName(MOVE_UP));
 			currentInput = MOVE_UP;
 			break;
 		case 3:
 			statusMsg.assign("press a key to assign to : ");
-			statusMsg.append(playerMap->returnInputName(MOVE_DOWN));
+			statusMsg.append(e_playerMap->returnInputName(MOVE_DOWN));
 			currentInput = MOVE_DOWN;
 			break;
 		case 4:
 			statusMsg.assign("press a key to assign to : ");
-			statusMsg.append(playerMap->returnInputName(JUMP));
+			statusMsg.append(e_playerMap->returnInputName(JUMP));
 			currentInput = JUMP;
 			break;
 		case 5:
 			statusMsg.assign("press a key to assign to : ");
-			statusMsg.append(playerMap->returnInputName(CROUCH));
+			statusMsg.append(e_playerMap->returnInputName(CROUCH));
 			currentInput = CROUCH;
 			break;
 		case 6:
 			statusMsg.assign("press a key to assign to : ");
-			statusMsg.append(playerMap->returnInputName(SHOOT));
+			statusMsg.append(e_playerMap->returnInputName(SHOOT));
 			currentInput = SHOOT;
 			break;
 		case 7:
@@ -142,8 +146,8 @@ void InputCfg::assignInput(SDL_Scancode scancode)
 			oldInput = itr->associatedInput;
 			itr->associatedInput = currentInput;
 			itr->scancode = scancode;
-			playerMap->DefineInput(scancode, UNDEFINED);	//unnecessary since the defineinput later on will just overwrite
-			statusMsg.assign(playerMap->returnInputName(oldInput));
+			e_playerMap->DefineInput(scancode, UNDEFINED);	//unnecessary since the defineinput later on will just overwrite
+			statusMsg.assign(e_playerMap->returnInputName(oldInput));
 			statusMsg.append(" is undefined");
 			statusMenu->ReplaceItem(statusMsg, oldInput, font);	//hopefully the enum will suffice as the index of the old input
 		}
@@ -152,8 +156,8 @@ void InputCfg::assignInput(SDL_Scancode scancode)
 			alreadyAssigned.push_back(newInput);
 		}
 
-		playerMap->DefineInput(scancode, currentInput);
-		statusMsg.assign(playerMap->returnInputName(currentInput));
+		e_playerMap->DefineInput(scancode, currentInput);
+		statusMsg.assign(e_playerMap->returnInputName(currentInput));
 		statusMsg.append(" has been assigned to key: ");
 		statusMsg.append(SDL_GetScancodeName(scancode));
 		statusMenu->ReplaceItem(statusMsg, currentIndex, font);

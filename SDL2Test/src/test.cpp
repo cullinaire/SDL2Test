@@ -36,6 +36,7 @@
 #include "txtlayer.h"
 #include "inputcfg.h"
 #include "animobj.h"
+#include "player.h"
 
 int main(int argc, char **argv)
 {
@@ -76,7 +77,9 @@ int main(int argc, char **argv)
 
 	InputMap player1Input;
 
-	InputCfg inputConfig(&player1Input, rend, &mainText, &fontDraw);
+	InputCfg inputConfig(rend, &mainText, &fontDraw);
+
+	inputConfig.assignPlayerMap(&player1Input);
 
 	AnimObj mm1(&mm1sheet);
 
@@ -86,6 +89,8 @@ int main(int argc, char **argv)
 	lastAnimMsg.assign("Standing facing Left playing");
 
 	mm1.startAnim(2);
+
+	Player player1(&mm1, &inputConfig, 1);
 
 	SDL_Event ev;
 	SDL_Scancode lastKey;	//Keeps track of last key pressed
@@ -118,14 +123,17 @@ int main(int argc, char **argv)
 				if(waitingForInput)
 				{
 					//do the key assignment here
-					inputConfig.assignInput(lastKey);
+					//inputConfig.assignInput(lastKey);
+					player1.assignInput(lastKey);
 					waitingForInput = false;
 				}
 				else if(menuactive)
 				{
-					inputConfig.processInput(lastKey, &waitingForInput, &menuactive);
+					//inputConfig.processInput(lastKey, &waitingForInput, &menuactive);
+					player1.configInput(lastKey, &waitingForInput, &menuactive);
 					lastKeyStateMsg.assign("Last input: ");
-					lastKeyStateMsg.append(player1Input.returnInputName(player1Input.returnInput(lastKey)));
+					//lastKeyStateMsg.append(player1Input.returnInputName(player1Input.returnInput(lastKey)));
+					lastKeyStateMsg.append(player1.getInputName(lastKey));
 				}
 				else
 				{
@@ -142,43 +150,44 @@ int main(int argc, char **argv)
 						default:
 							break;
 						}
-						switch(player1Input.returnInput(lastKey))
-						{
-							//Thinking about implementing a Spelunky style approach to simultaneous
-							//keydowns for left and right move inputs. That is, if one is pressed
-							//while the other was already being held down, then the response is for
-							//the player to stop in his tracks, without turning around.
-							//If a key is released, the player begins moving in the direction of the
-							//key that is still held down.
-						case MOVE_LEFT:
-							if(keyPressed[player1Input.returnScancode(MOVE_RIGHT)] == true)
-							{
-								mm1.startAnim(3);
-								lastAnimMsg.assign("Standing facing right playing");
-							}
-							else
-							{
-								mm1.startAnim(0);
-								lastAnimMsg.assign("Running Left playing");
-							}
-								leftKeyState.assign("left Key pressed");
-							break;
-						case MOVE_RIGHT:
-							if(keyPressed[player1Input.returnScancode(MOVE_LEFT)] == true)
-							{
-								mm1.startAnim(2);
-								lastAnimMsg.assign("Standing facing left playing");
-							}
-							else
-							{
-								mm1.startAnim(1);
-								lastAnimMsg.assign("Running Right playing");
-							}
-								rightKeyState.assign("right Key pressed");
-							break;
-						default:
-							break;
-						}
+						//switch(player1Input.returnInput(lastKey))
+						//{
+						//	//Thinking about implementing a Spelunky style approach to simultaneous
+						//	//keydowns for left and right move inputs. That is, if one is pressed
+						//	//while the other was already being held down, then the response is for
+						//	//the player to stop in his tracks, without turning around.
+						//	//If a key is released, the player begins moving in the direction of the
+						//	//key that is still held down.
+						//case MOVE_LEFT:
+						//	if(keyPressed[player1Input.returnScancode(MOVE_RIGHT)] == true)
+						//	{
+						//		mm1.startAnim(3);
+						//		lastAnimMsg.assign("Standing facing right playing");
+						//	}
+						//	else
+						//	{
+						//		mm1.startAnim(0);
+						//		lastAnimMsg.assign("Running Left playing");
+						//	}
+						//		leftKeyState.assign("left Key pressed");
+						//	break;
+						//case MOVE_RIGHT:
+						//	if(keyPressed[player1Input.returnScancode(MOVE_LEFT)] == true)
+						//	{
+						//		mm1.startAnim(2);
+						//		lastAnimMsg.assign("Standing facing left playing");
+						//	}
+						//	else
+						//	{
+						//		mm1.startAnim(1);
+						//		lastAnimMsg.assign("Running Right playing");
+						//	}
+						//		rightKeyState.assign("right Key pressed");
+						//	break;
+						//default:
+						//	break;
+						//}
+						player1.processKeyDown(lastKey, keyPressed);
 						keyPressed[lastKey] = true;
 					}
 				}
@@ -189,7 +198,8 @@ int main(int argc, char **argv)
 				keyPressed[lastKey] = false;
 				if(!menuactive)
 				{
-					switch(player1Input.returnInput(lastKey))
+					player1.processKeyUp(lastKey, keyPressed);
+					/*switch(player1Input.returnInput(lastKey))
 					{
 					case MOVE_LEFT:
 						if(keyPressed[player1Input.returnScancode(MOVE_RIGHT)] == true)
@@ -219,7 +229,7 @@ int main(int argc, char **argv)
 						break;
 					default:
 						break;
-					}
+					}*/
 				}
 			}
 		}

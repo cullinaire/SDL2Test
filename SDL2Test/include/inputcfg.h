@@ -25,7 +25,8 @@ typedef struct assignedInput
 class InputCfg
 {
 public:
-	InputCfg(InputMap *p_playerMap, SDL_Renderer *rend, TxtLayer *txtOut, BMPText *bmpFont);
+	InputCfg(SDL_Renderer *rend, TxtLayer *txtOut, BMPText *bmpFont);
+	void assignPlayerMap(InputMap *p_playerMap);
 	void registerQuit(bool *quit);
 	void showMenu();
 	void showStatus();
@@ -35,7 +36,7 @@ public:
 private:
 	Menu *inputMenu;
 	Menu *statusMenu;
-	InputMap *playerMap;	//Do not delete - instantiated elsewhere
+	InputMap *e_playerMap;	//Do not delete - instantiated elsewhere
 	std::string statusMsg;
 	TxtLayer *textOutput;	//Do not delete - instantiated elsewhere
 	BMPText *font;			//Do not delete - instantiated elsewhere
