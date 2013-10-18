@@ -109,9 +109,23 @@ int main(int argc, char **argv)
 	advicePos.x = 8;
 	advicePos.y = 8;
 
+	Uint32 prevMoment = SDL_GetTicks();
+	Uint32 slowTick = prevMoment;
+	Uint32 frameTime = 0;
+	std::string ftString;
+	SDL_Rect frameTimePos;
+	frameTimePos.x = 600;
+	frameTimePos.y = 8;
+
 	while(!quit)
 	{
 		mainText.ReceiveString("Press ESC to view menu", advicePos);
+		if(prevMoment - slowTick > 500)	//Update frametime every 500 ms
+		{
+			slowTick = SDL_GetTicks();
+			ftString.assign(std::to_string(frameTime));
+		}
+		mainText.ReceiveString(ftString, frameTimePos);
 
 		while(SDL_PollEvent(&ev))
 		{
@@ -180,6 +194,8 @@ int main(int argc, char **argv)
 		//End draw stuff
 		SDL_RenderPresent(rend);
 		SDL_Delay(5);	//Don't peg the CPU
+		frameTime = SDL_GetTicks() - prevMoment;
+		prevMoment = SDL_GetTicks();
 	}
 
 	//Deinitialization
