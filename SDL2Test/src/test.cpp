@@ -123,27 +123,7 @@ int main(int argc, char **argv)
 				}
 				else if(menuactive)
 				{
-					switch(lastKey)
-					{
-					case SDL_SCANCODE_DOWN:
-						inputConfig.menuDown();
-						break;
-					case SDL_SCANCODE_UP:
-						inputConfig.menuUp();
-						break;
-					case SDL_SCANCODE_RETURN:
-						inputConfig.menuSelect();
-						waitingForInput = true;
-						break;
-					case SDL_SCANCODE_ESCAPE:
-						if(!menuactive)
-							menuactive = true;
-						else
-							menuactive = false;
-						break;
-					default:
-						break;
-					}
+					inputConfig.processInput(lastKey, &waitingForInput, &menuactive);
 					lastKeyStateMsg.assign("Last input: ");
 					lastKeyStateMsg.append(player1Input.returnInputName(player1Input.returnInput(lastKey)));
 				}

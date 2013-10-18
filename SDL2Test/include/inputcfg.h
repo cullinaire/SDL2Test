@@ -29,9 +29,7 @@ public:
 	void registerQuit(bool *quit);
 	void showMenu();
 	void showStatus();
-	void menuDown();
-	void menuUp();
-	void menuSelect();
+	void processInput(SDL_Scancode lastKey, bool *waitingForInput, bool *menuactive);
 	void assignInput(SDL_Scancode scancode);
 	~InputCfg();
 private:

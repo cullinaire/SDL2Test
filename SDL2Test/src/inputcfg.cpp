@@ -48,58 +48,69 @@ void InputCfg::showStatus()
 	statusMenu->OutputMenu(256, 256);
 }
 
-void InputCfg::menuDown()
+void InputCfg::processInput(SDL_Scancode lastKey, bool *waitingForInput, bool *menuactive)
 {
-	inputMenu->MoveCursor(true);
-}
-
-void InputCfg::menuUp()
-{
-	inputMenu->MoveCursor(false);
-}
-
-void InputCfg::menuSelect()
-{
-	currentIndex = inputMenu->ExecuteItem();
-	switch(currentIndex)
+	switch(lastKey)
 	{
-	case 0:
-		statusMsg.assign("press a key to assign to : ");
-		statusMsg.append(playerMap->returnInputName(MOVE_LEFT));
-		currentInput = MOVE_LEFT;
+	case SDL_SCANCODE_DOWN:
+		inputMenu->MoveCursor(true);
 		break;
-	case 1:
-		statusMsg.assign("press a key to assign to : ");
-		statusMsg.append(playerMap->returnInputName(MOVE_RIGHT));
-		currentInput = MOVE_RIGHT;
+	case SDL_SCANCODE_UP:
+		inputMenu->MoveCursor(false);
 		break;
-	case 2:
-		statusMsg.assign("press a key to assign to : ");
-		statusMsg.append(playerMap->returnInputName(MOVE_UP));
-		currentInput = MOVE_UP;
+	case SDL_SCANCODE_RETURN:
+		currentIndex = inputMenu->ExecuteItem();
+		switch(currentIndex)
+		{
+		case 0:
+			statusMsg.assign("press a key to assign to : ");
+			statusMsg.append(playerMap->returnInputName(MOVE_LEFT));
+			currentInput = MOVE_LEFT;
+			break;
+		case 1:
+			statusMsg.assign("press a key to assign to : ");
+			statusMsg.append(playerMap->returnInputName(MOVE_RIGHT));
+			currentInput = MOVE_RIGHT;
+			break;
+		case 2:
+			statusMsg.assign("press a key to assign to : ");
+			statusMsg.append(playerMap->returnInputName(MOVE_UP));
+			currentInput = MOVE_UP;
+			break;
+		case 3:
+			statusMsg.assign("press a key to assign to : ");
+			statusMsg.append(playerMap->returnInputName(MOVE_DOWN));
+			currentInput = MOVE_DOWN;
+			break;
+		case 4:
+			statusMsg.assign("press a key to assign to : ");
+			statusMsg.append(playerMap->returnInputName(JUMP));
+			currentInput = JUMP;
+			break;
+		case 5:
+			statusMsg.assign("press a key to assign to : ");
+			statusMsg.append(playerMap->returnInputName(CROUCH));
+			currentInput = CROUCH;
+			break;
+		case 6:
+			statusMsg.assign("press a key to assign to : ");
+			statusMsg.append(playerMap->returnInputName(SHOOT));
+			currentInput = SHOOT;
+			break;
+		case 7:
+			*quit = true;
+			break;
+		}
+
+		*waitingForInput = true;
 		break;
-	case 3:
-		statusMsg.assign("press a key to assign to : ");
-		statusMsg.append(playerMap->returnInputName(MOVE_DOWN));
-		currentInput = MOVE_DOWN;
+	case SDL_SCANCODE_ESCAPE:
+		if(!*menuactive)
+			*menuactive = true;
+		else
+			*menuactive = false;
 		break;
-	case 4:
-		statusMsg.assign("press a key to assign to : ");
-		statusMsg.append(playerMap->returnInputName(JUMP));
-		currentInput = JUMP;
-		break;
-	case 5:
-		statusMsg.assign("press a key to assign to : ");
-		statusMsg.append(playerMap->returnInputName(CROUCH));
-		currentInput = CROUCH;
-		break;
-	case 6:
-		statusMsg.assign("press a key to assign to : ");
-		statusMsg.append(playerMap->returnInputName(SHOOT));
-		currentInput = SHOOT;
-		break;
-	case 7:
-		*quit = true;
+	default:
 		break;
 	}
 }

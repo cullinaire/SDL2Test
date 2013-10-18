@@ -15,7 +15,7 @@
 #and offset as well (offset is the total number of frames from frame 0
 #to the first frame of the particular animation). Animation id is also
 #calculatable (just counts up from 0) so is omitted from being listed here.
-#So the format is: {loop mode (true or false}
+#So the format is: {back and forth loop mode (true or false)}
 
 #Run facing left
 
