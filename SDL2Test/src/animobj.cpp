@@ -109,12 +109,8 @@ void AnimObj::startAnim(int index)
 }
 
 //This will always be called in the main loop, but will only actally render if an animation is active
-void AnimObj::playAnim(int x, int y)
+void AnimObj::playAnim()
 {
-	SDL_Rect dst;
-	dst.x = x;
-	dst.y = y;
-
 	if(playing)
 	{
 		if(SDL_GetTicks() - elapsed >= drawFrame->duration)
@@ -157,4 +153,10 @@ void AnimObj::playAnim(int x, int y)
 
 		animSheet->Draw(drawFrame->frameID + selAnim->offset, dst);
 	}
+}
+
+void AnimObj::updateLoc(int x, int y)
+{
+	dst.x = x;
+	dst.y = y;
 }

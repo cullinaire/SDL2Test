@@ -111,6 +111,7 @@ int main(int argc, char **argv)
 
 	Uint32 prevMoment = SDL_GetTicks();
 	Uint32 slowTick = prevMoment;
+	Uint32 physRate = prevMoment;
 	Uint32 frameTime = 0;
 	std::string ftString;
 	SDL_Rect frameTimePos;
@@ -174,8 +175,6 @@ int main(int argc, char **argv)
 				{
 					player1.processKeyUp(lastKey, keyPressed);
 				}
-				/*lastInputMsg.assign("Last input: ");
-				lastInputMsg.append(player1.getInputName(lastKey));*/
 			}
 		}
 		mainText.ReceiveString(lastInputMsg, lastInputMsgPos);
@@ -183,7 +182,12 @@ int main(int argc, char **argv)
 
 		SDL_RenderClear(rend);
 		//Draw stuff now
-		mm1.playAnim(256, 64);
+		if(SDL_GetTicks() - physRate > 17)	//33ms ~30Hz rate, 17 ~60Hz
+		{
+			physRate = SDL_GetTicks();
+			player1.updatePhys();
+		}
+		mm1.playAnim();
 		if(menuactive)
 		{
 			inputConfig.showMenu();

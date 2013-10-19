@@ -21,6 +21,12 @@
 #include "animobj.h"
 #include "txtlayer.h"
 
+typedef enum PlayerState
+{
+	ALIVE,
+	DEAD
+} PlayerState;
+
 class Player
 {
 public:
@@ -31,17 +37,27 @@ public:
 	void processKeyDown(SDL_Scancode p_scancode, bool *keyPressed);
 	void processKeyUp(SDL_Scancode p_scancode, bool *keyPressed);
 	void emitInfo(TxtLayer *txtOut);
+	void updatePhys();
 private:
 	int playerID;
+	PlayerState state;
 	InputMap keyMap;
 	InputCfg *e_inputCfg;	//Do not delete - the e_ prefix denotes external object
 	AnimObj *e_animobj;
+	int xpos;
+	int ypos;
+	int xvel;	//Velocity is pixels per whatever timestep we choose to use
+	int yvel;
+
+	//Debug information to screen stuff - non essential
 	std::string animInfo;
 	std::string leftKeyInfo;
 	std::string rightKeyInfo;
+	std::string velInfo;
 	SDL_Rect animDest;
 	SDL_Rect leftKeyDest;
 	SDL_Rect rightKeyDest;
+	SDL_Rect velDest;
 };
 
 #endif

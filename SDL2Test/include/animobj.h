@@ -38,7 +38,8 @@ public:
 	AnimObj(SpriteSheet *p_animSheet);
 	void defineAnim(std::string anifilename);
 	void startAnim(int index);
-	void playAnim(int x, int y);
+	void playAnim();
+	void updateLoc(int x, int y);
 
 private:
 	SpriteSheet *animSheet;		//Do not delete - instantiated elsewhere
@@ -47,6 +48,7 @@ private:
 	bool isbNf;		//mode is back and forth
 	Uint32 elapsed;
 	int curAnimIndex;
+	SDL_Rect dst;
 	std::list<aniList> animations;
 	std::list<aniList>::iterator selAnim;
 	std::list<aniFrame>::iterator drawFrame;

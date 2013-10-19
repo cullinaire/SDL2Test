@@ -3,6 +3,11 @@
 Player::Player(AnimObj *p_animobj, InputCfg *p_inputCfg, int p_id)
 {
 	playerID = p_id;
+	state = ALIVE;
+	xpos = 256;
+	ypos = 256;
+	xvel = 0;
+	yvel = 0;
 
 	animDest.x = 256;
 	animDest.y = 16;
@@ -13,6 +18,7 @@ Player::Player(AnimObj *p_animobj, InputCfg *p_inputCfg, int p_id)
 
 	e_inputCfg = p_inputCfg;
 	e_animobj = p_animobj;
+	e_animobj->updateLoc(xpos, ypos);
 
 	e_animobj->startAnim(2);
 	animInfo.assign("Standing facing left playing");
@@ -50,11 +56,13 @@ void Player::processKeyDown(SDL_Scancode p_scancode, bool *keyPressed)
 		if(keyPressed[keyMap.returnScancode(MOVE_RIGHT)] == true)
 		{
 			e_animobj->startAnim(3);
+			xvel = 0;
 			animInfo.assign("Standing facing right playing");
 		}
 		else
 		{
 			e_animobj->startAnim(0);
+			xvel = -5;
 			animInfo.assign("Running Left playing");
 		}
 		leftKeyInfo.assign("left Key pressed");
@@ -63,11 +71,13 @@ void Player::processKeyDown(SDL_Scancode p_scancode, bool *keyPressed)
 		if(keyPressed[keyMap.returnScancode(MOVE_LEFT)] == true)
 		{
 			e_animobj->startAnim(2);
+			xvel = 0;
 			animInfo.assign("Standing facing left playing");
 		}
 		else
 		{
 			e_animobj->startAnim(1);
+			xvel = 5;
 			animInfo.assign("Running Right playing");
 		}
 		rightKeyInfo.assign("right Key pressed");
@@ -85,11 +95,13 @@ void Player::processKeyUp(SDL_Scancode p_scancode, bool *keyPressed)
 		if(keyPressed[keyMap.returnScancode(MOVE_RIGHT)] == true)
 		{
 			e_animobj->startAnim(1);
+			xvel = 5;
 			animInfo.assign("Running Right playing");
 		}
 		else
 		{
 			e_animobj->startAnim(2);
+			xvel = 0;
 			animInfo.assign("Standing facing left playing");
 		}
 		leftKeyInfo.assign("left Key not pressed");
@@ -98,11 +110,13 @@ void Player::processKeyUp(SDL_Scancode p_scancode, bool *keyPressed)
 		if(keyPressed[keyMap.returnScancode(MOVE_LEFT)] == true)
 		{
 			e_animobj->startAnim(0);
+			xvel = -5;
 			animInfo.assign("Running Left playing");
 		}
 		else
 		{
 			e_animobj->startAnim(3);
+			xvel = 0;
 			animInfo.assign("Standing facing right playing");
 		}
 		rightKeyInfo.assign("right Key not pressed");
@@ -117,4 +131,11 @@ void Player::emitInfo(TxtLayer *txtOut)
 	txtOut->ReceiveString(animInfo, animDest);
 	txtOut->ReceiveString(leftKeyInfo, leftKeyDest);
 	txtOut->ReceiveString(rightKeyInfo, rightKeyDest);
+}
+
+void Player::updatePhys()
+{
+	xpos += xvel;
+	ypos += yvel;
+	e_animobj->updateLoc(xpos, ypos);
 }
