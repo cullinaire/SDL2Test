@@ -109,25 +109,14 @@ int main(int argc, char **argv)
 	advicePos.x = 8;
 	advicePos.y = 8;
 
-	Uint32 prevMoment = SDL_GetTicks();
-	Uint32 slowTick = prevMoment;
-	Uint32 physRate = prevMoment;
-	Uint32 frameTime = 0;
-	std::string ftString;
-	SDL_Rect frameTimePos;
-	frameTimePos.x = 600;
-	frameTimePos.y = 8;
+	double t = 0.0;
+	const double dt = 10.0;
 
+	Uint32 currentTime = SDL_GetTicks();
+	double accumulator = 0.0;
+	
 	while(!quit)
-	{
-		mainText.ReceiveString("Press ESC to view menu", advicePos);
-		if(prevMoment - slowTick > 500)	//Update frametime every 500 ms
-		{
-			slowTick = SDL_GetTicks();
-			ftString.assign(std::to_string(frameTime));
-		}
-		mainText.ReceiveString(ftString, frameTimePos);
-
+	{		
 		while(SDL_PollEvent(&ev))
 		{
 			if(ev.type == SDL_QUIT)
@@ -177,16 +166,34 @@ int main(int argc, char **argv)
 				}
 			}
 		}
+		mainText.ReceiveString("Press ESC to view menu", advicePos);
 		mainText.ReceiveString(lastInputMsg, lastInputMsgPos);
 		player1.emitInfo(&mainText);
 
+		//UPDATING SECTION////////////////////////////////////////////////////
+		Uint32 newTime = SDL_GetTicks();
+		Uint32 frameTime = newTime - currentTime;
+		if(frameTime > 25)
+			frameTime = 25;	//Max frame time to avoid sprial of death
+		currentTime = newTime;
+
+		accumulator += frameTime;
+
+		while(accumulator >= dt)
+		{
+			player1.Integrate(t, dt);
+			t += dt;
+			accumulator -= dt;
+		}
+
+		const double alpha = accumulator / dt;
+
+		player1.Interpolate(alpha);
+
+		//DRAWING SECTION/////////////////////////////////////////////////////
 		SDL_RenderClear(rend);
 		//Draw stuff now
-		if(SDL_GetTicks() - physRate > 17)	//33ms ~30Hz rate, 17 ~60Hz
-		{
-			physRate = SDL_GetTicks();
-			player1.updatePhys();
-		}
+		
 		mm1.playAnim();
 		if(menuactive)
 		{
@@ -197,9 +204,7 @@ int main(int argc, char **argv)
 		mainText.Clear();
 		//End draw stuff
 		SDL_RenderPresent(rend);
-		SDL_Delay(5);	//Don't peg the CPU
-		frameTime = SDL_GetTicks() - prevMoment;
-		prevMoment = SDL_GetTicks();
+		//SDL_Delay(5);	//Don't peg the CPU
 	}
 
 	//Deinitialization
