@@ -9,11 +9,6 @@ Player::Player(AnimObj *p_animobj, InputCfg *p_inputCfg, int p_id)
 	playerPosVel.xv = 0;
 	playerPosVel.yv = 0;
 
-	playerDeriv.dx = 0;
-	playerDeriv.dy = 0;
-	playerDeriv.dxv = 0;
-	playerDeriv.dyv = 0;
-
 	renderState = playerPosVel;
 
 	animDest.x = 256;
@@ -147,7 +142,7 @@ void Player::Integrate(double t, double dt)
 {
 	prevState = playerPosVel;
 
-	Derivative a = this->eval(playerPosVel, t, 0.0f, playerDeriv);
+	Derivative a = this->eval(playerPosVel, t);
 	Derivative b = this->eval(playerPosVel, t, dt*0.5f, a);
 	Derivative c = this->eval(playerPosVel, t, dt*0.5f, b);
 	Derivative d = this->eval(playerPosVel, t, dt, c);
@@ -172,17 +167,21 @@ void Player::Interpolate(const double alpha)
 {
 	renderState.x = playerPosVel.x*alpha + prevState.x * (1.0 - alpha);
 	renderState.y = playerPosVel.y*alpha + prevState.y * (1.0 - alpha);
+
+	renderState.xv = playerPosVel.xv*alpha + prevState.xv * (1.0 - alpha);
+	renderState.yv = playerPosVel.yv*alpha + prevState.yv * (1.0 - alpha);
+
 	e_animobj->updateLoc(renderState.x, renderState.y);
 }
 
 Derivative Player::accel(const State &state, double t)
 {
-	Derivative accel;
+	Derivative acc;
 	const double k = 10;
 	const double b = 1;
-	accel.dxv = -k * state.x - b*state.xv;
-	accel.dyv = -k * state.y - b*state.yv;
-	return accel;
+	acc.dxv = -k * state.x - b*state.xv;
+	acc.dyv = -k * state.y - b*state.yv;
+	return acc;
 }
 
 Derivative Player::eval(const State &initial, double t, double dt, const Derivative &d)
@@ -197,10 +196,22 @@ Derivative Player::eval(const State &initial, double t, double dt, const Derivat
 
 	Derivative output;
 
-	output = accel(state, t+dt);	//dxv, dxy assigned here
-
 	output.dx = state.xv;
 	output.dy = state.yv;
 
+	output = this->accel(state, t+dt);	//dxv, dxy assigned here
+
+	return output;
+}
+
+Derivative Player::eval(const State &initial, double t)
+{
+	Derivative output;
+
+	output.dx = initial.xv;
+	output.dy = initial.yv;
+
+	output = this->accel(initial, t);
+	
 	return output;
 }

@@ -37,7 +37,7 @@ typedef struct State
 
 typedef struct Derivative
 {
-	double dx, dy;	//derivative of pos: vel
+	double dx, dy;		//derivative of pos: vel
 	double dxv, dyv;	//derivative of vel: acc
 } Derivative;
 
@@ -62,9 +62,9 @@ private:
 	State playerPosVel;
 	State prevState;
 	State renderState;
-	Derivative playerDeriv;
 	Derivative accel(const State &state, double t);
 	Derivative eval(const State &initial, double t, double dt, const Derivative &d);
+	Derivative eval(const State &initial, double t);
 
 	//Debug information to screen stuff - non essential
 	std::string animInfo;

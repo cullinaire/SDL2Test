@@ -127,11 +127,11 @@ int main(int argc, char **argv)
 	timePos.x = 24;
 	timePos.y = 432;
 
-	double t = 0.0;
-	const double dt = 0.01;	//fixed timestep for physics updates
+	double t = 0.0f;
+	const double dt = 0.01f;	//fixed timestep for physics updates
 
 	Uint64 currentTime = SDL_GetPerformanceCounter();
-	double accumulator = 0.0;
+	double accumulator = 0.0f;
 	
 	while(!quit)
 	{		
@@ -193,8 +193,8 @@ int main(int argc, char **argv)
 		Uint64 newTime = SDL_GetPerformanceCounter();
 		double frameTime = (newTime - currentTime) / (double)SDL_GetPerformanceFrequency();
 
-		if(frameTime > 0.25)
-			frameTime = 0.25;	//Max frame time to avoid sprial of death
+		if(frameTime > 0.25f)
+			frameTime = 0.25f;	//Max frame time to avoid sprial of death
 
 		fps.assign("Frametime: ");
 		fps.append(std::to_string(frameTime));
@@ -212,9 +212,9 @@ int main(int argc, char **argv)
 
 		while(accumulator >= dt)
 		{
+			accumulator -= dt;
 			player1.Integrate(t, dt);
 			t += dt;
-			accumulator -= dt;
 		}
 
 		time.assign("t: ");
