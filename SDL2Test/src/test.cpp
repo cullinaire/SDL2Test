@@ -109,10 +109,28 @@ int main(int argc, char **argv)
 	advicePos.x = 8;
 	advicePos.y = 8;
 
-	double t = 0.0;
-	const double dt = 10.0;
+	std::string fps;
 
-	Uint32 currentTime = SDL_GetTicks();
+	SDL_Rect fpsPos;
+	fpsPos.x = 24;
+	fpsPos.y = 464;
+
+	std::string accum;
+
+	SDL_Rect accumPos;
+	accumPos.x = 24;
+	accumPos.y = 448;
+
+	std::string time;
+
+	SDL_Rect timePos;
+	timePos.x = 24;
+	timePos.y = 432;
+
+	double t = 0.0;
+	const double dt = 0.01;	//fixed timestep for physics updates
+
+	Uint64 currentTime = SDL_GetPerformanceCounter();
 	double accumulator = 0.0;
 	
 	while(!quit)
@@ -166,18 +184,31 @@ int main(int argc, char **argv)
 				}
 			}
 		}
+
 		mainText.ReceiveString("Press ESC to view menu", advicePos);
 		mainText.ReceiveString(lastInputMsg, lastInputMsgPos);
 		player1.emitInfo(&mainText);
 
 		//UPDATING SECTION////////////////////////////////////////////////////
-		Uint32 newTime = SDL_GetTicks();
-		Uint32 frameTime = newTime - currentTime;
-		if(frameTime > 25)
-			frameTime = 25;	//Max frame time to avoid sprial of death
+		Uint64 newTime = SDL_GetPerformanceCounter();
+		double frameTime = (newTime - currentTime) / (double)SDL_GetPerformanceFrequency();
+
+		if(frameTime > 0.25)
+			frameTime = 0.25;	//Max frame time to avoid sprial of death
+
+		fps.assign("Frametime: ");
+		fps.append(std::to_string(frameTime));
+
+		mainText.ReceiveString(fps, fpsPos);	//report fps
+
 		currentTime = newTime;
 
 		accumulator += frameTime;
+
+		accum.assign("Accumulator: ");
+		accum.append(std::to_string(accumulator));
+
+		mainText.ReceiveString(accum, accumPos);
 
 		while(accumulator >= dt)
 		{
@@ -185,6 +216,11 @@ int main(int argc, char **argv)
 			t += dt;
 			accumulator -= dt;
 		}
+
+		time.assign("t: ");
+		time.append(std::to_string(t));
+
+		mainText.ReceiveString(time, timePos);
 
 		const double alpha = accumulator / dt;
 
@@ -195,6 +231,7 @@ int main(int argc, char **argv)
 		//Draw stuff now
 		
 		mm1.playAnim();
+
 		if(menuactive)
 		{
 			inputConfig.showMenu();

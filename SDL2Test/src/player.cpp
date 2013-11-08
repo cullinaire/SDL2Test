@@ -9,6 +9,11 @@ Player::Player(AnimObj *p_animobj, InputCfg *p_inputCfg, int p_id)
 	playerPosVel.xv = 0;
 	playerPosVel.yv = 0;
 
+	playerDeriv.dx = 0;
+	playerDeriv.dy = 0;
+	playerDeriv.dxv = 0;
+	playerDeriv.dyv = 0;
+
 	renderState = playerPosVel;
 
 	animDest.x = 256;
@@ -17,8 +22,8 @@ Player::Player(AnimObj *p_animobj, InputCfg *p_inputCfg, int p_id)
 	leftKeyDest.y = 128;
 	rightKeyDest.x = 256;
 	rightKeyDest.y = 136;
-	pposDest.x = 480;
-	pposDest.y = 472;
+	pposDest.x = 400;
+	pposDest.y = 464;
 
 	e_inputCfg = p_inputCfg;
 	e_animobj = p_animobj;
@@ -167,6 +172,7 @@ void Player::Interpolate(const double alpha)
 {
 	renderState.x = playerPosVel.x*alpha + prevState.x * (1.0 - alpha);
 	renderState.y = playerPosVel.y*alpha + prevState.y * (1.0 - alpha);
+	e_animobj->updateLoc(renderState.x, renderState.y);
 }
 
 Derivative Player::accel(const State &state, double t)
