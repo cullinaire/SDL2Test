@@ -19,8 +19,8 @@ Player::Player(AnimObj *p_animobj, InputCfg *p_inputCfg, int p_id)
 	rightKeyDest.y = 136;
 	pposDest.x = 400;
 	pposDest.y = 464;
-	derivDest.x = 400;
-	derivDest.y = 448;
+	derivDest.x = 16;
+	derivDest.y = 384;
 
 	e_inputCfg = p_inputCfg;
 	e_animobj = p_animobj;
@@ -62,13 +62,13 @@ void Player::processKeyDown(SDL_Scancode p_scancode, bool *keyPressed)
 		if(keyPressed[keyMap.returnScancode(MOVE_RIGHT)] == true)
 		{
 			e_animobj->startAnim(3);
-			playerPosVel.xv = 0;
+			playerPosVel.xv = STOPPED_SPD;
 			animInfo.assign("Standing facing right playing");
 		}
 		else
 		{
 			e_animobj->startAnim(0);
-			playerPosVel.xv = -2;
+			playerPosVel.xv = LEFT_RUN_SPD;
 			animInfo.assign("Running Left playing");
 		}
 		leftKeyInfo.assign("left Key pressed");
@@ -77,13 +77,13 @@ void Player::processKeyDown(SDL_Scancode p_scancode, bool *keyPressed)
 		if(keyPressed[keyMap.returnScancode(MOVE_LEFT)] == true)
 		{
 			e_animobj->startAnim(2);
-			playerPosVel.xv = 0;
+			playerPosVel.xv = STOPPED_SPD;
 			animInfo.assign("Standing facing left playing");
 		}
 		else
 		{
 			e_animobj->startAnim(1);
-			playerPosVel.xv = 2;
+			playerPosVel.xv = RIGHT_RUN_SPD;
 			animInfo.assign("Running Right playing");
 		}
 		rightKeyInfo.assign("right Key pressed");
@@ -101,13 +101,13 @@ void Player::processKeyUp(SDL_Scancode p_scancode, bool *keyPressed)
 		if(keyPressed[keyMap.returnScancode(MOVE_RIGHT)] == true)
 		{
 			e_animobj->startAnim(1);
-			playerPosVel.xv = 2;
+			playerPosVel.xv = RIGHT_RUN_SPD;
 			animInfo.assign("Running Right playing");
 		}
 		else
 		{
 			e_animobj->startAnim(2);
-			playerPosVel.xv = 0;
+			playerPosVel.xv = STOPPED_SPD;
 			animInfo.assign("Standing facing left playing");
 		}
 		leftKeyInfo.assign("left Key not pressed");
@@ -116,13 +116,13 @@ void Player::processKeyUp(SDL_Scancode p_scancode, bool *keyPressed)
 		if(keyPressed[keyMap.returnScancode(MOVE_LEFT)] == true)
 		{
 			e_animobj->startAnim(0);
-			playerPosVel.xv = -2;
+			playerPosVel.xv = LEFT_RUN_SPD;
 			animInfo.assign("Running Left playing");
 		}
 		else
 		{
 			e_animobj->startAnim(3);
-			playerPosVel.xv = 0;
+			playerPosVel.xv = STOPPED_SPD;
 			animInfo.assign("Standing facing right playing");
 		}
 		rightKeyInfo.assign("right Key not pressed");
@@ -164,10 +164,8 @@ void Player::Integrate(double t, double dt)
 
 	pposInfo.assign("xv: ");
 	pposInfo.append(std::to_string(playerPosVel.xv));
-	derivInfo.assign("deriv a: ");
+	derivInfo.assign("a.dx: ");
 	derivInfo.append(std::to_string(a.dx));
-	derivInfo.append("; b: ");
-	derivInfo.append(std::to_string(b.dx));
 }
 
 void Player::Interpolate(const double alpha)
@@ -181,14 +179,16 @@ void Player::Interpolate(const double alpha)
 	e_animobj->updateLoc(renderState.x, renderState.y);
 }
 
-Derivative Player::accel(const State &state, double t)
+void Player::accel(const State &state, double t, Derivative &p_output)
 {
-	Derivative acc;
-	const double k = 10;
-	const double b = 1;
-	acc.dxv = -k * state.x - b*state.xv;
-	acc.dyv = -k * state.y - b*state.yv;
-	return acc;
+	//Derivative acc;
+	//const double k = 10;
+	//const double b = 1;
+	//acc.dxv = -k * state.x - b*state.xv;
+	//acc.dyv = -k * state.y - b*state.yv;
+	//return acc;
+	p_output.dxv = 0;
+	p_output.dyv = 0;
 }
 
 Derivative Player::eval(const State &initial, double t, double dt, const Derivative &d)
@@ -206,7 +206,7 @@ Derivative Player::eval(const State &initial, double t, double dt, const Derivat
 	output.dx = state.xv;
 	output.dy = state.yv;
 
-	output = this->accel(state, t+dt);	//dxv, dxy assigned here
+	this->accel(state, t+dt, output);	//dxv, dxy assigned here
 
 	return output;
 }
@@ -218,7 +218,7 @@ Derivative Player::eval(const State &initial, double t)
 	output.dx = initial.xv;
 	output.dy = initial.yv;
 
-	output = this->accel(initial, t);
+	this->accel(initial, t, output);
 	
 	return output;
 }

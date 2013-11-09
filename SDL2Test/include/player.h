@@ -10,6 +10,10 @@
 //of this; only the initial values are set in this object such as direction
 //and acceleration.
 
+#define LEFT_RUN_SPD	-100
+#define RIGHT_RUN_SPD	100
+#define STOPPED_SPD		0
+
 #ifdef __linux
 	#include "SDL2/SDL.h"
 #elif _WIN32
@@ -62,7 +66,7 @@ private:
 	State playerPosVel;
 	State prevState;
 	State renderState;
-	Derivative accel(const State &state, double t);
+	void accel(const State &state, double t, Derivative &p_output);
 	Derivative eval(const State &initial, double t, double dt, const Derivative &d);
 	Derivative eval(const State &initial, double t);
 
