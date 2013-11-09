@@ -71,10 +71,12 @@ private:
 	std::string leftKeyInfo;
 	std::string rightKeyInfo;
 	std::string pposInfo;
+	std::string derivInfo;
 	SDL_Rect animDest;
 	SDL_Rect leftKeyDest;
 	SDL_Rect rightKeyDest;
 	SDL_Rect pposDest;
+	SDL_Rect derivDest;
 };
 
 #endif

@@ -19,6 +19,8 @@ Player::Player(AnimObj *p_animobj, InputCfg *p_inputCfg, int p_id)
 	rightKeyDest.y = 136;
 	pposDest.x = 400;
 	pposDest.y = 464;
+	derivDest.x = 400;
+	derivDest.y = 448;
 
 	e_inputCfg = p_inputCfg;
 	e_animobj = p_animobj;
@@ -136,6 +138,7 @@ void Player::emitInfo(TxtLayer *txtOut)
 	txtOut->ReceiveString(leftKeyInfo, leftKeyDest);
 	txtOut->ReceiveString(rightKeyInfo, rightKeyDest);
 	txtOut->ReceiveString(pposInfo, pposDest);
+	txtOut->ReceiveString(derivInfo, derivDest);
 }
 
 void Player::Integrate(double t, double dt)
@@ -161,6 +164,10 @@ void Player::Integrate(double t, double dt)
 
 	pposInfo.assign("xv: ");
 	pposInfo.append(std::to_string(playerPosVel.xv));
+	derivInfo.assign("deriv a: ");
+	derivInfo.append(std::to_string(a.dx));
+	derivInfo.append("; b: ");
+	derivInfo.append(std::to_string(b.dx));
 }
 
 void Player::Interpolate(const double alpha)
