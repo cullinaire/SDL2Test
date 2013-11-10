@@ -25,10 +25,11 @@
 #include "animobj.h"
 #include "txtlayer.h"
 
-typedef enum PlayerState
+typedef struct PlayerState
 {
-	ALIVE,
-	DEAD
+	bool alive;
+	bool facingleft;
+	bool airborne;
 } PlayerState;
 
 typedef struct State
@@ -59,7 +60,7 @@ public:
 	void Interpolate(const double alpha);
 private:
 	int playerID;
-	PlayerState state;
+	PlayerState playerState;
 	InputMap keyMap;
 	InputCfg *e_inputCfg;	//Do not delete - the e_ prefix denotes external object
 	AnimObj *e_animobj;

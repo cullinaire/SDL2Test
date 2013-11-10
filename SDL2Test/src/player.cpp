@@ -3,7 +3,9 @@
 Player::Player(AnimObj *p_animobj, InputCfg *p_inputCfg, int p_id)
 {
 	playerID = p_id;
-	state = ALIVE;
+	playerState.alive = true;
+	playerState.facingleft = true;
+	playerState.airborne = false;
 	playerPosVel.x = 256;
 	playerPosVel.y = 256;
 	playerPosVel.xv = 0;
@@ -63,12 +65,14 @@ void Player::processKeyDown(SDL_Scancode p_scancode, bool *keyPressed)
 		{
 			e_animobj->startAnim(3);
 			playerPosVel.xv = STOPPED_SPD;
+			playerState.facingleft = false;
 			animInfo.assign("Standing facing right playing");
 		}
 		else
 		{
 			e_animobj->startAnim(0);
 			playerPosVel.xv = LEFT_RUN_SPD;
+			playerState.facingleft = true;
 			animInfo.assign("Running Left playing");
 		}
 		leftKeyInfo.assign("left Key pressed");
@@ -78,12 +82,14 @@ void Player::processKeyDown(SDL_Scancode p_scancode, bool *keyPressed)
 		{
 			e_animobj->startAnim(2);
 			playerPosVel.xv = STOPPED_SPD;
+			playerState.facingleft = true;
 			animInfo.assign("Standing facing left playing");
 		}
 		else
 		{
 			e_animobj->startAnim(1);
 			playerPosVel.xv = RIGHT_RUN_SPD;
+			playerState.facingleft = true;
 			animInfo.assign("Running Right playing");
 		}
 		rightKeyInfo.assign("right Key pressed");
@@ -102,12 +108,14 @@ void Player::processKeyUp(SDL_Scancode p_scancode, bool *keyPressed)
 		{
 			e_animobj->startAnim(1);
 			playerPosVel.xv = RIGHT_RUN_SPD;
+			playerState.facingleft = false;
 			animInfo.assign("Running Right playing");
 		}
 		else
 		{
 			e_animobj->startAnim(2);
 			playerPosVel.xv = STOPPED_SPD;
+			playerState.facingleft = true;
 			animInfo.assign("Standing facing left playing");
 		}
 		leftKeyInfo.assign("left Key not pressed");
@@ -117,12 +125,14 @@ void Player::processKeyUp(SDL_Scancode p_scancode, bool *keyPressed)
 		{
 			e_animobj->startAnim(0);
 			playerPosVel.xv = LEFT_RUN_SPD;
+			playerState.facingleft = true;
 			animInfo.assign("Running Left playing");
 		}
 		else
 		{
 			e_animobj->startAnim(3);
 			playerPosVel.xv = STOPPED_SPD;
+			playerState.facingleft = false;
 			animInfo.assign("Standing facing right playing");
 		}
 		rightKeyInfo.assign("right Key not pressed");
