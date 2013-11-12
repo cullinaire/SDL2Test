@@ -8,6 +8,7 @@ InputCfg::InputCfg(SDL_Renderer *rend, TxtLayer *txtOut, BMPText *bmpFont)
 	statusMenu->DefineCursor(" ");
 	font = bmpFont;
 	alreadyAssigned.clear();	//Maybe build this list from an external config file later
+
 	currentInput = UNDEFINED;
 
 	inputMenu->InsertItem("left", 0, bmpFont);
@@ -45,13 +46,11 @@ void InputCfg::showMenu()
 
 void InputCfg::showStatus()
 {
-	SDL_Rect fontDim;
-	fontDim.w = fontDim.h = 8;
-
 	textOutput->ReceiveString(statusMsg, 128, 64, font);
 	statusMenu->OutputMenu(256, 256);
 }
 
+//Updates currentInput based on the desired Input to assign a key to
 void InputCfg::processInput(SDL_Scancode lastKey, bool *waitingForInput, bool *menuactive)
 {
 	switch(lastKey)
@@ -119,6 +118,7 @@ void InputCfg::processInput(SDL_Scancode lastKey, bool *waitingForInput, bool *m
 	}
 }
 
+//assigns scancode to the currentInput at the time
 void InputCfg::assignInput(SDL_Scancode scancode)
 {
 	bool duplicate = false;
@@ -167,6 +167,13 @@ void InputCfg::assignInput(SDL_Scancode scancode)
 	{
 		statusMsg.assign("error: currentinput is undefined!!");
 	}
+}
+
+void InputCfg::assignInput(SDL_Scancode scancode, gameInput p_currentInput)
+{
+	currentInput = p_currentInput;
+	currentIndex = (int)currentInput;	//Needed since currentIndex is normally set by menu selection
+	this->assignInput(scancode);
 }
 
 InputCfg::~InputCfg()

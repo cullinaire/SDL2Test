@@ -192,7 +192,7 @@ int main(int argc, char **argv)
 		//UPDATING SECTION////////////////////////////////////////////////////
 		Uint64 newTime = SDL_GetPerformanceCounter();
 		double frameTime = (newTime - currentTime) / (double)SDL_GetPerformanceFrequency();
-
+		//Don't do anything time consuming in this space to ensure accurate frameTime reporting
 		if(frameTime > 0.25f)
 			frameTime = 0.25f;	//Max frame time to avoid sprial of death
 
@@ -210,9 +210,13 @@ int main(int argc, char **argv)
 
 		mainText.ReceiveString(accum, accumPos);
 
+		//Now start doing expensive stuff
+		//Doing "collision detection" here: (WRONG: DO IT IN FIXED TIMESTEP AREA)
+
 		while(accumulator >= dt)
 		{
 			accumulator -= dt;
+			player1.Collide();
 			player1.Integrate(t, dt);
 			t += dt;
 		}

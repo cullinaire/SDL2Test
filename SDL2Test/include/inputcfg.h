@@ -32,6 +32,7 @@ public:
 	void showStatus();
 	void processInput(SDL_Scancode lastKey, bool *waitingForInput, bool *menuactive);
 	void assignInput(SDL_Scancode scancode);
+	void assignInput(SDL_Scancode scancode, gameInput p_currentInput);
 	~InputCfg();
 private:
 	Menu *inputMenu;
