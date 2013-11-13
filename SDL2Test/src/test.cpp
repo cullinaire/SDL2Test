@@ -37,6 +37,7 @@
 #include "inputcfg.h"
 #include "animobj.h"
 #include "player.h"
+#include "timekeep.h"
 
 int main(int argc, char **argv)
 {
@@ -131,6 +132,8 @@ int main(int argc, char **argv)
 	const double dt = 0.01f;	//fixed timestep for physics updates
 
 	Uint64 currentTime = SDL_GetPerformanceCounter();
+	Uint64 sysCounter = 0;	//Is the master timer referenced by game
+	Uint64 lastCount = sysCounter;	//For getting the difference vs sysCounter
 	double accumulator = 0.0f;
 	
 	while(!quit)
@@ -190,18 +193,22 @@ int main(int argc, char **argv)
 		player1.emitInfo(&mainText);
 
 		//UPDATING SECTION////////////////////////////////////////////////////
-		Uint64 newTime = SDL_GetPerformanceCounter();
-		double frameTime = (newTime - currentTime) / (double)SDL_GetPerformanceFrequency();
+		
+		UpdateTime(sysCounter, currentTime);	//This must be called only once per frame
+		//The following line must be before the two lines after it
+		double frameTime = (sysCounter - lastCount)/SDL_GetPerformanceFrequency();
+		currentTime = SDL_GetPerformanceCounter();
+		lastCount = sysCounter;
 
 		if(frameTime > 0.25f)
 			frameTime = 0.25f;	//Max frame time to avoid sprial of death
+		else if(frameTime < 0.016f)
+			frameTime = 0.016f;	//Min frame time for debugging
 
 		fps.assign("Frametime: ");
 		fps.append(std::to_string(frameTime));
 
 		mainText.ReceiveString(fps, fpsPos);	//report fps
-
-		currentTime = newTime;
 
 		accumulator += frameTime;
 
@@ -217,8 +224,8 @@ int main(int argc, char **argv)
 			t += dt;
 		}
 
-		time.assign("t: ");
-		time.append(std::to_string(t));
+		time.assign("sysCounter: ");
+		time.append(std::to_string(sysCounter));
 
 		mainText.ReceiveString(time, timePos);
 
