@@ -206,6 +206,9 @@ int main(int argc, char **argv)
 		double frameTime = (newTime - currentTime) / (double)SDL_GetPerformanceFrequency();
 		//Don't do anything time consuming in this space to ensure accurate frameTime reporting
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> 323dc3fadabe6f35415950b0048ff14d06d1dcac
+=======
 >>>>>>> 323dc3fadabe6f35415950b0048ff14d06d1dcac
 =======
 >>>>>>> 323dc3fadabe6f35415950b0048ff14d06d1dcac
