@@ -193,29 +193,14 @@ int main(int argc, char **argv)
 		player1.emitInfo(&mainText);
 
 		//UPDATING SECTION////////////////////////////////////////////////////
-<<<<<<< HEAD
-		
 		UpdateTime(sysCounter, currentTime);	//This must be called only once per frame
 		//The following line must be before the two lines after it
-		double frameTime = (sysCounter - lastCount)/SDL_GetPerformanceFrequency();
+		double frameTime = (double)(sysCounter - lastCount)/SDL_GetPerformanceFrequency();
 		currentTime = SDL_GetPerformanceCounter();
 		lastCount = sysCounter;
 
-=======
-		Uint64 newTime = SDL_GetPerformanceCounter();
-		double frameTime = (newTime - currentTime) / (double)SDL_GetPerformanceFrequency();
-		//Don't do anything time consuming in this space to ensure accurate frameTime reporting
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 323dc3fadabe6f35415950b0048ff14d06d1dcac
-=======
->>>>>>> 323dc3fadabe6f35415950b0048ff14d06d1dcac
-=======
->>>>>>> 323dc3fadabe6f35415950b0048ff14d06d1dcac
 		if(frameTime > 0.25f)
 			frameTime = 0.25f;	//Max frame time to avoid sprial of death
-		else if(frameTime < 0.016f)
-			frameTime = 0.016f;	//Min frame time for debugging
 
 		fps.assign("Frametime: ");
 		fps.append(std::to_string(frameTime));
