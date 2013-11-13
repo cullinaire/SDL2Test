@@ -13,7 +13,9 @@
 #define LEFT_RUN_SPD	-100
 #define RIGHT_RUN_SPD	100
 #define STOPPED_SPD		0
-
+#define GRAVITY			700
+#define JUMPVEL			-300	//Remember everything going "up" is negative
+#define TEMP_FLOOR		256		//initial location of "ground" for testing
 #ifdef __linux
 	#include "SDL2/SDL.h"
 #elif _WIN32
@@ -58,6 +60,8 @@ public:
 	void emitInfo(TxtLayer *txtOut);
 	void Integrate(double t, double dt);
 	void Interpolate(const double alpha);
+	void Collide();
+
 private:
 	int playerID;
 	PlayerState playerState;
@@ -76,12 +80,14 @@ private:
 	std::string leftKeyInfo;
 	std::string rightKeyInfo;
 	std::string pposInfo;
-	std::string derivInfo;
+	std::string derivXInfo;
+	std::string derivYInfo;
 	SDL_Rect animDest;
 	SDL_Rect leftKeyDest;
 	SDL_Rect rightKeyDest;
 	SDL_Rect pposDest;
-	SDL_Rect derivDest;
+	SDL_Rect derivXDest;
+	SDL_Rect derivYDest;
 };
 
 #endif

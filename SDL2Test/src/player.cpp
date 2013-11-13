@@ -7,7 +7,7 @@ Player::Player(AnimObj *p_animobj, InputCfg *p_inputCfg, int p_id)
 	playerState.facingleft = true;
 	playerState.airborne = false;
 	playerPosVel.x = 256;
-	playerPosVel.y = 256;
+	playerPosVel.y = TEMP_FLOOR;
 	playerPosVel.xv = 0;
 	playerPosVel.yv = 0;
 
@@ -21,8 +21,10 @@ Player::Player(AnimObj *p_animobj, InputCfg *p_inputCfg, int p_id)
 	rightKeyDest.y = 136;
 	pposDest.x = 400;
 	pposDest.y = 464;
-	derivDest.x = 16;
-	derivDest.y = 384;
+	derivXDest.x = 16;
+	derivXDest.y = 384;
+	derivYDest.x = 16;
+	derivYDest.y = 400;
 
 	e_inputCfg = p_inputCfg;
 	e_animobj = p_animobj;
@@ -32,11 +34,17 @@ Player::Player(AnimObj *p_animobj, InputCfg *p_inputCfg, int p_id)
 	animInfo.assign("Standing facing left playing");
 	
 	keyMap.ClearMap();
+
+	e_inputCfg->assignPlayerMap(&keyMap);
+
+	e_inputCfg->assignInput(SDL_SCANCODE_LEFT, MOVE_LEFT);
+	e_inputCfg->assignInput(SDL_SCANCODE_RIGHT, MOVE_RIGHT);
+	e_inputCfg->assignInput(SDL_SCANCODE_SPACE, JUMP);
 }
 
 void Player::configInput(SDL_Scancode lastKey, bool *waitingForInput, bool *menuactive)
 {
-	e_inputCfg->assignPlayerMap(&keyMap);
+	//e_inputCfg->assignPlayerMap(&keyMap);
 	e_inputCfg->processInput(lastKey, waitingForInput, menuactive);
 }
 
@@ -94,6 +102,13 @@ void Player::processKeyDown(SDL_Scancode p_scancode, bool *keyPressed)
 		}
 		rightKeyInfo.assign("right Key pressed");
 		break;
+	case JUMP:
+		if(playerState.airborne == false)
+		{
+			playerState.airborne = true;
+			playerPosVel.yv = JUMPVEL;
+		}
+		break;
 	default:
 		break;
 	}
@@ -137,6 +152,9 @@ void Player::processKeyUp(SDL_Scancode p_scancode, bool *keyPressed)
 		}
 		rightKeyInfo.assign("right Key not pressed");
 		break;
+	case JUMP:
+		playerPosVel.yv = 0;
+		break;
 	default:
 		break;
 	}
@@ -148,7 +166,8 @@ void Player::emitInfo(TxtLayer *txtOut)
 	txtOut->ReceiveString(leftKeyInfo, leftKeyDest);
 	txtOut->ReceiveString(rightKeyInfo, rightKeyDest);
 	txtOut->ReceiveString(pposInfo, pposDest);
-	txtOut->ReceiveString(derivInfo, derivDest);
+	txtOut->ReceiveString(derivXInfo, derivXDest);
+	txtOut->ReceiveString(derivYInfo, derivYDest);
 }
 
 void Player::Integrate(double t, double dt)
@@ -174,8 +193,10 @@ void Player::Integrate(double t, double dt)
 
 	pposInfo.assign("xv: ");
 	pposInfo.append(std::to_string(playerPosVel.xv));
-	derivInfo.assign("a.dx: ");
-	derivInfo.append(std::to_string(a.dx));
+	derivXInfo.assign("a.dx: ");
+	derivXInfo.append(std::to_string(a.dx));
+	derivYInfo.assign("a.dy: ");
+	derivYInfo.append(std::to_string(a.dy));
 }
 
 void Player::Interpolate(const double alpha)
@@ -198,7 +219,7 @@ void Player::accel(const State &state, double t, Derivative &p_output)
 	//acc.dyv = -k * state.y - b*state.yv;
 	//return acc;
 	p_output.dxv = 0;
-	p_output.dyv = 0;
+	p_output.dyv = GRAVITY;	//Constant gravity
 }
 
 Derivative Player::eval(const State &initial, double t, double dt, const Derivative &d)
@@ -231,4 +252,16 @@ Derivative Player::eval(const State &initial, double t)
 	this->accel(initial, t, output);
 	
 	return output;
+}
+
+void Player::Collide()
+{
+	//If airborne isn't true at the time of test, assume that player was just standing on
+	//ground being "pulled under" by gravity. Then the code inside the if block prevents
+	//player from sinking. Otherwise player is allowed to TAKE TO THE AIR
+	if(playerPosVel.y > TEMP_FLOOR)
+	{
+		playerPosVel.y = TEMP_FLOOR;
+		playerPosVel.yv = 0;
+	}
 }

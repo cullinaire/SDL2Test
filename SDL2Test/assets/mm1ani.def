@@ -17,15 +17,7 @@
 #calculatable (just counts up from 0) so is omitted from being listed here.
 #So the format is: {back and forth loop mode (true or false)}
 
-#Run facing left
-
-[200]
-[200]
-[200]
-
-{false}
-
-#Run facing right
+#Run facing left - 0
 
 [200]
 [200]
@@ -33,16 +25,38 @@
 
 {true}
 
-#Stand facing left
+#Run facing right - 1
+
+[200]
+[200]
+[200]
+
+{true}
+
+#Stand facing left - 2
 
 [100]
 [1500]
 
 {true}
 
-#Stand facing right
+#Stand facing right - 3
 
 [1500]
 [100]
+
+{true}
+
+#Jump facing left - 4
+
+[50]
+[1000]
+
+{true}
+
+#Jump facing right - 5
+
+[50]
+[1000]
 
 {true}

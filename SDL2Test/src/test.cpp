@@ -193,6 +193,7 @@ int main(int argc, char **argv)
 		player1.emitInfo(&mainText);
 
 		//UPDATING SECTION////////////////////////////////////////////////////
+<<<<<<< HEAD
 		
 		UpdateTime(sysCounter, currentTime);	//This must be called only once per frame
 		//The following line must be before the two lines after it
@@ -200,6 +201,11 @@ int main(int argc, char **argv)
 		currentTime = SDL_GetPerformanceCounter();
 		lastCount = sysCounter;
 
+=======
+		Uint64 newTime = SDL_GetPerformanceCounter();
+		double frameTime = (newTime - currentTime) / (double)SDL_GetPerformanceFrequency();
+		//Don't do anything time consuming in this space to ensure accurate frameTime reporting
+>>>>>>> 323dc3fadabe6f35415950b0048ff14d06d1dcac
 		if(frameTime > 0.25f)
 			frameTime = 0.25f;	//Max frame time to avoid sprial of death
 		else if(frameTime < 0.016f)
@@ -217,9 +223,13 @@ int main(int argc, char **argv)
 
 		mainText.ReceiveString(accum, accumPos);
 
+		//Now start doing expensive stuff
+		//Doing "collision detection" here: (WRONG: DO IT IN FIXED TIMESTEP AREA)
+
 		while(accumulator >= dt)
 		{
 			accumulator -= dt;
+			player1.Collide();
 			player1.Integrate(t, dt);
 			t += dt;
 		}
