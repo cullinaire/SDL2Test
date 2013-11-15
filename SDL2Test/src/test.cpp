@@ -95,33 +95,33 @@ int main(int argc, char **argv)
 
 	inputConfig.registerQuit(&quit);	//So the menu can modify the quit variable...shaky I know
 
+	SDL_Rect advicePos;	//"Press ESC to view menu"
+	advicePos.x = 8;
+	advicePos.y = 8;
+
 	std::string lastInputMsg;
 
 	SDL_Rect lastInputMsgPos;
-	lastInputMsgPos.x = 256;
-	lastInputMsgPos.y = 24;
-
-	SDL_Rect advicePos;
-	advicePos.x = 8;
-	advicePos.y = 8;
+	lastInputMsgPos.x = 16;
+	lastInputMsgPos.y = 352;
 
 	std::string fps;
 
 	SDL_Rect fpsPos;
-	fpsPos.x = 24;
-	fpsPos.y = 416;
+	fpsPos.x = 16;
+	fpsPos.y = 368;
 
 	std::string accum;
 
 	SDL_Rect accumPos;
-	accumPos.x = 24;
-	accumPos.y = 448;
+	accumPos.x = 16;
+	accumPos.y = 384;
 
 	std::string time;
 
 	SDL_Rect timePos;
-	timePos.x = 24;
-	timePos.y = 432;
+	timePos.x = 16;
+	timePos.y = 400;
 
 	double t = 0.0f;
 	const double dt = 0.01f;	//fixed timestep for physics updates
@@ -212,7 +212,7 @@ int main(int argc, char **argv)
 		//Now start doing expensive stuff
 		//Doing "collision detection" here: (WRONG: DO IT IN FIXED TIMESTEP AREA)
 
-		while(accumulator >= dt)
+		while(accumulator >= dt)	//The fixed timestep area is in this while loop
 		{
 			accumulator -= dt;
 			player1.Collide();
@@ -227,18 +227,16 @@ int main(int argc, char **argv)
 
 		const double alpha = accumulator / dt;
 
-		player1.Interpolate(alpha);
-
 		//DRAWING SECTION/////////////////////////////////////////////////////
 		SDL_RenderClear(rend);
 		//Draw stuff now
-
+		player1.Interpolate(alpha);	//Was putting this before the renderclear like a dummy
 		if(menuactive)
 		{
 			inputConfig.showMenu();
 			inputConfig.showStatus();
 		}
-		mainText.OutputFrame(rend);
+		mainText.OutputFrame(rend);	//Draw text last
 		mainText.Clear();
 		//End draw stuff
 		SDL_RenderPresent(rend);

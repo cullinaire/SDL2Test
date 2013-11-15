@@ -6,6 +6,8 @@ AnimObj::AnimObj(SpriteSheet *p_animSheet)
 	playing = false;
 	forwards = true;
 	isbNf = false;
+	dst.x = 0;
+	dst.y = 0;
 }
 
 void AnimObj::defineAnim(std::string anifilename)
@@ -95,15 +97,18 @@ void AnimObj::defineAnim(std::string anifilename)
 void AnimObj::startAnim(int index)
 {
 	playing = true;
-	curAnimIndex = index;
-	elapsed = SDL_GetTicks();
-	for(selAnim = animations.begin();selAnim != animations.end();++selAnim)
+	if(curAnimIndex != index)	//Prevent repeat calls from interrupting animation
 	{
-		if(selAnim->index == index)	//Found the animation to play
+		curAnimIndex = index;
+		elapsed = SDL_GetTicks();
+		for(selAnim = animations.begin();selAnim != animations.end();++selAnim)
 		{
-			drawFrame = selAnim->frames.begin();	//Set the iterator for later (actually this doesn't seem to work)
-			isbNf = selAnim->backNforth;
-			break;	//also need to preserve selAnim iterator as well (also doesn't work across method calls)
+			if(selAnim->index == index)	//Found the animation to play
+			{
+				drawFrame = selAnim->frames.begin();	//Set the iterator for later (actually this doesn't seem to work)
+				isbNf = selAnim->backNforth;
+				break;	//also need to preserve selAnim iterator as well (also doesn't work across method calls)
+			}
 		}
 	}
 }

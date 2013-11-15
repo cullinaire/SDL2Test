@@ -14,18 +14,20 @@ Player::Player(AnimObj *p_animobj, InputCfg *p_inputCfg, int p_id)
 	renderState = playerPosVel;	//only renderstate talks to the renderer
 
 	//debug msg settings
+	rendDest.x = 16;
+	rendDest.y = 416;
 	pposDest.x = 16;
 	pposDest.y = 464;
 	derivXDest.x = 16;
-	derivXDest.y = 384;
+	derivXDest.y = 432;
 	derivYDest.x = 16;
-	derivYDest.y = 400;
+	derivYDest.y = 448;
 
 	e_inputCfg = p_inputCfg;
 	e_animobj = p_animobj;
 	e_animobj->updateLoc(renderState.x, renderState.y);
 
-	e_animobj->startAnim(0);
+	e_animobj->startAnim(1);
 	
 	keyMap.ClearMap();
 
@@ -162,6 +164,7 @@ void Player::processKeyUp(SDL_Scancode p_scancode, bool *keyPressed)
 
 void Player::emitInfo(TxtLayer *txtOut)
 {
+	txtOut->ReceiveString(rendInfo, rendDest);
 	txtOut->ReceiveString(pposInfo, pposDest);
 	txtOut->ReceiveString(derivXInfo, derivXDest);
 	txtOut->ReceiveString(derivYInfo, derivYDest);
@@ -210,6 +213,13 @@ void Player::Interpolate(const double alpha)
 	//Renderstate has no need for velocity information - it's only drawing a snapshot
 	//renderState.xv = playerPosVel.xv*alpha + prevState.xv * (1.0 - alpha);
 	//renderState.yv = playerPosVel.yv*alpha + prevState.yv * (1.0 - alpha);
+
+	rendInfo.assign("rend(x): ");
+	rendInfo.append(std::to_string(renderState.x));
+	rendInfo.append(" rend(y): ");
+	rendInfo.append(std::to_string(renderState.y));
+
+	this->SelectAnim();
 
 	e_animobj->updateLoc(renderState.x, renderState.y);
 	e_animobj->playAnim();
@@ -261,4 +271,25 @@ Derivative Player::eval(const State &initial, double t)
 
 void Player::Collide()
 {
+}
+
+void Player::SelectAnim()
+{
+	if(playerPosVel.xv == 0 && playerPosVel.yv == 0)
+	{
+		playerState.moving = false;
+	}
+	else
+	{
+		playerState.moving = true;
+	}
+
+	if(playerState.moving == true)
+	{
+		e_animobj->startAnim(0);	//walking anim
+	}
+	else
+	{
+		e_animobj->startAnim(1);	//standing anim
+	}
 }

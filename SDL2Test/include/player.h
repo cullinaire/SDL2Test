@@ -59,6 +59,7 @@ public:
 	void Integrate(double t, double dt);
 	void Interpolate(const double alpha);
 	void Collide();
+	void SelectAnim();
 
 private:
 	int playerID;
@@ -74,12 +75,11 @@ private:
 	Derivative eval(const State &initial, double t);
 
 	//Debug information to screen stuff - non essential
+	std::string rendInfo;
 	std::string pposInfo;
 	std::string derivXInfo;
 	std::string derivYInfo;
-	SDL_Rect animDest;
-	SDL_Rect leftKeyDest;
-	SDL_Rect rightKeyDest;
+	SDL_Rect rendDest;
 	SDL_Rect pposDest;
 	SDL_Rect derivXDest;
 	SDL_Rect derivYDest;
