@@ -4,22 +4,17 @@ Player::Player(AnimObj *p_animobj, InputCfg *p_inputCfg, int p_id)
 {
 	playerID = p_id;
 	playerState.alive = true;
-	playerState.facingleft = true;
-	playerState.airborne = false;
-	playerPosVel.x = 256;
-	playerPosVel.y = TEMP_FLOOR;
+	playerState.moving = false;
+
+	playerPosVel.x = PLAYER_INITIAL_X;
+	playerPosVel.y = PLAYER_INITIAL_Y;
 	playerPosVel.xv = 0;
 	playerPosVel.yv = 0;
 
-	renderState = playerPosVel;
+	renderState = playerPosVel;	//only renderstate talks to the renderer
 
-	animDest.x = 256;
-	animDest.y = 16;
-	leftKeyDest.x = 256;
-	leftKeyDest.y = 128;
-	rightKeyDest.x = 256;
-	rightKeyDest.y = 136;
-	pposDest.x = 400;
+	//debug msg settings
+	pposDest.x = 16;
 	pposDest.y = 464;
 	derivXDest.x = 16;
 	derivXDest.y = 384;
@@ -30,8 +25,7 @@ Player::Player(AnimObj *p_animobj, InputCfg *p_inputCfg, int p_id)
 	e_animobj = p_animobj;
 	e_animobj->updateLoc(renderState.x, renderState.y);
 
-	e_animobj->startAnim(2);
-	animInfo.assign("Standing facing left playing");
+	e_animobj->startAnim(0);
 	
 	keyMap.ClearMap();
 
@@ -39,12 +33,12 @@ Player::Player(AnimObj *p_animobj, InputCfg *p_inputCfg, int p_id)
 
 	e_inputCfg->assignInput(SDL_SCANCODE_LEFT, MOVE_LEFT);
 	e_inputCfg->assignInput(SDL_SCANCODE_RIGHT, MOVE_RIGHT);
-	e_inputCfg->assignInput(SDL_SCANCODE_SPACE, JUMP);
+	e_inputCfg->assignInput(SDL_SCANCODE_UP, MOVE_UP);
+	e_inputCfg->assignInput(SDL_SCANCODE_DOWN, MOVE_DOWN);
 }
 
 void Player::configInput(SDL_Scancode lastKey, bool *waitingForInput, bool *menuactive)
 {
-	//e_inputCfg->assignPlayerMap(&keyMap);
 	e_inputCfg->processInput(lastKey, waitingForInput, menuactive);
 }
 
@@ -71,43 +65,44 @@ void Player::processKeyDown(SDL_Scancode p_scancode, bool *keyPressed)
 	case MOVE_LEFT:
 		if(keyPressed[keyMap.returnScancode(MOVE_RIGHT)] == true)
 		{
-			e_animobj->startAnim(3);
 			playerPosVel.xv = STOPPED_SPD;
-			playerState.facingleft = false;
-			animInfo.assign("Standing facing right playing");
 		}
 		else
 		{
-			e_animobj->startAnim(0);
-			playerPosVel.xv = LEFT_RUN_SPD;
-			playerState.facingleft = true;
-			animInfo.assign("Running Left playing");
+			playerPosVel.xv = -DEF_SPD;
 		}
-		leftKeyInfo.assign("left Key pressed");
 		break;
 	case MOVE_RIGHT:
 		if(keyPressed[keyMap.returnScancode(MOVE_LEFT)] == true)
 		{
-			e_animobj->startAnim(2);
 			playerPosVel.xv = STOPPED_SPD;
-			playerState.facingleft = true;
-			animInfo.assign("Standing facing left playing");
 		}
 		else
 		{
-			e_animobj->startAnim(1);
-			playerPosVel.xv = RIGHT_RUN_SPD;
-			playerState.facingleft = true;
-			animInfo.assign("Running Right playing");
+			playerPosVel.xv = DEF_SPD;
 		}
-		rightKeyInfo.assign("right Key pressed");
+		break;
+	case MOVE_UP:
+		if(keyPressed[keyMap.returnScancode(MOVE_DOWN)] == true)
+		{
+			playerPosVel.yv = STOPPED_SPD;
+		}
+		else
+		{
+			playerPosVel.yv = -DEF_SPD;
+		}
+		break;
+	case MOVE_DOWN:
+		if(keyPressed[keyMap.returnScancode(MOVE_UP)] == true)
+		{
+			playerPosVel.yv = STOPPED_SPD;
+		}
+		else
+		{
+			playerPosVel.yv = DEF_SPD;
+		}
 		break;
 	case JUMP:
-		if(playerState.airborne == false)
-		{
-			playerState.airborne = true;
-			playerPosVel.yv = JUMPVEL;
-		}
 		break;
 	default:
 		break;
@@ -121,39 +116,44 @@ void Player::processKeyUp(SDL_Scancode p_scancode, bool *keyPressed)
 	case MOVE_LEFT:
 		if(keyPressed[keyMap.returnScancode(MOVE_RIGHT)] == true)
 		{
-			e_animobj->startAnim(1);
-			playerPosVel.xv = RIGHT_RUN_SPD;
-			playerState.facingleft = false;
-			animInfo.assign("Running Right playing");
+			playerPosVel.xv = DEF_SPD;
 		}
 		else
 		{
-			e_animobj->startAnim(2);
 			playerPosVel.xv = STOPPED_SPD;
-			playerState.facingleft = true;
-			animInfo.assign("Standing facing left playing");
 		}
-		leftKeyInfo.assign("left Key not pressed");
 		break;
 	case MOVE_RIGHT:
 		if(keyPressed[keyMap.returnScancode(MOVE_LEFT)] == true)
 		{
-			e_animobj->startAnim(0);
-			playerPosVel.xv = LEFT_RUN_SPD;
-			playerState.facingleft = true;
-			animInfo.assign("Running Left playing");
+			playerPosVel.xv = -DEF_SPD;
 		}
 		else
 		{
-			e_animobj->startAnim(3);
 			playerPosVel.xv = STOPPED_SPD;
-			playerState.facingleft = false;
-			animInfo.assign("Standing facing right playing");
 		}
-		rightKeyInfo.assign("right Key not pressed");
+		break;
+	case MOVE_UP:
+		if(keyPressed[keyMap.returnScancode(MOVE_DOWN)] == true)
+		{
+			playerPosVel.yv = DEF_SPD;
+		}
+		else
+		{
+			playerPosVel.yv = STOPPED_SPD;
+		}
+		break;
+	case MOVE_DOWN:
+		if(keyPressed[keyMap.returnScancode(MOVE_UP)] == true)
+		{
+			playerPosVel.yv = -DEF_SPD;
+		}
+		else
+		{
+			playerPosVel.yv = STOPPED_SPD;
+		}
 		break;
 	case JUMP:
-		playerPosVel.yv = 0;
 		break;
 	default:
 		break;
@@ -162,9 +162,6 @@ void Player::processKeyUp(SDL_Scancode p_scancode, bool *keyPressed)
 
 void Player::emitInfo(TxtLayer *txtOut)
 {
-	txtOut->ReceiveString(animInfo, animDest);
-	txtOut->ReceiveString(leftKeyInfo, leftKeyDest);
-	txtOut->ReceiveString(rightKeyInfo, rightKeyDest);
 	txtOut->ReceiveString(pposInfo, pposDest);
 	txtOut->ReceiveString(derivXInfo, derivXDest);
 	txtOut->ReceiveString(derivYInfo, derivYDest);
@@ -191,8 +188,14 @@ void Player::Integrate(double t, double dt)
 	playerPosVel.xv = playerPosVel.xv + dxvdt * dt;
 	playerPosVel.yv = playerPosVel.yv + dyvdt * dt;
 
-	pposInfo.assign("xv: ");
-	pposInfo.append(std::to_string(playerPosVel.xv));
+	pposInfo.assign("a.dxv: ");
+	pposInfo.append(std::to_string(a.dxv));
+	pposInfo.append(" a.dyv: ");
+	pposInfo.append(std::to_string(a.dyv));
+	pposInfo.append(" x: ");
+	pposInfo.append(std::to_string(playerPosVel.x));
+	pposInfo.append(" y: ");
+	pposInfo.append(std::to_string(playerPosVel.y));
 	derivXInfo.assign("a.dx: ");
 	derivXInfo.append(std::to_string(a.dx));
 	derivYInfo.assign("a.dy: ");
@@ -204,10 +207,12 @@ void Player::Interpolate(const double alpha)
 	renderState.x = playerPosVel.x*alpha + prevState.x * (1.0 - alpha);
 	renderState.y = playerPosVel.y*alpha + prevState.y * (1.0 - alpha);
 
-	renderState.xv = playerPosVel.xv*alpha + prevState.xv * (1.0 - alpha);
-	renderState.yv = playerPosVel.yv*alpha + prevState.yv * (1.0 - alpha);
+	//Renderstate has no need for velocity information - it's only drawing a snapshot
+	//renderState.xv = playerPosVel.xv*alpha + prevState.xv * (1.0 - alpha);
+	//renderState.yv = playerPosVel.yv*alpha + prevState.yv * (1.0 - alpha);
 
 	e_animobj->updateLoc(renderState.x, renderState.y);
+	e_animobj->playAnim();
 }
 
 void Player::accel(const State &state, double t, Derivative &p_output)
@@ -219,7 +224,7 @@ void Player::accel(const State &state, double t, Derivative &p_output)
 	//acc.dyv = -k * state.y - b*state.yv;
 	//return acc;
 	p_output.dxv = 0;
-	p_output.dyv = GRAVITY;	//Constant gravity
+	p_output.dyv = 0;
 }
 
 Derivative Player::eval(const State &initial, double t, double dt, const Derivative &d)
@@ -256,12 +261,4 @@ Derivative Player::eval(const State &initial, double t)
 
 void Player::Collide()
 {
-	//If airborne isn't true at the time of test, assume that player was just standing on
-	//ground being "pulled under" by gravity. Then the code inside the if block prevents
-	//player from sinking. Otherwise player is allowed to TAKE TO THE AIR
-	if(playerPosVel.y > TEMP_FLOOR)
-	{
-		playerPosVel.y = TEMP_FLOOR;
-		playerPosVel.yv = 0;
-	}
 }

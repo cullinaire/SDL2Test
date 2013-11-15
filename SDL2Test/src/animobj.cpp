@@ -151,6 +151,7 @@ void AnimObj::playAnim()
 			}
 		}
 
+		animSheet->getCellSize(drawFrame->frameID, dst);
 		animSheet->Draw(drawFrame->frameID + selAnim->offset, dst);
 	}
 }

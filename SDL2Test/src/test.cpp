@@ -32,7 +32,6 @@
 #include "sprite.h"
 #include "gfxtext.h"
 #include "menu.h"
-#include "inputmap.h"
 #include "txtlayer.h"
 #include "inputcfg.h"
 #include "animobj.h"
@@ -70,23 +69,19 @@ int main(int argc, char **argv)
 	fontDim.h = 8;
 
 	SpriteSheet arcadeFont("../assets/drbrfont.bmp", rend, fontDim, 1, 95, 95);
-	SpriteSheet mm1sheet("../assets/mm1.bmp", rend, "../assets/mm1.def");
+	SpriteSheet mensheet("../assets/men.bmp", rend, "../assets/hatman.def");
 
-	BMPText fontDraw(&arcadeFont);
+	BMPText fontDraw(&arcadeFont);	//Default system font for debug msgs
 
-	TxtLayer mainText(&fontDraw);
+	TxtLayer mainText(&fontDraw);	//Txtlayer which will carry all printed text for each frame
 
-	InputMap player1Input;
+	InputCfg inputConfig(rend, &mainText, &fontDraw);	//Helper to configure input for each player
 
-	InputCfg inputConfig(rend, &mainText, &fontDraw);
+	AnimObj hatman(&mensheet);	//Animation object, uses sprites from parameter
 
-	inputConfig.assignPlayerMap(&player1Input);
+	hatman.defineAnim("../assets/hatmanani.def");	//animation needs definition file which is assigned here
 
-	AnimObj mm1(&mm1sheet);
-
-	mm1.defineAnim("../assets/mm1ani.def");
-
-	Player player1(&mm1, &inputConfig, 1);
+	Player player1(&hatman, &inputConfig, 1);	//Player class is assigned animobject, inputconfig (with the map assigned), and id of player
 
 	SDL_Event ev;
 	SDL_Scancode lastKey;	//Keeps track of last key pressed
@@ -114,7 +109,7 @@ int main(int argc, char **argv)
 
 	SDL_Rect fpsPos;
 	fpsPos.x = 24;
-	fpsPos.y = 464;
+	fpsPos.y = 416;
 
 	std::string accum;
 
@@ -237,8 +232,6 @@ int main(int argc, char **argv)
 		//DRAWING SECTION/////////////////////////////////////////////////////
 		SDL_RenderClear(rend);
 		//Draw stuff now
-		
-		mm1.playAnim();
 
 		if(menuactive)
 		{

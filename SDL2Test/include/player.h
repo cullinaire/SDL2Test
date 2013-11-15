@@ -10,12 +10,11 @@
 //of this; only the initial values are set in this object such as direction
 //and acceleration.
 
-#define LEFT_RUN_SPD	-100
-#define RIGHT_RUN_SPD	100
-#define STOPPED_SPD		0
-#define GRAVITY			700
-#define JUMPVEL			-300	//Remember everything going "up" is negative
-#define TEMP_FLOOR		256		//initial location of "ground" for testing
+#define PLAYER_INITIAL_X	256
+#define PLAYER_INITIAL_Y	256
+#define STOPPED_SPD			0
+#define DEF_SPD				100
+
 #ifdef __linux
 	#include "SDL2/SDL.h"
 #elif _WIN32
@@ -30,8 +29,7 @@
 typedef struct PlayerState
 {
 	bool alive;
-	bool facingleft;
-	bool airborne;
+	bool moving;
 } PlayerState;
 
 typedef struct State
@@ -76,9 +74,6 @@ private:
 	Derivative eval(const State &initial, double t);
 
 	//Debug information to screen stuff - non essential
-	std::string animInfo;
-	std::string leftKeyInfo;
-	std::string rightKeyInfo;
 	std::string pposInfo;
 	std::string derivXInfo;
 	std::string derivYInfo;

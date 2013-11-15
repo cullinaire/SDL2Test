@@ -44,6 +44,7 @@ public:
 	SpriteSheet(const std::string bmpfilename, SDL_Renderer *renderer, SDL_Rect cell, int row, int col, int total);
 	SpriteSheet(const std::string bmpfilename, SDL_Renderer *renderer, const std::string sprdeffilename);
 	SDL_Rect getCellSize(int idx);
+	void getCellSize(int idx, SDL_Rect &dst);
 	void Draw(int id, SDL_Rect dest);
 	~SpriteSheet();
 private:

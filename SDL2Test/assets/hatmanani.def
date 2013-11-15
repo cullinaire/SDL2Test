@@ -1,0 +1,25 @@
+#Animation definition file for hatman sprite
+#Each frame contains: frameID and duration
+#Much like the structure of the sprite definition file, the
+#values are grouped in brackets. However since frameID can be
+#deduced (it always starts from 0 and goes up until the end of the
+#animation, after which it starts from 0 again) only the duration
+#will be provided here.
+#Format: [duration]
+#However there is a twist. The frames for a given animation are
+#grouped into an aggregation called "animation" (yes).
+#Each animation has: a list of frames, animation id, number of frames,
+#offset, and whether it loops normally or back and forth.
+#The animation info assumes the frames listed before it are the frames
+#to use, so the list is implied, and by extension the number of frames
+#and offset as well (offset is the total number of frames from frame 0
+#to the first frame of the particular animation). Animation id is also
+#calculatable (just counts up from 0) so is omitted from being listed here.
+#So the format is: {back and forth loop mode (true or false)}
+
+#Standard walk - 0
+
+[200]
+[200]
+
+{true}
