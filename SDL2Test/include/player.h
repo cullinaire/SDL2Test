@@ -10,10 +10,10 @@
 //of this; only the initial values are set in this object such as direction
 //and acceleration.
 
-#define PLAYER_INITIAL_X	256
-#define PLAYER_INITIAL_Y	256
-#define STOPPED_SPD			0
-#define DEF_SPD				100
+#define PLAYER_INITIAL_X	32
+#define PLAYER_INITIAL_Y	32
+#define ZERO_FORCE			0
+#define DEF_FORCE			5
 
 #ifdef __linux
 	#include "SDL2/SDL.h"
@@ -38,13 +38,16 @@ typedef struct State
 	double y;	//pos
 	double xv;	//vel
 	double yv;	//vel
+	double xa;	//acc
+	double ya;	//acc
+	double mass;	//in kg
 } State;
 
-typedef struct Derivative
-{
-	double dx, dy;		//derivative of pos: vel
-	double dxv, dyv;	//derivative of vel: acc
-} Derivative;
+//typedef struct Derivative
+//{
+//	double dx, dy;		//derivative of pos: vel
+//	double dxv, dyv;	//derivative of vel: acc
+//} Derivative;
 
 class Player
 {
@@ -55,34 +58,26 @@ public:
 	std::string getInputName(SDL_Scancode lastKey);
 	void processKeyDown(SDL_Scancode p_scancode, bool *keyPressed);
 	void processKeyUp(SDL_Scancode p_scancode, bool *keyPressed);
-	void emitInfo(TxtLayer *txtOut);
-	void Integrate(double t, double dt);
+	void verlet(double dt);
+	//void Integrate(double t, double dt);
 	void Interpolate(const double alpha);
 	void Collide();
 	void SelectAnim();
 
 private:
 	int playerID;
+	double xf, yf;	//Forces - these are what the movement commands will apply to player
 	PlayerState playerState;
 	InputMap keyMap;
 	InputCfg *e_inputCfg;	//Do not delete - the e_ prefix denotes external object
 	AnimObj *e_animobj;
-	State playerPosVel;
-	State prevState;
-	State renderState;
-	void accel(const State &state, double t, Derivative &p_output);
+	State pstate;
+	State previous;
+	//State prevState;
+	//State renderState;
+	/*void accel(const State &state, double t, Derivative &p_output);
 	Derivative eval(const State &initial, double t, double dt, const Derivative &d);
-	Derivative eval(const State &initial, double t);
-
-	//Debug information to screen stuff - non essential
-	std::string rendInfo;
-	std::string pposInfo;
-	std::string derivXInfo;
-	std::string derivYInfo;
-	SDL_Rect rendDest;
-	SDL_Rect pposDest;
-	SDL_Rect derivXDest;
-	SDL_Rect derivYDest;
+	Derivative eval(const State &initial, double t);*/
 };
 
 #endif

@@ -28,6 +28,7 @@
 	#include "SDL.h"
 #endif
 #include <iostream>
+#include <vector>
 #include "logger.h"
 #include "sprite.h"
 #include "gfxtext.h"
@@ -69,6 +70,7 @@ int main(int argc, char **argv)
 	fontDim.h = 8;
 
 	SpriteSheet arcadeFont("../assets/drbrfont.bmp", rend, fontDim, 1, 95, 95);
+
 	SpriteSheet mensheet("../assets/men.bmp", rend, "../assets/hatman.def");
 
 	BMPText fontDraw(&arcadeFont);	//Default system font for debug msgs
@@ -81,7 +83,10 @@ int main(int argc, char **argv)
 
 	hatman.defineAnim("../assets/hatmanani.def");	//animation needs definition file which is assigned here
 
-	Player player1(&hatman, &inputConfig, 1);	//Player class is assigned animobject, inputconfig (with the map assigned), and id of player
+	std::vector<Player> players;
+
+	players.push_back(Player(&hatman, &inputConfig, 1));
+	//Player player1(&hatman, &inputConfig, 1);	//Player class is assigned animobject, inputconfig (with the map assigned), and id of player
 
 	SDL_Event ev;
 	SDL_Scancode lastKey;	//Keeps track of last key pressed
@@ -143,12 +148,12 @@ int main(int argc, char **argv)
 				if(waitingForInput)
 				{
 					//do the key assignment here
-					player1.assignInput(lastKey);
+					players[0].assignInput(lastKey);
 					waitingForInput = false;
 				}
 				else if(menuactive)
 				{
-					player1.configInput(lastKey, &waitingForInput, &menuactive);
+					players[0].configInput(lastKey, &waitingForInput, &menuactive);
 				}
 				else
 				{
@@ -165,12 +170,12 @@ int main(int argc, char **argv)
 						default:
 							break;
 						}
-						player1.processKeyDown(lastKey, keyPressed);
+						players[0].processKeyDown(lastKey, keyPressed);
 						keyPressed[lastKey] = true;
 					}
 				}
 				lastInputMsg.assign("Last input: ");
-				lastInputMsg.append(player1.getInputName(lastKey));
+				lastInputMsg.append(players[0].getInputName(lastKey));
 			}
 			if(ev.type == SDL_KEYUP)
 			{
@@ -178,14 +183,13 @@ int main(int argc, char **argv)
 				keyPressed[lastKey] = false;
 				if(!menuactive)
 				{
-					player1.processKeyUp(lastKey, keyPressed);
+					players[0].processKeyUp(lastKey, keyPressed);
 				}
 			}
 		}
 
 		mainText.ReceiveString("Press ESC to view menu", advicePos);
 		mainText.ReceiveString(lastInputMsg, lastInputMsgPos);
-		player1.emitInfo(&mainText);
 
 		//UPDATING SECTION////////////////////////////////////////////////////
 		UpdateTime(sysCounter, currentTime);	//This must be called only once per frame
@@ -215,8 +219,9 @@ int main(int argc, char **argv)
 		while(accumulator >= dt)	//The fixed timestep area is in this while loop
 		{
 			accumulator -= dt;
-			player1.Collide();
-			player1.Integrate(t, dt);
+			players[0].Collide();
+			players[0].verlet(dt);
+			//players[0].Integrate(t, dt);
 			t += dt;
 		}
 
@@ -230,7 +235,8 @@ int main(int argc, char **argv)
 		//DRAWING SECTION/////////////////////////////////////////////////////
 		SDL_RenderClear(rend);
 		//Draw stuff now
-		player1.Interpolate(alpha);	//Was putting this before the renderclear like a dummy
+		players[0].Interpolate(alpha);	//Was putting this before the renderclear like a dummy
+
 		if(menuactive)
 		{
 			inputConfig.showMenu();
