@@ -167,7 +167,11 @@ int main(int argc, char **argv)
 							else
 								menuactive = false;
 							break;
+						case SDL_SCANCODE_F4:
+							//lastInputMsg.assign("I DID NOT PRESS F4!!!!!");
+							break;
 						default:
+							//lastInputMsg.assign("Maybe I pressed something else?");
 							break;
 						}
 						players[0].processKeyDown(lastKey, keyPressed);
@@ -219,6 +223,7 @@ int main(int argc, char **argv)
 		while(accumulator >= dt)	//The fixed timestep area is in this while loop
 		{
 			accumulator -= dt;
+			players[0].applyTimers();
 			players[0].Collide();
 			players[0].verlet(dt);
 			//players[0].Integrate(t, dt);
@@ -246,7 +251,7 @@ int main(int argc, char **argv)
 		mainText.Clear();
 		//End draw stuff
 		SDL_RenderPresent(rend);
-		//SDL_Delay(5);	//Don't peg the CPU
+		//SDL_Delay(200);	//Don't peg the CPU
 	}
 
 	//Deinitialization

@@ -11,6 +11,7 @@ Player::Player(AnimObj *p_animobj, InputCfg *p_inputCfg, int p_id)
 	pstate.xv = pstate.yv = pstate.xa = pstate.ya = 0;
 	pstate.mass = 0.1;
 	xf = yf = 0;
+	xtimerStarted = ytimerStarted = false;
 
 	//renderState = playerPosVel;	//only renderstate talks to the renderer
 
@@ -63,6 +64,8 @@ void Player::processKeyDown(SDL_Scancode p_scancode, bool *keyPressed)
 		else
 		{
 			xf = -DEF_FORCE;
+			xtimer = SDL_GetPerformanceCounter();
+			xtimerStarted = true;
 		}
 		break;
 	case MOVE_RIGHT:
@@ -73,6 +76,8 @@ void Player::processKeyDown(SDL_Scancode p_scancode, bool *keyPressed)
 		else
 		{
 			xf = DEF_FORCE;
+			xtimer = SDL_GetPerformanceCounter();
+			xtimerStarted = true;
 		}
 		break;
 	case MOVE_UP:
@@ -83,6 +88,8 @@ void Player::processKeyDown(SDL_Scancode p_scancode, bool *keyPressed)
 		else
 		{
 			yf = -DEF_FORCE;
+			ytimer = SDL_GetPerformanceCounter();
+			ytimerStarted = true;
 		}
 		break;
 	case MOVE_DOWN:
@@ -93,6 +100,8 @@ void Player::processKeyDown(SDL_Scancode p_scancode, bool *keyPressed)
 		else
 		{
 			yf = DEF_FORCE;
+			ytimer = SDL_GetPerformanceCounter();
+			ytimerStarted = true;
 		}
 		break;
 	case JUMP:
@@ -110,6 +119,8 @@ void Player::processKeyUp(SDL_Scancode p_scancode, bool *keyPressed)
 		if(keyPressed[keyMap.returnScancode(MOVE_RIGHT)] == true)
 		{
 			xf = DEF_FORCE;
+			xtimer = SDL_GetPerformanceCounter();
+			xtimerStarted = true;
 		}
 		else
 		{
@@ -120,6 +131,8 @@ void Player::processKeyUp(SDL_Scancode p_scancode, bool *keyPressed)
 		if(keyPressed[keyMap.returnScancode(MOVE_LEFT)] == true)
 		{
 			xf = -DEF_FORCE;
+			xtimer = SDL_GetPerformanceCounter();
+			xtimerStarted = true;
 		}
 		else
 		{
@@ -130,6 +143,8 @@ void Player::processKeyUp(SDL_Scancode p_scancode, bool *keyPressed)
 		if(keyPressed[keyMap.returnScancode(MOVE_DOWN)] == true)
 		{
 			yf = DEF_FORCE;
+			ytimer = SDL_GetPerformanceCounter();
+			ytimerStarted = true;
 		}
 		else
 		{
@@ -140,6 +155,8 @@ void Player::processKeyUp(SDL_Scancode p_scancode, bool *keyPressed)
 		if(keyPressed[keyMap.returnScancode(MOVE_UP)] == true)
 		{
 			yf = -DEF_FORCE;
+			ytimer = SDL_GetPerformanceCounter();
+			ytimerStarted = true;
 		}
 		else
 		{
@@ -157,6 +174,14 @@ void Player::verlet(double dt)
 {
 	previous = pstate;
 
+	//double dragCoeff = 0.5;
+
+	//Apply various modifiers to force before we use it
+
+	//xf *= dragCoeff * pstate.xv * pstate.xv;
+
+	//Modifiers done
+
 	double lastxa = pstate.xa;
 
 	pstate.x += pstate.xv * dt + (0.5f * lastxa * dt * dt);
@@ -168,6 +193,13 @@ void Player::verlet(double dt)
 	pstate.xa = newxa;
 
 	pstate.xv += avgxa * dt;
+
+	//Hacks for now in the absence of good physics answers
+
+	if(pstate.xv >= MAX_PLAYER_VEL)
+		pstate.xv = MAX_PLAYER_VEL;
+	if(xf == 0)
+		pstate.xv *= FORCEFALLOFFFACTOR;
 }
 
 //void Player::Integrate(double t, double dt)
@@ -241,6 +273,19 @@ void Player::Interpolate(const double alpha)
 
 void Player::Collide()
 {
+}
+
+void Player::applyTimers()
+{
+	//if(xtimerStarted)
+	//{
+	//	xdt = (double)(SDL_GetPerformanceCounter() - xtimer)/SDL_GetPerformanceFrequency();
+	//	if(xdt >= FORCEFALLOFFTIME)
+	//	{
+	//		xtimerStarted = false;
+	//		xf = ZERO_FORCE;
+	//	}
+	//}
 }
 
 void Player::SelectAnim()

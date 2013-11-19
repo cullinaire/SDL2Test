@@ -16,6 +16,8 @@
 //lastSample must be in the form of the output from SDL_GetPerformanceCounter()
 //The conversion into actual seconds is only done outside the function to
 //preserve the stability of the counter over a long period
+//counter is the cumulative time since program start
+//lastSample is the snapshot time when function was last called
 void UpdateTime(Uint64 &counter, Uint64 &lastSample);
 
 #endif

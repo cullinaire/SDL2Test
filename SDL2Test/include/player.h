@@ -13,7 +13,10 @@
 #define PLAYER_INITIAL_X	32
 #define PLAYER_INITIAL_Y	32
 #define ZERO_FORCE			0
-#define DEF_FORCE			5
+#define DEF_FORCE			100
+#define FORCEFALLOFFTIME	0.2
+#define MAX_PLAYER_VEL		100
+#define FORCEFALLOFFFACTOR	0.05
 
 #ifdef __linux
 	#include "SDL2/SDL.h"
@@ -62,11 +65,15 @@ public:
 	//void Integrate(double t, double dt);
 	void Interpolate(const double alpha);
 	void Collide();
+	void applyTimers();
 	void SelectAnim();
 
 private:
 	int playerID;
 	double xf, yf;	//Forces - these are what the movement commands will apply to player
+	bool xtimerStarted, ytimerStarted;
+	Uint64 xtimer, ytimer;	//used to determine when to modify force after keypress
+	double xdt, ydt;
 	PlayerState playerState;
 	InputMap keyMap;
 	InputCfg *e_inputCfg;	//Do not delete - the e_ prefix denotes external object
