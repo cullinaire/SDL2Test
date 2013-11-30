@@ -223,8 +223,8 @@ int main(int argc, char **argv)
 		while(accumulator >= dt)	//The fixed timestep area is in this while loop
 		{
 			accumulator -= dt;
-			players[0].applyTimers();
 			players[0].Collide();
+			//players[0].modifyForces(t+dt);
 			players[0].verlet(dt);
 			//players[0].Integrate(t, dt);
 			t += dt;

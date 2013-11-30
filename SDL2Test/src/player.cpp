@@ -5,13 +5,24 @@ Player::Player(AnimObj *p_animobj, InputCfg *p_inputCfg, int p_id)
 	playerID = p_id;
 	playerState.alive = true;
 	playerState.moving = false;
+	playerState.leftpressed = false;
+	playerState.rightpressed = false;
+
+	pstate.pos.set(PLAYER_INITIAL_X, PLAYER_INITIAL_Y, 0);
+	pstate.vel.zero();
+	pstate.acc.zero();
 
 	pstate.x = PLAYER_INITIAL_X;
 	pstate.y = PLAYER_INITIAL_Y;
-	pstate.xv = pstate.yv = pstate.xa = pstate.ya = 0;
+	pstate.xv = 50;
+	pstate.yv = pstate.xa = pstate.ya = 0;
+
 	pstate.mass = 0.1;
-	xf = yf = 0;
-	xtimerStarted = ytimerStarted = false;
+
+	moveForce.zero();
+
+	xf = 0;
+	yf = 0;
 
 	//renderState = playerPosVel;	//only renderstate talks to the renderer
 
@@ -59,29 +70,31 @@ void Player::processKeyDown(SDL_Scancode p_scancode, bool *keyPressed)
 	case MOVE_LEFT:
 		if(keyPressed[keyMap.returnScancode(MOVE_RIGHT)] == true)
 		{
+			moveForce[0] = ZERO_FORCE;
 			xf = ZERO_FORCE;
 		}
 		else
 		{
+			moveForce[0] = -DEF_FORCE;
 			xf = -DEF_FORCE;
-			xtimer = SDL_GetPerformanceCounter();
-			xtimerStarted = true;
 		}
+		playerState.leftpressed = true;
 		break;
 	case MOVE_RIGHT:
 		if(keyPressed[keyMap.returnScancode(MOVE_LEFT)] == true)
 		{
+			moveForce[0] = ZERO_FORCE;
 			xf = ZERO_FORCE;
 		}
 		else
 		{
+			moveForce[0] = DEF_FORCE;
 			xf = DEF_FORCE;
-			xtimer = SDL_GetPerformanceCounter();
-			xtimerStarted = true;
 		}
+		playerState.rightpressed = true;
 		break;
 	case MOVE_UP:
-		if(keyPressed[keyMap.returnScancode(MOVE_DOWN)] == true)
+		/*if(keyPressed[keyMap.returnScancode(MOVE_DOWN)] == true)
 		{
 			yf = ZERO_FORCE;
 		}
@@ -90,19 +103,19 @@ void Player::processKeyDown(SDL_Scancode p_scancode, bool *keyPressed)
 			yf = -DEF_FORCE;
 			ytimer = SDL_GetPerformanceCounter();
 			ytimerStarted = true;
-		}
+		}*/
 		break;
 	case MOVE_DOWN:
-		if(keyPressed[keyMap.returnScancode(MOVE_UP)] == true)
-		{
-			yf = ZERO_FORCE;
-		}
-		else
-		{
-			yf = DEF_FORCE;
-			ytimer = SDL_GetPerformanceCounter();
-			ytimerStarted = true;
-		}
+		//if(keyPressed[keyMap.returnScancode(MOVE_UP)] == true)
+		//{
+		//	yf = ZERO_FORCE;
+		//}
+		//else
+		//{
+		//	yf = DEF_FORCE;
+		//	ytimer = SDL_GetPerformanceCounter();
+		//	ytimerStarted = true;
+		//}
 		break;
 	case JUMP:
 		break;
@@ -118,50 +131,52 @@ void Player::processKeyUp(SDL_Scancode p_scancode, bool *keyPressed)
 	case MOVE_LEFT:
 		if(keyPressed[keyMap.returnScancode(MOVE_RIGHT)] == true)
 		{
+			moveForce[0] = DEF_FORCE;
 			xf = DEF_FORCE;
-			xtimer = SDL_GetPerformanceCounter();
-			xtimerStarted = true;
 		}
 		else
 		{
+			moveForce[0] = ZERO_FORCE;
 			xf = ZERO_FORCE;
 		}
+		playerState.leftpressed = false;
 		break;
 	case MOVE_RIGHT:
 		if(keyPressed[keyMap.returnScancode(MOVE_LEFT)] == true)
 		{
+			moveForce[0] = -DEF_FORCE;
 			xf = -DEF_FORCE;
-			xtimer = SDL_GetPerformanceCounter();
-			xtimerStarted = true;
 		}
 		else
 		{
+			moveForce[0] = ZERO_FORCE;
 			xf = ZERO_FORCE;
 		}
+		playerState.rightpressed = false;
 		break;
 	case MOVE_UP:
-		if(keyPressed[keyMap.returnScancode(MOVE_DOWN)] == true)
-		{
-			yf = DEF_FORCE;
-			ytimer = SDL_GetPerformanceCounter();
-			ytimerStarted = true;
-		}
-		else
-		{
-			yf = ZERO_FORCE;
-		}
+		//if(keyPressed[keyMap.returnScancode(MOVE_DOWN)] == true)
+		//{
+		//	yf = DEF_FORCE;
+		//	ytimer = SDL_GetPerformanceCounter();
+		//	ytimerStarted = true;
+		//}
+		//else
+		//{
+		//	yf = ZERO_FORCE;
+		//}
 		break;
 	case MOVE_DOWN:
-		if(keyPressed[keyMap.returnScancode(MOVE_UP)] == true)
-		{
-			yf = -DEF_FORCE;
-			ytimer = SDL_GetPerformanceCounter();
-			ytimerStarted = true;
-		}
-		else
-		{
-			yf = ZERO_FORCE;
-		}
+		//if(keyPressed[keyMap.returnScancode(MOVE_UP)] == true)
+		//{
+		//	yf = -DEF_FORCE;
+		//	ytimer = SDL_GetPerformanceCounter();
+		//	ytimerStarted = true;
+		//}
+		//else
+		//{
+		//	yf = ZERO_FORCE;
+		//}
 		break;
 	case JUMP:
 		break;
@@ -170,36 +185,43 @@ void Player::processKeyUp(SDL_Scancode p_scancode, bool *keyPressed)
 	}
 }
 
+//void Player::modifyForces(double t)
+//{
+//	if(playerState.rightpressed)
+//	{
+//	}
+//	else if(playerState.rightpressed)
+//	{
+//	}
+//}
+
 void Player::verlet(double dt)
 {
 	previous = pstate;
 
-	//double dragCoeff = 0.5;
-
-	//Apply various modifiers to force before we use it
-
-	//xf *= dragCoeff * pstate.xv * pstate.xv;
-
-	//Modifiers done
+	cml::vector3d lastAcc = pstate.acc;
 
 	double lastxa = pstate.xa;
 
+	pstate.pos += pstate.vel * dt + (0.5f * lastAcc * dt * dt);
+
 	pstate.x += pstate.xv * dt + (0.5f * lastxa * dt * dt);
+
+	cml::vector3d newAcc = moveForce / pstate.mass;
 
 	double newxa = xf / pstate.mass;
 	
+	cml::vector3d avgAcc = (lastAcc + newAcc) / 2;
+
 	double avgxa = (lastxa + newxa) / 2;
+
+	pstate.acc = newAcc;
 
 	pstate.xa = newxa;
 
+	pstate.vel += avgAcc * dt;
+
 	pstate.xv += avgxa * dt;
-
-	//Hacks for now in the absence of good physics answers
-
-	if(pstate.xv >= MAX_PLAYER_VEL)
-		pstate.xv = MAX_PLAYER_VEL;
-	if(xf == 0)
-		pstate.xv *= FORCEFALLOFFFACTOR;
 }
 
 //void Player::Integrate(double t, double dt)
@@ -226,7 +248,8 @@ void Player::verlet(double dt)
 
 void Player::Interpolate(const double alpha)
 {
-	double rendx = pstate.x*alpha + previous.x * (1.0 - alpha);
+	//double rendx = pstate.x*alpha + previous.x * (1.0 - alpha);
+	double rendx = pstate.pos[0]*alpha + previous.pos[0]*(1.0 - alpha);
 	double rendy = 32;	//for now
 
 	e_animobj->updateLoc(rendx, rendy);
