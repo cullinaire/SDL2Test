@@ -67,6 +67,7 @@ public:
 	void Collide();
 	void applyTimers();
 	void SelectAnim();
+	void reportVel(std::string &velstr);
 
 private:
 	int playerID;

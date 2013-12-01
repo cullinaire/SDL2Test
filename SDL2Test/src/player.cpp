@@ -271,21 +271,20 @@ void Player::applyTimers()
 
 void Player::SelectAnim()
 {
-	//if()
-	//{
-	//	playerState.moving = false;
-	//}
-	//else
-	//{
-	//	playerState.moving = true;
-	//}
+	if(pstate.vel.length() > 1)
+	{
+		e_animobj->startAnim(0);
+		if(pstate.vel.length() < 50)
+			e_animobj->changeSpeed(2);
+		else
+			e_animobj->changeSpeed(1);
+	}
+	else
+		e_animobj->startAnim(1);
+}
 
-	//if(playerState.moving == true)
-	//{
-	//	e_animobj->startAnim(0);	//walking anim
-	//}
-	//else
-	//{
-	//	e_animobj->startAnim(1);	//standing anim
-	//}
+void Player::reportVel(std::string &velstr)
+{
+	velstr.assign("Velocity: ");
+	velstr.append(std::to_string(pstate.vel.length()));
 }

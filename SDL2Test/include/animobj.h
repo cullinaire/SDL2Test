@@ -39,6 +39,7 @@ public:
 	void defineAnim(std::string anifilename);
 	void startAnim(int index);
 	void playAnim();
+	void changeSpeed(double mult);
 	void updateLoc(int x, int y);
 
 private:
@@ -46,6 +47,7 @@ private:
 	bool playing;
 	bool forwards;		//direction animation is playing in - only used if backNforth is true
 	bool isbNf;		//mode is back and forth
+	double speedFactor;	//Multiplied by frame duration to vary playback speed
 	Uint32 elapsed;
 	int curAnimIndex;
 	SDL_Rect dst;

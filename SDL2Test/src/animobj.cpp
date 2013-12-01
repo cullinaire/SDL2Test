@@ -8,6 +8,7 @@ AnimObj::AnimObj(SpriteSheet *p_animSheet)
 	isbNf = false;
 	dst.x = 0;
 	dst.y = 0;
+	speedFactor = 1;
 }
 
 void AnimObj::defineAnim(std::string anifilename)
@@ -96,6 +97,7 @@ void AnimObj::defineAnim(std::string anifilename)
 
 void AnimObj::startAnim(int index)
 {
+	speedFactor = 1;
 	playing = true;
 	if(curAnimIndex != index)	//Prevent repeat calls from interrupting animation
 	{
@@ -118,7 +120,7 @@ void AnimObj::playAnim()
 {
 	if(playing)
 	{
-		if(SDL_GetTicks() - elapsed >= drawFrame->duration)
+		if(SDL_GetTicks() - elapsed >= drawFrame->duration*speedFactor)
 		{
 			elapsed = SDL_GetTicks();
 			//I can't use iterators here because they just simply will not work
@@ -159,6 +161,11 @@ void AnimObj::playAnim()
 		animSheet->getCellSize(drawFrame->frameID, dst);
 		animSheet->Draw(drawFrame->frameID + selAnim->offset, dst);
 	}
+}
+
+void AnimObj::changeSpeed(double mult)
+{
+	speedFactor = mult;
 }
 
 void AnimObj::updateLoc(int x, int y)

@@ -128,6 +128,12 @@ int main(int argc, char **argv)
 	timePos.x = 16;
 	timePos.y = 400;
 
+	std::string vel;
+
+	SDL_Rect velPos;
+	velPos.x = 16;
+	velPos.y = 416;
+
 	double t = 0.0f;
 	const double dt = 0.01f;	//fixed timestep for physics updates
 
@@ -226,7 +232,9 @@ int main(int argc, char **argv)
 			players[0].Collide();
 			players[0].modifyForces(t+dt);
 			players[0].verlet(dt);
-			//players[0].Integrate(t, dt);
+			players[0].SelectAnim();
+			players[0].reportVel(vel);
+			mainText.ReceiveString(vel, velPos);
 			t += dt;
 		}
 
