@@ -12,23 +12,12 @@ Player::Player(AnimObj *p_animobj, InputCfg *p_inputCfg, int p_id)
 	pstate.vel.zero();
 	pstate.acc.zero();
 
-	pstate.x = PLAYER_INITIAL_X;
-	pstate.y = PLAYER_INITIAL_Y;
-	pstate.xv = 50;
-	pstate.yv = pstate.xa = pstate.ya = 0;
-
 	pstate.mass = 0.1;
 
 	moveForce.zero();
 
-	xf = 0;
-	yf = 0;
-
-	//renderState = playerPosVel;	//only renderstate talks to the renderer
-
 	e_inputCfg = p_inputCfg;
 	e_animobj = p_animobj;
-	//e_animobj->updateLoc(renderState.x, renderState.y);
 
 	e_animobj->startAnim(1);
 	
@@ -61,22 +50,14 @@ void Player::processKeyDown(SDL_Scancode p_scancode, bool *keyPressed)
 {
 	switch(keyMap.returnInput(p_scancode))
 	{
-		//Thinking about implementing a Spelunky style approach to simultaneous
-		//keydowns for left and right move inputs. That is, if one is pressed
-		//while the other was already being held down, then the response is for
-		//the player to stop in his tracks, without turning around.
-		//If a key is released, the player begins moving in the direction of the
-		//key that is still held down.
 	case MOVE_LEFT:
 		if(keyPressed[keyMap.returnScancode(MOVE_RIGHT)] == true)
 		{
 			moveForce[0] = ZERO_FORCE;
-			xf = ZERO_FORCE;
 		}
 		else
 		{
 			moveForce[0] = -DEF_FORCE;
-			xf = -DEF_FORCE;
 		}
 		playerState.leftpressed = true;
 		break;
@@ -84,38 +65,32 @@ void Player::processKeyDown(SDL_Scancode p_scancode, bool *keyPressed)
 		if(keyPressed[keyMap.returnScancode(MOVE_LEFT)] == true)
 		{
 			moveForce[0] = ZERO_FORCE;
-			xf = ZERO_FORCE;
 		}
 		else
 		{
 			moveForce[0] = DEF_FORCE;
-			xf = DEF_FORCE;
 		}
 		playerState.rightpressed = true;
 		break;
 	case MOVE_UP:
-		/*if(keyPressed[keyMap.returnScancode(MOVE_DOWN)] == true)
+		if(keyPressed[keyMap.returnScancode(MOVE_DOWN)] == true)
 		{
-			yf = ZERO_FORCE;
+			moveForce[1] = ZERO_FORCE;
 		}
 		else
 		{
-			yf = -DEF_FORCE;
-			ytimer = SDL_GetPerformanceCounter();
-			ytimerStarted = true;
-		}*/
+			moveForce[1] = -DEF_FORCE;
+		}
 		break;
 	case MOVE_DOWN:
-		//if(keyPressed[keyMap.returnScancode(MOVE_UP)] == true)
-		//{
-		//	yf = ZERO_FORCE;
-		//}
-		//else
-		//{
-		//	yf = DEF_FORCE;
-		//	ytimer = SDL_GetPerformanceCounter();
-		//	ytimerStarted = true;
-		//}
+		if(keyPressed[keyMap.returnScancode(MOVE_UP)] == true)
+		{
+			moveForce[1] = ZERO_FORCE;
+		}
+		else
+		{
+			moveForce[1] = DEF_FORCE;
+		}
 		break;
 	case JUMP:
 		break;
@@ -132,12 +107,10 @@ void Player::processKeyUp(SDL_Scancode p_scancode, bool *keyPressed)
 		if(keyPressed[keyMap.returnScancode(MOVE_RIGHT)] == true)
 		{
 			moveForce[0] = DEF_FORCE;
-			xf = DEF_FORCE;
 		}
 		else
 		{
 			moveForce[0] = ZERO_FORCE;
-			xf = ZERO_FORCE;
 		}
 		playerState.leftpressed = false;
 		break;
@@ -145,38 +118,32 @@ void Player::processKeyUp(SDL_Scancode p_scancode, bool *keyPressed)
 		if(keyPressed[keyMap.returnScancode(MOVE_LEFT)] == true)
 		{
 			moveForce[0] = -DEF_FORCE;
-			xf = -DEF_FORCE;
 		}
 		else
 		{
 			moveForce[0] = ZERO_FORCE;
-			xf = ZERO_FORCE;
 		}
 		playerState.rightpressed = false;
 		break;
 	case MOVE_UP:
-		//if(keyPressed[keyMap.returnScancode(MOVE_DOWN)] == true)
-		//{
-		//	yf = DEF_FORCE;
-		//	ytimer = SDL_GetPerformanceCounter();
-		//	ytimerStarted = true;
-		//}
-		//else
-		//{
-		//	yf = ZERO_FORCE;
-		//}
+		if(keyPressed[keyMap.returnScancode(MOVE_DOWN)] == true)
+		{
+			moveForce[1] = DEF_FORCE;
+		}
+		else
+		{
+			moveForce[1] = ZERO_FORCE;
+		}
 		break;
 	case MOVE_DOWN:
-		//if(keyPressed[keyMap.returnScancode(MOVE_UP)] == true)
-		//{
-		//	yf = -DEF_FORCE;
-		//	ytimer = SDL_GetPerformanceCounter();
-		//	ytimerStarted = true;
-		//}
-		//else
-		//{
-		//	yf = ZERO_FORCE;
-		//}
+		if(keyPressed[keyMap.returnScancode(MOVE_UP)] == true)
+		{
+			moveForce[1] = -DEF_FORCE;
+		}
+		else
+		{
+			moveForce[1] = ZERO_FORCE;
+		}
 		break;
 	case JUMP:
 		break;
@@ -185,15 +152,18 @@ void Player::processKeyUp(SDL_Scancode p_scancode, bool *keyPressed)
 	}
 }
 
-//void Player::modifyForces(double t)
-//{
-//	if(playerState.rightpressed)
-//	{
-//	}
-//	else if(playerState.rightpressed)
-//	{
-//	}
-//}
+void Player::modifyForces(double t)
+{
+	//if(playerState.rightpressed)
+	//{
+	//}
+	//else if(playerState.rightpressed)
+	//{
+	//}
+	/*elapsedTime = 0;
+	elapsedTime += t - oldTime;*/
+	pstate.vel *= DEF_FRIC;
+}
 
 void Player::verlet(double dt)
 {
@@ -201,27 +171,15 @@ void Player::verlet(double dt)
 
 	cml::vector3d lastAcc = pstate.acc;
 
-	double lastxa = pstate.xa;
-
 	pstate.pos += pstate.vel * dt + (0.5f * lastAcc * dt * dt);
-
-	pstate.x += pstate.xv * dt + (0.5f * lastxa * dt * dt);
 
 	cml::vector3d newAcc = moveForce / pstate.mass;
 
-	double newxa = xf / pstate.mass;
-	
 	cml::vector3d avgAcc = (lastAcc + newAcc) / 2;
-
-	double avgxa = (lastxa + newxa) / 2;
 
 	pstate.acc = newAcc;
 
-	pstate.xa = newxa;
-
 	pstate.vel += avgAcc * dt;
-
-	pstate.xv += avgxa * dt;
 }
 
 //void Player::Integrate(double t, double dt)
@@ -250,7 +208,7 @@ void Player::Interpolate(const double alpha)
 {
 	//double rendx = pstate.x*alpha + previous.x * (1.0 - alpha);
 	double rendx = pstate.pos[0]*alpha + previous.pos[0]*(1.0 - alpha);
-	double rendy = 32;	//for now
+	double rendy = pstate.pos[1]*alpha + previous.pos[1]*(1.0 - alpha);
 
 	e_animobj->updateLoc(rendx, rendy);
 	e_animobj->playAnim();

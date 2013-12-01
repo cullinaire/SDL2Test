@@ -224,7 +224,7 @@ int main(int argc, char **argv)
 		{
 			accumulator -= dt;
 			players[0].Collide();
-			//players[0].modifyForces(t+dt);
+			players[0].modifyForces(t+dt);
 			players[0].verlet(dt);
 			//players[0].Integrate(t, dt);
 			t += dt;
