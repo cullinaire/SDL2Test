@@ -176,6 +176,8 @@ void Player::modifyForces(double t)
 			moveForce[0] = 0;
 		}
 	}
+	else
+		moveForce[0] = 0;	//Don't forget the null condition!
 
 	if(playerState.downpressed)
 	{
@@ -193,6 +195,8 @@ void Player::modifyForces(double t)
 			moveForce[1] = 0;
 		}
 	}
+	else
+		moveForce[1] = 0;	//likewise...
 
 	if(moveForce.length() > 0)	//Convert to unit vector then scale by desired magnitude
 	{
