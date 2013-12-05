@@ -12,7 +12,6 @@
 
 #define PLAYER_INITIAL_X	32
 #define PLAYER_INITIAL_Y	32
-#define ZERO_FORCE			0
 #define DEF_FORCE			100
 #define DEF_FRIC			0.95
 
@@ -83,6 +82,7 @@ private:
 	State previous;
 	double elapsedTime;
 	double oldTime;
+
 	/*void accel(const State &state, double t, Derivative &p_output);
 	Derivative eval(const State &initial, double t, double dt, const Derivative &d);
 	Derivative eval(const State &initial, double t);*/

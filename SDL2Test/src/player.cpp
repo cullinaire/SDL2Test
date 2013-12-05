@@ -161,16 +161,53 @@ void Player::processKeyUp(SDL_Scancode p_scancode, bool *keyPressed)
 void Player::modifyForces(double t)
 {
 	if(playerState.rightpressed)
-		moveForce[0] = DEF_FORCE;
-	else if(!playerState.rightpressed)
-		moveForce[0] = ZERO_FORCE;
-	if(playerState.downpressed)
-		moveForce[1] = DEF_FORCE;
-	else if(!playerState.downpressed)
-		moveForce[1] = ZERO_FORCE;
-	//moveForce.normalize();
+	{
+		moveForce[0] = 1;
+		if(playerState.leftpressed)	//implies left is already held down when right is pressed
+		{
+			moveForce[0] = 0;	//Then the response is to zero the horizontal force
+		}
+	}
+	else if(playerState.leftpressed)	//The else is critical!
+	{
+		moveForce[0] = -1;
+		if(playerState.rightpressed)
+		{
+			moveForce[0] = 0;
+		}
+	}
 
-	pstate.vel *= DEF_FRIC;
+	if(playerState.downpressed)
+	{
+		moveForce[1] = 1;
+		if(playerState.uppressed)
+		{
+			moveForce[1] = 0;
+		}
+	}
+	else if(playerState.uppressed)
+	{
+		moveForce[1] = -1;
+		if(playerState.downpressed)
+		{
+			moveForce[1] = 0;
+		}
+	}
+
+	if(moveForce.length() > 0)	//Convert to unit vector then scale by desired magnitude
+	{
+		moveForce.normalize();
+		if(!playerState.downpressed && !playerState.uppressed && !playerState.leftpressed && !playerState.rightpressed)
+		{
+			moveForce.zero();	//If no movement keys are pressed, stop applying force
+		}
+		else
+		{
+			moveForce *= DEF_FORCE;
+		}
+	}
+
+	pstate.vel *= DEF_FRIC;	//Not really a force here, but apply friction to slow to stop
 }
 
 void Player::verlet(double dt)
