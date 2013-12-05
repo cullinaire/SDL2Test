@@ -34,6 +34,8 @@ typedef struct PlayerState
 	bool moving;
 	bool leftpressed;
 	bool rightpressed;
+	bool uppressed;
+	bool downpressed;
 } PlayerState;
 
 typedef struct State

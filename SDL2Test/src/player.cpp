@@ -7,6 +7,8 @@ Player::Player(AnimObj *p_animobj, InputCfg *p_inputCfg, int p_id)
 	playerState.moving = false;
 	playerState.leftpressed = false;
 	playerState.rightpressed = false;
+	playerState.downpressed = false;
+	playerState.uppressed = false;
 
 	pstate.pos.set(PLAYER_INITIAL_X, PLAYER_INITIAL_Y, 0);
 	pstate.vel.zero();
@@ -51,46 +53,48 @@ void Player::processKeyDown(SDL_Scancode p_scancode, bool *keyPressed)
 	switch(keyMap.returnInput(p_scancode))
 	{
 	case MOVE_LEFT:
-		if(keyPressed[keyMap.returnScancode(MOVE_RIGHT)] == true)
-		{
-			moveForce[0] = ZERO_FORCE;
-		}
-		else
-		{
-			moveForce[0] = -DEF_FORCE;
-		}
+		//if(keyPressed[keyMap.returnScancode(MOVE_RIGHT)] == true)
+		//{
+		//	moveForce[0] = ZERO_FORCE;
+		//}
+		//else
+		//{
+		//	moveForce[0] = -DEF_FORCE;
+		//}
 		playerState.leftpressed = true;
 		break;
 	case MOVE_RIGHT:
-		if(keyPressed[keyMap.returnScancode(MOVE_LEFT)] == true)
-		{
-			moveForce[0] = ZERO_FORCE;
-		}
-		else
-		{
-			moveForce[0] = DEF_FORCE;
-		}
+		//if(keyPressed[keyMap.returnScancode(MOVE_LEFT)] == true)
+		//{
+		//	moveForce[0] = ZERO_FORCE;
+		//}
+		//else
+		//{
+		//	moveForce[0] = DEF_FORCE;
+		//}
 		playerState.rightpressed = true;
 		break;
 	case MOVE_UP:
-		if(keyPressed[keyMap.returnScancode(MOVE_DOWN)] == true)
-		{
-			moveForce[1] = ZERO_FORCE;
-		}
-		else
-		{
-			moveForce[1] = -DEF_FORCE;
-		}
+		//if(keyPressed[keyMap.returnScancode(MOVE_DOWN)] == true)
+		//{
+		//	moveForce[1] = ZERO_FORCE;
+		//}
+		//else
+		//{
+		//	moveForce[1] = -DEF_FORCE;
+		//}
+		playerState.uppressed = true;
 		break;
 	case MOVE_DOWN:
-		if(keyPressed[keyMap.returnScancode(MOVE_UP)] == true)
-		{
-			moveForce[1] = ZERO_FORCE;
-		}
-		else
-		{
-			moveForce[1] = DEF_FORCE;
-		}
+		//if(keyPressed[keyMap.returnScancode(MOVE_UP)] == true)
+		//{
+		//	moveForce[1] = ZERO_FORCE;
+		//}
+		//else
+		//{
+		//	moveForce[1] = DEF_FORCE;
+		//}
+		playerState.downpressed = true;
 		break;
 	case JUMP:
 		break;
@@ -104,46 +108,48 @@ void Player::processKeyUp(SDL_Scancode p_scancode, bool *keyPressed)
 	switch(keyMap.returnInput(p_scancode))
 	{
 	case MOVE_LEFT:
-		if(keyPressed[keyMap.returnScancode(MOVE_RIGHT)] == true)
-		{
-			moveForce[0] = DEF_FORCE;
-		}
-		else
-		{
-			moveForce[0] = ZERO_FORCE;
-		}
+		//if(keyPressed[keyMap.returnScancode(MOVE_RIGHT)] == true)
+		//{
+		//	moveForce[0] = DEF_FORCE;
+		//}
+		//else
+		//{
+		//	moveForce[0] = ZERO_FORCE;
+		//}
 		playerState.leftpressed = false;
 		break;
 	case MOVE_RIGHT:
-		if(keyPressed[keyMap.returnScancode(MOVE_LEFT)] == true)
-		{
-			moveForce[0] = -DEF_FORCE;
-		}
-		else
-		{
-			moveForce[0] = ZERO_FORCE;
-		}
+		//if(keyPressed[keyMap.returnScancode(MOVE_LEFT)] == true)
+		//{
+		//	moveForce[0] = -DEF_FORCE;
+		//}
+		//else
+		//{
+		//	moveForce[0] = ZERO_FORCE;
+		//}
 		playerState.rightpressed = false;
 		break;
 	case MOVE_UP:
-		if(keyPressed[keyMap.returnScancode(MOVE_DOWN)] == true)
-		{
-			moveForce[1] = DEF_FORCE;
-		}
-		else
-		{
-			moveForce[1] = ZERO_FORCE;
-		}
+		//if(keyPressed[keyMap.returnScancode(MOVE_DOWN)] == true)
+		//{
+		//	moveForce[1] = DEF_FORCE;
+		//}
+		//else
+		//{
+		//	moveForce[1] = ZERO_FORCE;
+		//}
+		playerState.uppressed = false;
 		break;
 	case MOVE_DOWN:
-		if(keyPressed[keyMap.returnScancode(MOVE_UP)] == true)
-		{
-			moveForce[1] = -DEF_FORCE;
-		}
-		else
-		{
-			moveForce[1] = ZERO_FORCE;
-		}
+		//if(keyPressed[keyMap.returnScancode(MOVE_UP)] == true)
+		//{
+		//	moveForce[1] = -DEF_FORCE;
+		//}
+		//else
+		//{
+		//	moveForce[1] = ZERO_FORCE;
+		//}
+		playerState.downpressed = false;
 		break;
 	case JUMP:
 		break;
@@ -154,14 +160,16 @@ void Player::processKeyUp(SDL_Scancode p_scancode, bool *keyPressed)
 
 void Player::modifyForces(double t)
 {
-	//if(playerState.rightpressed)
-	//{
-	//}
-	//else if(playerState.rightpressed)
-	//{
-	//}
-	/*elapsedTime = 0;
-	elapsedTime += t - oldTime;*/
+	if(playerState.rightpressed)
+		moveForce[0] = DEF_FORCE;
+	else if(!playerState.rightpressed)
+		moveForce[0] = ZERO_FORCE;
+	if(playerState.downpressed)
+		moveForce[1] = DEF_FORCE;
+	else if(!playerState.downpressed)
+		moveForce[1] = ZERO_FORCE;
+	//moveForce.normalize();
+
 	pstate.vel *= DEF_FRIC;
 }
 
@@ -274,10 +282,12 @@ void Player::SelectAnim()
 	if(pstate.vel.length() > 1)
 	{
 		e_animobj->startAnim(0);
-		if(pstate.vel.length() < 50)
+		if(pstate.vel.length() < 30)
 			e_animobj->changeSpeed(2);
-		else
+		else if(pstate.vel.length() < 100)
 			e_animobj->changeSpeed(1);
+		else
+			e_animobj->changeSpeed(0.5);
 	}
 	else
 		e_animobj->startAnim(1);
