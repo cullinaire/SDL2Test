@@ -5,8 +5,13 @@ Menu::Menu(TxtLayer *txtOut)
 	cursor = items.begin();
 	cursorText.assign(">");
 	output = txtOut;
-	//index = 0;
-	//numItems = 0;
+	title.clear();
+}
+
+void Menu::SetTitle(std::string title)
+{
+	this->title.clear();
+	this->title = title;
 }
 
 void Menu::InsertItem(std::string item, int index, BMPText *p_font)
@@ -33,6 +38,10 @@ void Menu::OutputMenu(int x, int y)
 {
 	int menuX = x;
 	int menuY = y;
+
+	output->ReceiveString(title, menuX, menuY, items.begin()->font);	//menu title
+
+	menuY += 2*(items.begin()->font->getCharSize().h);
 
 	for(itr = items.begin();itr != items.end();++itr)
 	{

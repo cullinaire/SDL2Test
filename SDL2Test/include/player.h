@@ -56,7 +56,8 @@ class Player
 {
 public:
 	Player(AnimObj *p_animobj, InputCfg *p_inputCfg, int p_id);
-	void configInput(SDL_Scancode lastKey, bool *waitingForInput, bool *menuactive);
+	void relocate(int x, int y);
+	void configInput(SDL_Scancode lastKey, bool *waitingForInput, bool *menuactive, int pid);
 	void assignInput(SDL_Scancode lastKey);
 	std::string getInputName(SDL_Scancode lastKey);
 	void processKeyDown(SDL_Scancode p_scancode, bool *keyPressed);
@@ -65,8 +66,8 @@ public:
 	void verlet(double dt);
 	//void Integrate(double t, double dt);
 	void Interpolate(const double alpha);
-	void Collide();
-	void applyTimers();
+	//void Collide();
+	//void applyTimers();
 	void SelectAnim();
 	void reportVel(std::string &velstr);
 

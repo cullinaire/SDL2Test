@@ -33,8 +33,19 @@ Player::Player(AnimObj *p_animobj, InputCfg *p_inputCfg, int p_id)
 	e_inputCfg->assignInput(SDL_SCANCODE_DOWN, MOVE_DOWN);
 }
 
-void Player::configInput(SDL_Scancode lastKey, bool *waitingForInput, bool *menuactive)
+void Player::relocate(int x, int y)
 {
+	pstate.pos.set(x, y, 0);
+}
+
+void Player::configInput(SDL_Scancode lastKey, bool *waitingForInput, bool *menuactive, int pid)
+{
+	std::string newTitle;
+	newTitle.assign("Player ");
+	newTitle.append(std::to_string(pid));
+	newTitle.append(" input config");
+
+	e_inputCfg->changeMenuTitle(newTitle);
 	e_inputCfg->processInput(lastKey, waitingForInput, menuactive);
 }
 
@@ -301,22 +312,22 @@ void Player::Interpolate(const double alpha)
 //	return output;
 //}
 
-void Player::Collide()
-{
-}
+//void Player::Collide()
+//{
+//}
 
-void Player::applyTimers()
-{
-	//if(xtimerStarted)
-	//{
-	//	xdt = (double)(SDL_GetPerformanceCounter() - xtimer)/SDL_GetPerformanceFrequency();
-	//	if(xdt >= FORCEFALLOFFTIME)
-	//	{
-	//		xtimerStarted = false;
-	//		xf = ZERO_FORCE;
-	//	}
-	//}
-}
+//void Player::applyTimers()
+//{
+//	if(xtimerStarted)
+//	{
+//		xdt = (double)(SDL_GetPerformanceCounter() - xtimer)/SDL_GetPerformanceFrequency();
+//		if(xdt >= FORCEFALLOFFTIME)
+//		{
+//			xtimerStarted = false;
+//			xf = ZERO_FORCE;
+//		}
+//	}
+//}
 
 void Player::SelectAnim()
 {

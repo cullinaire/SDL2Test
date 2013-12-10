@@ -86,7 +86,26 @@ int main(int argc, char **argv)
 	std::vector<Player> players;
 
 	players.push_back(Player(&hatman, &inputConfig, 1));
-	//Player player1(&hatman, &inputConfig, 1);	//Player class is assigned animobject, inputconfig (with the map assigned), and id of player
+	players.push_back(Player(&hatman, &inputConfig, 2));
+	players.push_back(Player(&hatman, &inputConfig, 3));
+
+	players[1].relocate(64, 64);
+	players[2].relocate(128, 128);
+
+	int numplayers = players.size();
+
+	Menu playerSelect = Menu(&mainText);
+
+	std::string playername;
+
+	playerSelect.SetTitle("Select player:");
+	playerSelect.DefineCursor("*");
+	for(int i=0;i < numplayers;++i)
+	{
+		playername.assign("Player ");
+		playername.append(std::to_string(i+1));
+		playerSelect.InsertItem(playername, i+1, &fontDraw);
+	}
 
 	SDL_Event ev;
 	SDL_Scancode lastKey;	//Keeps track of last key pressed
@@ -95,6 +114,7 @@ int main(int argc, char **argv)
 	bool menuactive = false;
 	bool waitingForInput = false;	//Used for input mapping
 	bool keyPressed[256];	//Used to mitigate key-repeat issues
+	int activePlayerId = 0;
 	for(int i=0;i < 256;++i)
 		keyPressed[i] = false;
 
@@ -154,12 +174,33 @@ int main(int argc, char **argv)
 				if(waitingForInput)
 				{
 					//do the key assignment here
-					players[0].assignInput(lastKey);
+					/*for(int i=0;i<numplayers;++i)
+						players[i].assignInput(lastKey);*/
+					players[activePlayerId].assignInput(lastKey);
 					waitingForInput = false;
 				}
 				else if(menuactive)
 				{
-					players[0].configInput(lastKey, &waitingForInput, &menuactive);
+					/*for(int i=0;i<numplayers;++i)
+						players[i].configInput(lastKey, &waitingForInput, &menuactive);*/
+					switch(lastKey)
+					{
+					case SDL_SCANCODE_UP:
+						playerSelect.MoveCursor(false);
+						break;
+					case SDL_SCANCODE_DOWN:
+						playerSelect.MoveCursor(true);
+						break;
+					case SDL_SCANCODE_RETURN:
+						activePlayerId = playerSelect.ExecuteItem();
+						players[activePlayerId].configInput(lastKey, &waitingForInput, &menuactive, activePlayerId);
+						break;
+					case SDL_SCANCODE_ESCAPE:
+						menuactive = false;
+						break;
+					default:
+						break;
+					}
 				}
 				else
 				{
@@ -180,7 +221,8 @@ int main(int argc, char **argv)
 							//lastInputMsg.assign("Maybe I pressed something else?");
 							break;
 						}
-						players[0].processKeyDown(lastKey, keyPressed);
+						for(int i=0;i<numplayers;++i)
+							players[i].processKeyDown(lastKey, keyPressed);
 						keyPressed[lastKey] = true;
 					}
 				}
@@ -193,7 +235,8 @@ int main(int argc, char **argv)
 				keyPressed[lastKey] = false;
 				if(!menuactive)
 				{
-					players[0].processKeyUp(lastKey, keyPressed);
+					for(int i=0;i<numplayers;++i)
+						players[i].processKeyUp(lastKey, keyPressed);
 				}
 			}
 		}
@@ -229,11 +272,13 @@ int main(int argc, char **argv)
 		while(accumulator >= dt)	//The fixed timestep area is in this while loop
 		{
 			accumulator -= dt;
-			players[0].Collide();
-			players[0].modifyForces(t+dt);
-			players[0].verlet(dt);
-			players[0].SelectAnim();
-			players[0].reportVel(vel);
+			for(int i=0;i<numplayers;++i)
+			{
+				players[i].modifyForces(t+dt);
+				players[i].verlet(dt);
+				players[i].SelectAnim();
+				players[i].reportVel(vel);
+			}
 			mainText.ReceiveString(vel, velPos);
 			t += dt;
 		}
@@ -248,12 +293,16 @@ int main(int argc, char **argv)
 		//DRAWING SECTION/////////////////////////////////////////////////////
 		SDL_RenderClear(rend);
 		//Draw stuff now
-		players[0].Interpolate(alpha);	//Was putting this before the renderclear like a dummy
+		for(int i=0;i<numplayers;++i)
+		{
+			players[i].Interpolate(alpha);	//Was putting this before the renderclear like a dummy
+		}
 
 		if(menuactive)
 		{
 			inputConfig.showMenu();
 			inputConfig.showStatus();
+			playerSelect.OutputMenu(128, 128);
 		}
 		mainText.OutputFrame(rend);	//Draw text last
 		mainText.Clear();

@@ -25,6 +25,7 @@ class Menu
 {
 public:
 	Menu(TxtLayer *txtOut);
+	void SetTitle(std::string title);
 	void InsertItem(std::string item, int index, BMPText *p_font);
 	void ReplaceItem(std::string replacement, int index, BMPText *p_font);
 	void OutputMenu(int x, int y);
@@ -36,9 +37,8 @@ private:
 	std::list<menuItem>::iterator itr;	//Used for looping through list
 	std::list<menuItem>::iterator cursor;	//Maintains "current" menu selection
 	std::string cursorText;
+	std::string title;
 	TxtLayer *output;	//Do not delete, instantiated elsewhere
-	//int index;
-	//int numItems;
 };	
 
 #endif

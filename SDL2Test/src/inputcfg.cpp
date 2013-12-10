@@ -6,6 +6,8 @@ InputCfg::InputCfg(SDL_Renderer *rend, TxtLayer *txtOut, BMPText *bmpFont)
 	inputMenu = new Menu(textOutput);
 	statusMenu = new Menu(textOutput);
 	statusMenu->DefineCursor(" ");
+	inputMenu->SetTitle("Define key input");
+	statusMenu->SetTitle("Key assignments");
 	font = bmpFont;
 	alreadyAssigned.clear();	//Maybe build this list from an external config file later
 
@@ -37,6 +39,11 @@ void InputCfg::assignPlayerMap(InputMap *p_playerMap)
 void InputCfg::registerQuit(bool *quit)
 {
 	this->quit = quit;
+}
+
+void InputCfg::changeMenuTitle(std::string newTitle)
+{
+	inputMenu->SetTitle(newTitle);
 }
 
 void InputCfg::showMenu()
