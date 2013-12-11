@@ -14,6 +14,8 @@ See
 
 for help in installing the bleeding edge SDL on your system. Yes, it worked for me.
 
+Also requires CML 1.0.3. www.cmldev.net
+
 Added a cmake config for GNU/Linux building. Create a "bin" subdirectory from the main project path, chdir in there and type:
 
 	cmake ..
