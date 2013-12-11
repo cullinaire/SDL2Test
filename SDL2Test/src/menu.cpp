@@ -14,11 +14,12 @@ void Menu::SetTitle(std::string title)
 	this->title = title;
 }
 
-void Menu::InsertItem(std::string item, int index, BMPText *p_font)
+void Menu::InsertItem(std::string item, int index, int pid, BMPText *p_font)
 {
 	menuItem element;
 	element.text = item;
 	element.index = index;
+	element.pid = pid;
 	element.font = p_font;
 	items.push_back(element);
 	cursor = items.begin();
@@ -32,6 +33,14 @@ void Menu::ReplaceItem(std::string replacement, int index, BMPText *p_font)
 		++itr;
 	itr->text = replacement;
 	itr->font = p_font;
+}
+
+void Menu::ReplaceItem(std::string replacement, int index)
+{
+	itr = items.begin();
+	for(int i = 0;i < index;++i)
+		++itr;
+	itr->text = replacement;
 }
 
 void Menu::OutputMenu(int x, int y)
@@ -97,6 +106,5 @@ void Menu::DefineCursor(std::string cText)
 
 int Menu::ExecuteItem()
 {
-	return cursor->index;
-	//cursor->itemFunc(index);
+	return cursor->pid;
 }

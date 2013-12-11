@@ -78,3 +78,25 @@ SDL_Scancode InputMap::returnScancode(gameInput input)
 	}
 	return (SDL_Scancode)0;	//This corresponds to SDL_SCANCODE_UNKNOWN
 }
+
+void InputMap::populateStatus(Menu &statusMenu)
+{
+	std::vector<gameInput> gameInputList;
+
+	gameInputList.push_back(MOVE_LEFT);
+	gameInputList.push_back(MOVE_RIGHT);
+	gameInputList.push_back(MOVE_DOWN);
+	gameInputList.push_back(MOVE_UP);
+	gameInputList.push_back(JUMP);
+	gameInputList.push_back(CROUCH);
+	gameInputList.push_back(SHOOT);
+
+	for(int i=0;i < GAMEINPUTSIZE;++i)
+	{
+		std::string menuItem;
+		menuItem.assign(this->returnInputName(gameInputList[i]));
+		menuItem.append(": ");
+		menuItem.append(SDL_GetScancodeName(this->returnScancode(gameInputList[i])));
+		statusMenu.ReplaceItem(menuItem, i);
+	}
+}

@@ -2,6 +2,8 @@
 #define INPUTMAP_H_
 
 #define MAXINPUTS 256
+#define GAMEINPUTSIZE 7	//number of non-undefined elements in enum gameInput
+
 //inputmap.h - input mapper routines
 //Maps physical keys and buttons to internal game functions
 //Mapping will be done with dual arrays. One array for keys and the other array for
@@ -14,7 +16,9 @@
 #elif _WIN32
 	#include "SDL.h"
 #endif
+#include "menu.h"
 #include <string>
+#include <vector>
 #include <list>
 
 typedef enum gameInput
@@ -38,6 +42,7 @@ public:
 	gameInput returnInput(SDL_Scancode scancode);
 	std::string returnInputName(gameInput input);
 	SDL_Scancode returnScancode(gameInput input);
+	void populateStatus(Menu &statusMenu);
 private:
 	gameInput playerInput[MAXINPUTS];
 };

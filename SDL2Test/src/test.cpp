@@ -21,7 +21,7 @@
 //to enter a key, the main loop must not spin around that point. Set a variable noting that the
 //function is waiting, but continue on with the rest of the loop. If the player finally enters the
 //key, then do whatever with it.
-
+#define MAXPLAYERS	8
 #ifdef __linux
 	#include "SDL2/SDL.h"
 #elif _WIN32
@@ -85,33 +85,48 @@ int main(int argc, char **argv)
 
 	std::vector<Player> players;
 
-	players.push_back(Player(&hatman, &inputConfig, 1));
-	players.push_back(Player(&hatman, &inputConfig, 2));
-	players.push_back(Player(&hatman, &inputConfig, 3));
+	players.resize(MAXPLAYERS);
 
-	players[1].relocate(64, 64);
-	players[2].relocate(128, 128);
+	Player emptyPlayer(0);
 
-	int numplayers = players.size();
+	for(int i=0;i<MAXPLAYERS;++i)
+	{
+		players[i] = emptyPlayer;
+	}
+
+	//Adding players. Player id determines which vector index they will occupy. Of course later additions will
+	//be done by player input.
+
+	players[1] = Player(&hatman, &inputConfig, 1);
+	players[5] = Player(&hatman, &inputConfig, 5);
+	players[3] = Player(&hatman, &inputConfig, 3);
+
+	players[5].relocate(64, 64);
+	players[3].relocate(128, 128);
 
 	Menu playerSelect = Menu(&mainText);
 
 	std::string playername;
 
+	//Construct player select menu
 	playerSelect.SetTitle("Select player:");
 	playerSelect.DefineCursor("*");
-	for(int i=0;i < numplayers;++i)
+	for(int i=0;i < MAXPLAYERS;++i)
 	{
-		playername.assign("Player ");
-		playername.append(std::to_string(i+1));
-		playerSelect.InsertItem(playername, i+1, &fontDraw);
+		if(players[i].getPid() != 0)	//Is a valid player
+		{
+			playername.assign("Player ");
+			playername.append(std::to_string(i));
+			playerSelect.InsertItem(playername, i, players[i].getPid(), &fontDraw);
+		}
 	}
 
 	SDL_Event ev;
 	SDL_Scancode lastKey;	//Keeps track of last key pressed
 
 	bool quit = false;
-	bool menuactive = false;
+	bool playerSelectMenu = false;
+	bool inputMenu = false;
 	bool waitingForInput = false;	//Used for input mapping
 	bool keyPressed[256];	//Used to mitigate key-repeat issues
 	int activePlayerId = 0;
@@ -120,6 +135,7 @@ int main(int argc, char **argv)
 
 	inputConfig.registerQuit(&quit);	//So the menu can modify the quit variable...shaky I know
 
+	/*DEBUGGING INFO STUFF*/
 	SDL_Rect advicePos;	//"Press ESC to view menu"
 	advicePos.x = 8;
 	advicePos.y = 8;
@@ -153,6 +169,7 @@ int main(int argc, char **argv)
 	SDL_Rect velPos;
 	velPos.x = 16;
 	velPos.y = 416;
+	/*END DEBUGGING INFO STUFF*/
 
 	double t = 0.0f;
 	const double dt = 0.01f;	//fixed timestep for physics updates
@@ -179,7 +196,7 @@ int main(int argc, char **argv)
 					players[activePlayerId].assignInput(lastKey);
 					waitingForInput = false;
 				}
-				else if(menuactive)
+				else if(playerSelectMenu)
 				{
 					/*for(int i=0;i<numplayers;++i)
 						players[i].configInput(lastKey, &waitingForInput, &menuactive);*/
@@ -192,15 +209,23 @@ int main(int argc, char **argv)
 						playerSelect.MoveCursor(true);
 						break;
 					case SDL_SCANCODE_RETURN:
+						inputMenu = true;
+						playerSelectMenu = false;
 						activePlayerId = playerSelect.ExecuteItem();
-						players[activePlayerId].configInput(lastKey, &waitingForInput, &menuactive, activePlayerId);
+						lastKey = SDL_SCANCODE_F24;	//Just a placeholder to prevent inputmenu from processing the return
+						//configinput will reset inputMenu to false upon exit
+						players[activePlayerId].configInput(lastKey, &waitingForInput, &inputMenu);
 						break;
 					case SDL_SCANCODE_ESCAPE:
-						menuactive = false;
+						playerSelectMenu = false;
 						break;
 					default:
 						break;
 					}
+				}
+				else if(inputMenu)
+				{
+					players[activePlayerId].configInput(lastKey, &waitingForInput, &inputMenu);
 				}
 				else
 				{
@@ -209,20 +234,21 @@ int main(int argc, char **argv)
 						switch(lastKey)
 						{
 						case SDL_SCANCODE_ESCAPE:
-							if(!menuactive)
-								menuactive = true;
+							if(!playerSelectMenu)
+								playerSelectMenu = true;
 							else
-								menuactive = false;
-							break;
-						case SDL_SCANCODE_F4:
-							//lastInputMsg.assign("I DID NOT PRESS F4!!!!!");
+								playerSelectMenu = false;
 							break;
 						default:
-							//lastInputMsg.assign("Maybe I pressed something else?");
 							break;
 						}
-						for(int i=0;i<numplayers;++i)
-							players[i].processKeyDown(lastKey, keyPressed);
+						for(int i=0;i<MAXPLAYERS;++i)
+						{
+							if(players[i].getPid() != 0)	//Is a valid player
+							{
+								players[i].processKeyDown(lastKey, keyPressed);
+							}
+						}
 						keyPressed[lastKey] = true;
 					}
 				}
@@ -233,10 +259,15 @@ int main(int argc, char **argv)
 			{
 				lastKey = ev.key.keysym.scancode;	//This might be the fix
 				keyPressed[lastKey] = false;
-				if(!menuactive)
+				if(!playerSelectMenu && !inputMenu)
 				{
-					for(int i=0;i<numplayers;++i)
-						players[i].processKeyUp(lastKey, keyPressed);
+					for(int i=0;i<MAXPLAYERS;++i)
+					{
+						if(players[i].getPid() != 0)	//Is a valid player
+						{
+							players[i].processKeyUp(lastKey, keyPressed);
+						}
+					}
 				}
 			}
 		}
@@ -272,12 +303,15 @@ int main(int argc, char **argv)
 		while(accumulator >= dt)	//The fixed timestep area is in this while loop
 		{
 			accumulator -= dt;
-			for(int i=0;i<numplayers;++i)
+			for(int i=0;i<MAXPLAYERS;++i)
 			{
-				players[i].modifyForces(t+dt);
-				players[i].verlet(dt);
-				players[i].SelectAnim();
-				players[i].reportVel(vel);
+				if(players[i].getPid() != 0)	//Is a valid player
+				{
+					players[i].modifyForces(t+dt);
+					players[i].verlet(dt);
+					players[i].SelectAnim();
+					players[i].reportVel(vel);
+				}
 			}
 			mainText.ReceiveString(vel, velPos);
 			t += dt;
@@ -293,17 +327,24 @@ int main(int argc, char **argv)
 		//DRAWING SECTION/////////////////////////////////////////////////////
 		SDL_RenderClear(rend);
 		//Draw stuff now
-		for(int i=0;i<numplayers;++i)
+		for(int i=0;i<MAXPLAYERS;++i)
 		{
-			players[i].Interpolate(alpha);	//Was putting this before the renderclear like a dummy
+			if(players[i].getPid() != 0)	//Is a valid player
+			{
+				players[i].Interpolate(alpha);	//Was putting this before the renderclear like a dummy
+			}
 		}
 
-		if(menuactive)
+		if(playerSelectMenu)
+		{
+			playerSelect.OutputMenu(128, 128);
+		}
+		else if(inputMenu)
 		{
 			inputConfig.showMenu();
 			inputConfig.showStatus();
-			playerSelect.OutputMenu(128, 128);
 		}
+
 		mainText.OutputFrame(rend);	//Draw text last
 		mainText.Clear();
 		//End draw stuff

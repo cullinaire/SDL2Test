@@ -13,22 +13,22 @@ InputCfg::InputCfg(SDL_Renderer *rend, TxtLayer *txtOut, BMPText *bmpFont)
 
 	currentInput = UNDEFINED;
 
-	inputMenu->InsertItem("left", 0, bmpFont);
-	inputMenu->InsertItem("right", 1, bmpFont);
-	inputMenu->InsertItem("up", 2, bmpFont);
-	inputMenu->InsertItem("down", 3, bmpFont);
-	inputMenu->InsertItem("jump", 4, bmpFont);
-	inputMenu->InsertItem("crouch", 5, bmpFont);
-	inputMenu->InsertItem("shoot", 6, bmpFont);
-	inputMenu->InsertItem("quit", 7, bmpFont);
+	inputMenu->InsertItem("left", 0, 0, bmpFont);
+	inputMenu->InsertItem("right", 1, 1, bmpFont);
+	inputMenu->InsertItem("up", 2, 2, bmpFont);
+	inputMenu->InsertItem("down", 3, 3, bmpFont);
+	inputMenu->InsertItem("jump", 4, 4, bmpFont);
+	inputMenu->InsertItem("crouch", 5, 5, bmpFont);
+	inputMenu->InsertItem("shoot", 6, 6, bmpFont);
+	inputMenu->InsertItem("quit", 7, 7, bmpFont);
 
-	statusMenu->InsertItem("left is undefined", 0, bmpFont);
-	statusMenu->InsertItem("right is undefined", 1, bmpFont);
-	statusMenu->InsertItem("up is undefined", 2, bmpFont);
-	statusMenu->InsertItem("down is undefined", 3, bmpFont);
-	statusMenu->InsertItem("jump is undefined", 4, bmpFont);
-	statusMenu->InsertItem("crouch is undefined", 5, bmpFont);
-	statusMenu->InsertItem("shoot is undefined", 6, bmpFont);
+	statusMenu->InsertItem("left is undefined", 0, 0, bmpFont);
+	statusMenu->InsertItem("right is undefined", 1, 1, bmpFont);
+	statusMenu->InsertItem("up is undefined", 2, 2, bmpFont);
+	statusMenu->InsertItem("down is undefined", 3, 3, bmpFont);
+	statusMenu->InsertItem("jump is undefined", 4, 4, bmpFont);
+	statusMenu->InsertItem("crouch is undefined", 5, 5, bmpFont);
+	statusMenu->InsertItem("shoot is undefined", 6, 6, bmpFont);
 }
 
 void InputCfg::assignPlayerMap(InputMap *p_playerMap)
@@ -48,12 +48,13 @@ void InputCfg::changeMenuTitle(std::string newTitle)
 
 void InputCfg::showMenu()
 {
-	inputMenu->OutputMenu(64, 64);
+	inputMenu->OutputMenu(64, 96);
 }
 
 void InputCfg::showStatus()
 {
 	textOutput->ReceiveString(statusMsg, 128, 64, font);
+	e_playerMap->populateStatus(*statusMenu);
 	statusMenu->OutputMenu(256, 256);
 }
 

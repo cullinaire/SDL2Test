@@ -16,8 +16,8 @@
 typedef struct menuItem
 {
 	std::string text;
-	//void (*itemFunc) (int);
-	int index;
+	int pid;	//Internal data storage independent from index or position
+	int index;	//Always counting up in order of insertion (only the first time)
 	BMPText *font;
 } menuItem;
 
@@ -26,8 +26,9 @@ class Menu
 public:
 	Menu(TxtLayer *txtOut);
 	void SetTitle(std::string title);
-	void InsertItem(std::string item, int index, BMPText *p_font);
+	void InsertItem(std::string item, int index, int pid, BMPText *p_font);
 	void ReplaceItem(std::string replacement, int index, BMPText *p_font);
+	void ReplaceItem(std::string replacement, int index);
 	void OutputMenu(int x, int y);
 	void MoveCursor(bool dir);
 	void DefineCursor(std::string cText);
