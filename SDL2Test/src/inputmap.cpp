@@ -85,8 +85,8 @@ void InputMap::populateStatus(Menu &statusMenu)
 
 	gameInputList.push_back(MOVE_LEFT);
 	gameInputList.push_back(MOVE_RIGHT);
-	gameInputList.push_back(MOVE_DOWN);
 	gameInputList.push_back(MOVE_UP);
+	gameInputList.push_back(MOVE_DOWN);
 	gameInputList.push_back(JUMP);
 	gameInputList.push_back(CROUCH);
 	gameInputList.push_back(SHOOT);
