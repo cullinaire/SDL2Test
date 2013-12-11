@@ -133,8 +133,6 @@ int main(int argc, char **argv)
 	for(int i=0;i < 256;++i)
 		keyPressed[i] = false;
 
-	inputConfig.registerQuit(&quit);	//So the menu can modify the quit variable...shaky I know
-
 	/*DEBUGGING INFO STUFF*/
 	SDL_Rect advicePos;	//"Press ESC to view menu"
 	advicePos.x = 8;
@@ -226,6 +224,8 @@ int main(int argc, char **argv)
 				else if(inputMenu)
 				{
 					players[activePlayerId].configInput(lastKey, &waitingForInput, &inputMenu);
+					if(!inputMenu)
+						playerSelectMenu = true;
 				}
 				else
 				{

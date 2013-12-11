@@ -27,7 +27,6 @@ class InputCfg
 public:
 	InputCfg(SDL_Renderer *rend, TxtLayer *txtOut, BMPText *bmpFont);
 	void assignPlayerMap(InputMap *p_playerMap);
-	void registerQuit(bool *quit);
 	void changeMenuTitle(std::string newTitle);
 	void showMenu();
 	void showStatus();

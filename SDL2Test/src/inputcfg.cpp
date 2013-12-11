@@ -20,7 +20,6 @@ InputCfg::InputCfg(SDL_Renderer *rend, TxtLayer *txtOut, BMPText *bmpFont)
 	inputMenu->InsertItem("jump", 4, 4, bmpFont);
 	inputMenu->InsertItem("crouch", 5, 5, bmpFont);
 	inputMenu->InsertItem("shoot", 6, 6, bmpFont);
-	inputMenu->InsertItem("quit", 7, 7, bmpFont);
 
 	statusMenu->InsertItem("left is undefined", 0, 0, bmpFont);
 	statusMenu->InsertItem("right is undefined", 1, 1, bmpFont);
@@ -34,11 +33,6 @@ InputCfg::InputCfg(SDL_Renderer *rend, TxtLayer *txtOut, BMPText *bmpFont)
 void InputCfg::assignPlayerMap(InputMap *p_playerMap)
 {
 	e_playerMap = p_playerMap;
-}
-
-void InputCfg::registerQuit(bool *quit)
-{
-	this->quit = quit;
 }
 
 void InputCfg::changeMenuTitle(std::string newTitle)
@@ -107,9 +101,6 @@ void InputCfg::processInput(SDL_Scancode lastKey, bool *waitingForInput, bool *m
 			statusMsg.assign("press a key to assign to : ");
 			statusMsg.append(e_playerMap->returnInputName(SHOOT));
 			currentInput = SHOOT;
-			break;
-		case 7:
-			*quit = true;
 			break;
 		}
 
