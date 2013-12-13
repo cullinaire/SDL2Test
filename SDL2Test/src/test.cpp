@@ -134,39 +134,29 @@ int main(int argc, char **argv)
 		keyPressed[i] = false;
 
 	/*DEBUGGING INFO STUFF*/
-	SDL_Rect advicePos;	//"Press ESC to view menu"
-	advicePos.x = 8;
-	advicePos.y = 8;
-
-	std::string lastInputMsg;
-
-	SDL_Rect lastInputMsgPos;
-	lastInputMsgPos.x = 16;
-	lastInputMsgPos.y = 352;
-
 	std::string fps;
 
 	SDL_Rect fpsPos;
-	fpsPos.x = 16;
-	fpsPos.y = 368;
+	fpsPos.x = 0;
+	fpsPos.y = 416;
 
 	std::string accum;
 
 	SDL_Rect accumPos;
-	accumPos.x = 16;
-	accumPos.y = 384;
+	accumPos.x = 0;
+	accumPos.y = 432;
 
 	std::string time;
 
 	SDL_Rect timePos;
-	timePos.x = 16;
-	timePos.y = 400;
+	timePos.x = 0;
+	timePos.y = 448;
 
 	std::string vel;
 
 	SDL_Rect velPos;
-	velPos.x = 16;
-	velPos.y = 416;
+	velPos.x = 0;
+	velPos.y = 464;
 	/*END DEBUGGING INFO STUFF*/
 
 	double t = 0.0f;
@@ -252,8 +242,6 @@ int main(int argc, char **argv)
 						keyPressed[lastKey] = true;
 					}
 				}
-				lastInputMsg.assign("Last input: ");
-				lastInputMsg.append(players[0].getInputName(lastKey));
 			}
 			if(ev.type == SDL_KEYUP)
 			{
@@ -271,9 +259,6 @@ int main(int argc, char **argv)
 				}
 			}
 		}
-
-		mainText.ReceiveString("Press ESC to view menu", advicePos);
-		mainText.ReceiveString(lastInputMsg, lastInputMsgPos);
 
 		//UPDATING SECTION////////////////////////////////////////////////////
 		UpdateTime(sysCounter, currentTime);	//This must be called only once per frame
