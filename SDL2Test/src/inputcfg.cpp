@@ -111,6 +111,7 @@ void InputCfg::processInput(SDL_Scancode lastKey, bool *waitingForInput, bool *m
 			*menuactive = true;
 		else
 			*menuactive = false;
+		inputMenu->ResetCursor();
 		break;
 	default:
 		break;
