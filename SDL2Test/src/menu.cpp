@@ -99,6 +99,11 @@ void Menu::MoveCursor(bool dir)
 	}
 }
 
+void Menu::ResetCursor()
+{
+	cursor = items.begin();
+}
+
 void Menu::DefineCursor(std::string cText)
 {
 	cursorText = cText;

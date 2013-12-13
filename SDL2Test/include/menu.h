@@ -31,6 +31,7 @@ public:
 	void ReplaceItem(std::string replacement, int index);
 	void OutputMenu(int x, int y);
 	void MoveCursor(bool dir);
+	void ResetCursor();	//Moves cursor back to beginning position
 	void DefineCursor(std::string cText);
 	int ExecuteItem();
 private:
