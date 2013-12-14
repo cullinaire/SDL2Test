@@ -35,10 +35,14 @@ typedef struct aniList
 class AnimObj
 {
 public:
+	AnimObj();
 	AnimObj(SpriteSheet *p_animSheet);
+	void loadSheet(SpriteSheet *p_animSheet);
 	void defineAnim(std::string anifilename);
-	void startAnim(int index);
-	void playAnim();
+	void startAnim();
+	void stopAnim();
+	void playAnim(int index);
+	void outputCurFrame();
 	void changeSpeed(double mult);
 	void updateLoc(int x, int y);
 
@@ -50,6 +54,7 @@ private:
 	double speedFactor;	//Multiplied by frame duration to vary playback speed
 	Uint32 elapsed;
 	int curAnimIndex;
+	int curAnimFrameID;
 	SDL_Rect dst;
 	std::list<aniList> animations;
 	std::list<aniList>::iterator selAnim;

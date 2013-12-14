@@ -1,5 +1,16 @@
 #include "animobj.h"
 
+AnimObj::AnimObj()
+{
+	playing = false;
+	forwards = true;
+	isbNf = false;
+	dst.x = 0;
+	dst.y = 0;
+	speedFactor = 1;
+	curAnimFrameID = 0;
+}
+
 AnimObj::AnimObj(SpriteSheet *p_animSheet)
 {
 	animSheet = p_animSheet;
@@ -9,6 +20,12 @@ AnimObj::AnimObj(SpriteSheet *p_animSheet)
 	dst.x = 0;
 	dst.y = 0;
 	speedFactor = 1;
+	curAnimFrameID = 0;
+}
+
+void AnimObj::loadSheet(SpriteSheet *p_animSheet)
+{
+	animSheet = p_animSheet;
 }
 
 void AnimObj::defineAnim(std::string anifilename)
@@ -95,10 +112,18 @@ void AnimObj::defineAnim(std::string anifilename)
 	}
 }
 
-void AnimObj::startAnim(int index)
+void AnimObj::startAnim()
 {
-	speedFactor = 1;
 	playing = true;
+}
+
+void AnimObj::stopAnim()
+{
+	playing = false;
+}
+
+void AnimObj::playAnim(int index)
+{
 	if(curAnimIndex != index)	//Prevent repeat calls from interrupting animation
 	{
 		curAnimIndex = index;
@@ -113,11 +138,7 @@ void AnimObj::startAnim(int index)
 			}
 		}
 	}
-}
 
-//This will always be called in the main loop, but will only actally render if an animation is active
-void AnimObj::playAnim()
-{
 	if(playing)
 	{
 		if(SDL_GetTicks() - elapsed >= drawFrame->duration*speedFactor)
@@ -159,8 +180,14 @@ void AnimObj::playAnim()
 		}
 
 		animSheet->getCellSize(drawFrame->frameID, dst);
-		animSheet->Draw(drawFrame->frameID + selAnim->offset, dst);
+		curAnimFrameID = drawFrame->frameID + selAnim->offset;
+		animSheet->Draw(curAnimFrameID, dst);
 	}
+}
+
+void AnimObj::outputCurFrame()
+{
+	animSheet->Draw(curAnimFrameID, dst);
 }
 
 void AnimObj::changeSpeed(double mult)

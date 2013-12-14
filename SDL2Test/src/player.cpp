@@ -9,7 +9,7 @@ Player::Player(int p_id)
 	playerID = p_id;
 }
 
-Player::Player(AnimObj *p_animobj, InputCfg *p_inputCfg, int p_id)
+Player::Player(SpriteSheet *playerSheet, InputCfg *p_inputCfg, int p_id)
 {
 	playerID = p_id;
 	playerState.alive = true;
@@ -28,16 +28,12 @@ Player::Player(AnimObj *p_animobj, InputCfg *p_inputCfg, int p_id)
 	moveForce.zero();
 
 	e_inputCfg = p_inputCfg;
-	e_animobj = p_animobj;
 
-	e_animobj->startAnim(1);
+	playerAnim.loadSheet(playerSheet);
+	playerAnim.defineAnim("../assets/hatmanani.def");
+	playerAnim.startAnim();
 	
 	keyMap.ClearMap();
-
-	//e_inputCfg->assignInput(SDL_SCANCODE_LEFT, MOVE_LEFT);
-	//e_inputCfg->assignInput(SDL_SCANCODE_RIGHT, MOVE_RIGHT);
-	//e_inputCfg->assignInput(SDL_SCANCODE_UP, MOVE_UP);
-	//e_inputCfg->assignInput(SDL_SCANCODE_DOWN, MOVE_DOWN);
 }
 
 void Player::relocate(int x, int y)
@@ -191,24 +187,24 @@ void Player::Interpolate(const double alpha)
 	double rendx = pstate.pos[0]*alpha + previous.pos[0]*(1.0 - alpha);
 	double rendy = pstate.pos[1]*alpha + previous.pos[1]*(1.0 - alpha);
 
-	e_animobj->updateLoc(rendx, rendy);
-	e_animobj->playAnim();
+	playerAnim.updateLoc(rendx, rendy);
+	playerAnim.outputCurFrame();
 }
 
 void Player::SelectAnim()
 {
 	if(pstate.vel.length() > 1)
 	{
-		e_animobj->startAnim(0);
+		playerAnim.playAnim(0);
 		if(pstate.vel.length() < 30)
-			e_animobj->changeSpeed(2);
+			playerAnim.changeSpeed(2);
 		else if(pstate.vel.length() < 100)
-			e_animobj->changeSpeed(1);
+			playerAnim.changeSpeed(1);
 		else
-			e_animobj->changeSpeed(0.5);
+			playerAnim.changeSpeed(0.5);
 	}
 	else
-		e_animobj->startAnim(1);
+		playerAnim.playAnim(1);
 }
 
 int Player::getPid()

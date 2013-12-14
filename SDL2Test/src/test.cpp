@@ -79,10 +79,6 @@ int main(int argc, char **argv)
 
 	InputCfg inputConfig(rend, &mainText, &fontDraw);	//Helper to configure input for each player
 
-	AnimObj hatman(&mensheet);	//Animation object, uses sprites from parameter
-
-	hatman.defineAnim("../assets/hatmanani.def");	//animation needs definition file which is assigned here
-
 	std::vector<Player> players;
 
 	players.resize(MAXPLAYERS);
@@ -97,9 +93,9 @@ int main(int argc, char **argv)
 	//Adding players. Player id determines which vector index they will occupy. Of course later additions will
 	//be done by player input.
 
-	players[1] = Player(&hatman, &inputConfig, 1);
-	players[5] = Player(&hatman, &inputConfig, 5);
-	players[3] = Player(&hatman, &inputConfig, 3);
+	players[1] = Player(&mensheet, &inputConfig, 1);
+	players[5] = Player(&mensheet, &inputConfig, 5);
+	players[3] = Player(&mensheet, &inputConfig, 3);
 
 	players[5].relocate(64, 64);
 	players[3].relocate(128, 128);

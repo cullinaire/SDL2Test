@@ -48,7 +48,7 @@ class Player
 public:
 	Player();
 	Player(int p_id);
-	Player(AnimObj *p_animobj, InputCfg *p_inputCfg, int p_id);
+	Player(SpriteSheet *playerSheet, InputCfg *p_inputCfg, int p_id);
 	void relocate(int x, int y);
 	void configInput(SDL_Scancode lastKey, bool *waitingForInput, bool *menuactive);
 	void assignInput(SDL_Scancode lastKey);
@@ -69,7 +69,7 @@ private:
 	PlayerState playerState;
 	InputMap keyMap;
 	InputCfg *e_inputCfg;	//Do not delete - the e_ prefix denotes external object
-	AnimObj *e_animobj;
+	AnimObj playerAnim;
 	State pstate;
 	State previous;
 };
