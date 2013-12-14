@@ -22,6 +22,7 @@
 #include "inputcfg.h"
 #include "animobj.h"
 #include "txtlayer.h"
+#include "collision.h"
 #include "cml\cml.h"
 
 typedef struct PlayerState
@@ -70,6 +71,8 @@ private:
 	InputMap keyMap;
 	InputCfg *e_inputCfg;	//Do not delete - the e_ prefix denotes external object
 	AnimObj playerAnim;
+	AABB playerBox;	//AABB for player collision
+	void updateAABB(int x, int y);
 	State pstate;
 	State previous;
 };

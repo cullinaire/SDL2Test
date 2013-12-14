@@ -4,6 +4,7 @@ Player::Player()
 {
 }
 
+//This constructor only used to create "dummy players"
 Player::Player(int p_id)
 {
 	playerID = p_id;
@@ -19,9 +20,13 @@ Player::Player(SpriteSheet *playerSheet, InputCfg *p_inputCfg, int p_id)
 	playerState.downpressed = false;
 	playerState.uppressed = false;
 
+	playerBox.objID = playerID;	//IDs for all other types of collidables will begin with numbers > MAX_PLAYERS
+	
 	pstate.pos.set(PLAYER_INITIAL_X, PLAYER_INITIAL_Y, 0);
 	pstate.vel.zero();
 	pstate.acc.zero();
+
+	this->updateAABB(PLAYER_INITIAL_X, PLAYER_INITIAL_Y);
 
 	pstate.mass = 0.1;
 
@@ -36,8 +41,24 @@ Player::Player(SpriteSheet *playerSheet, InputCfg *p_inputCfg, int p_id)
 	keyMap.ClearMap();
 }
 
+//Set up collision AABB: The box will be slightly smaller than the actual player sprite, excluding
+//The hat and the feet. The width will also be slightly less than the sprite width.
+//Right now the actual player width and height (full sprite size) is 11 and 24 (subject to change,
+//check the spritesheet definition files!)
+//Remember that the x,y coord of the player is the upper left corner of the sprite.
+//X increases to the right and Y increases to the bottom.
+//Make sure to update these whenever the player changes position!!!
+void Player::updateAABB(int x, int y)
+{
+	playerBox.vals[0][0] = x+1;		//minX
+	playerBox.vals[0][1] = y+24-2;	//minY
+	playerBox.vals[1][0] = x+11-1;	//maxX
+	playerBox.vals[1][1] = y+2;		//maxY
+}
+
 void Player::relocate(int x, int y)
 {
+	this->updateAABB(x, y);
 	pstate.pos.set(x, y, 0);
 }
 
@@ -180,6 +201,8 @@ void Player::verlet(double dt)
 	pstate.acc = newAcc;
 
 	pstate.vel += avgAcc * dt;
+
+	this->updateAABB(pstate.pos[0], pstate.pos[1]);
 }
 
 void Player::Interpolate(const double alpha)
