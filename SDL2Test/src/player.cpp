@@ -50,9 +50,9 @@ Player::Player(SpriteSheet *playerSheet, InputCfg *p_inputCfg, int p_id)
 //Make sure to update these whenever the player changes position!!!
 void Player::updateAABB(int x, int y)
 {
-	playerBox.vals[0][0] = x+1;		//minX
-	playerBox.vals[0][1] = y+24-2;	//minY
-	playerBox.vals[1][0] = x+11-1;	//maxX
+	playerBox.vals[0][0] = x+2;		//minX
+	playerBox.vals[0][1] = y+24-3;	//minY
+	playerBox.vals[1][0] = x+11-2;	//maxX
 	playerBox.vals[1][1] = y+2;		//maxY
 }
 
@@ -202,14 +202,14 @@ void Player::verlet(double dt)
 
 	pstate.vel += avgAcc * dt;
 
-	this->updateAABB(pstate.pos[0], pstate.pos[1]);
+	//this->updateAABB(pstate.pos[0], pstate.pos[1]);
 }
 
 void Player::Interpolate(const double alpha)
 {
 	double rendx = pstate.pos[0]*alpha + previous.pos[0]*(1.0 - alpha);
 	double rendy = pstate.pos[1]*alpha + previous.pos[1]*(1.0 - alpha);
-
+	this->updateAABB(rendx, rendy);
 	playerAnim.updateLoc(rendx, rendy);
 	playerAnim.outputCurFrame();
 }
@@ -239,4 +239,21 @@ void Player::reportVel(std::string &velstr)
 {
 	velstr.assign("Velocity: ");
 	velstr.append(std::to_string(pstate.vel.length()));
+}
+
+void Player::drawAABB(SDL_Renderer *rend)
+{
+	SDL_Point corners[5];
+	corners[0].x = playerBox.vals[0][0];
+	corners[0].y = playerBox.vals[0][1];
+	corners[1].x = playerBox.vals[0][0];
+	corners[1].y = playerBox.vals[1][1];
+	corners[2].x = playerBox.vals[1][0];
+	corners[2].y = playerBox.vals[1][1];
+	corners[3].x = playerBox.vals[1][0];
+	corners[3].y = playerBox.vals[0][1];
+	corners[4].x = playerBox.vals[0][0];
+	corners[4].y = playerBox.vals[0][1];
+
+	SDL_RenderDrawLines(rend, corners, 5);
 }

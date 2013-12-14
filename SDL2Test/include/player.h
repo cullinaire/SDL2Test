@@ -62,6 +62,7 @@ public:
 	void SelectAnim();
 	int getPid();
 	void reportVel(std::string &velstr);
+	void drawAABB(SDL_Renderer *rend);
 
 private:
 	int playerID;

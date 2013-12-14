@@ -121,6 +121,7 @@ int main(int argc, char **argv)
 	SDL_Scancode lastKey;	//Keeps track of last key pressed
 
 	bool quit = false;
+	bool drawAABBs = false;
 	bool playerSelectMenu = false;
 	bool inputMenu = false;
 	bool waitingForInput = false;	//Used for input mapping
@@ -225,6 +226,12 @@ int main(int argc, char **argv)
 							else
 								playerSelectMenu = false;
 							break;
+						case SDL_SCANCODE_F1:	//To toggle visible AABBs
+							if(!drawAABBs)
+								drawAABBs = true;
+							else
+								drawAABBs = false;
+							break;
 						default:
 							break;
 						}
@@ -306,6 +313,7 @@ int main(int argc, char **argv)
 		const double alpha = accumulator / dt;
 
 		//DRAWING SECTION/////////////////////////////////////////////////////
+		SDL_SetRenderDrawColor(rend, 0, 0, 0, 255);	//Set back to black if AABB set to red
 		SDL_RenderClear(rend);
 		//Draw stuff now
 		for(int i=0;i<MAXPLAYERS;++i)
@@ -313,6 +321,11 @@ int main(int argc, char **argv)
 			if(players[i].getPid() != 0)	//Is a valid player
 			{
 				players[i].Interpolate(alpha);	//Was putting this before the renderclear like a dummy
+				if(drawAABBs)	//Draw collision AABB if toggled
+				{
+					SDL_SetRenderDrawColor(rend, 255, 0, 0, 255);	//Set AABB if visible to red
+					players[i].drawAABB(rend);
+				}
 			}
 		}
 
