@@ -21,6 +21,7 @@ Player::Player(SpriteSheet *playerSheet, InputCfg *p_inputCfg, int p_id)
 	playerState.uppressed = false;
 
 	playerBox.objID = playerID;	//IDs for all other types of collidables will begin with numbers > MAX_PLAYERS
+	playerBox.type = PLAYER;
 	
 	pstate.pos.set(PLAYER_INITIAL_X, PLAYER_INITIAL_Y, 0);
 	pstate.vel.zero();
@@ -188,6 +189,8 @@ void Player::modifyForces(double t)
 
 void Player::verlet(double dt)
 {
+	this->updateAABB(pstate.pos[0], pstate.pos[1]);
+
 	previous = pstate;
 
 	cml::vector3d lastAcc = pstate.acc;
@@ -201,15 +204,12 @@ void Player::verlet(double dt)
 	pstate.acc = newAcc;
 
 	pstate.vel += avgAcc * dt;
-
-	//this->updateAABB(pstate.pos[0], pstate.pos[1]);
 }
 
 void Player::Interpolate(const double alpha)
 {
 	double rendx = pstate.pos[0]*alpha + previous.pos[0]*(1.0 - alpha);
 	double rendy = pstate.pos[1]*alpha + previous.pos[1]*(1.0 - alpha);
-	this->updateAABB(rendx, rendy);
 	playerAnim.updateLoc(rendx, rendy);
 	playerAnim.outputCurFrame();
 }
