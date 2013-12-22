@@ -9,6 +9,29 @@ bool collide(const AABB boxA, const AABB boxB)
     return true;
 }
 
+SweepAndPrune::SweepAndPrune()
+{
+	numBoxes = 0;
+	numEncounters = 0;
+
+	for(int i=0;i < MAXAABBS;++i)
+	{
+		boxes[i].objID = -1;	//This marks the array cell as empty
+	}
+
+	for(int i=0;i < MAX_ENCOUNTERS;++i)
+	{
+		encounters[i].objIDs[0] = -1;	//Same as above, marking array cells as empty
+		encounters[i].objIDs[1] = -1;
+		//Also sanitize this one just in case
+		possibleDupes[i] = 0;
+	}
+}
+
+SweepAndPrune::~SweepAndPrune()
+{
+}
+
 void SweepAndPrune::Update()
 {
 	//sort lists on each axis
@@ -78,10 +101,18 @@ void SweepAndPrune::Update()
 	}
 }
 
-void SweepAndPrune::ResolveEncounters()
+void SweepAndPrune::ResolveEncounters(std::string *collmsg)
 {
+	collmsg->assign("No collisions right now");
     // Iterate through your encounter list and trigger collision resolution code
     // for each pair of objects in there
+	for(int i=0;i < MAX_ENCOUNTERS;++i)
+	{
+		if(encounters[i].objIDs[0] != -1)
+		{
+			collmsg->assign("Collision detected");
+		}
+	}
 }
 
 
@@ -89,42 +120,122 @@ void SweepAndPrune::AddEncounter(int objIdA, int objIdB)
 {
     // Add encounter between the inputted objects to the list
     // being careful not to duplicate existing ecounters
+
+	//first look for duplicates. This step marks down possible points of duplication
+	int numActualDupes = 0;
+	int numPossibleDupes = 0;
+	for(int i=0;i < MAX_ENCOUNTERS;++i)
+	{
+		if(encounters[i].objIDs[0] == objIdA || encounters[i].objIDs[0] == objIdB)
+		{
+			possibleDupes[numPossibleDupes] = i;
+			++numPossibleDupes;
+		}
+	}
+
+	//Next we check each of these points to see if any are dupes
+	for(int i=0;i < numPossibleDupes;++i)
+	{
+		//The reason the following check is valid is that the 0 index of objIDs was already marked as one
+		//of the two parameter IDs. Since it is impossible (better check) to have an encounter with the same
+		//ID repeated, the other ID in index 1 must be the other parameter ID. Further, only indexes with
+		//one of the parameters is checked so there is no danger of marking a valid encounter as a dupe
+		//(i.e. an encounter with index 0 being a totally different object)
+		if(encounters[possibleDupes[i]].objIDs[1] == objIdA || encounters[possibleDupes[i]].objIDs[1] == objIdB)
+		{
+			++numActualDupes;
+		}
+	}
+
+	if(numActualDupes >= 1)
+	{
+		//Don't add encounter!...in fact if the number is GREATER than 1, there is a problem and might want
+		//to raise an exception...
+	}
+	else
+	{
+		//No dupes so add the encounter already in the first empty slot
+		for(int i=0;i < MAX_ENCOUNTERS;++i)
+		{
+			if(encounters[i].objIDs[0] == -1)
+			{
+				encounters[i].objIDs[0] = objIdA;
+				encounters[i].objIDs[1] = objIdB;
+			}
+		}
+	}
 }
 
 
 void SweepAndPrune::RemoveEncounter(int objIdA, int objIdB)
 {
     // Remove encounter between the inputted objects from the
-    // list if it exists
+    // list if it exists (order of parameters do not matter)
+	// Worst case scenario will iterate all elements of encounters array once
+	for(int i=0;i < MAX_ENCOUNTERS;++i)
+	{
+		if(encounters[i].objIDs[0] == objIdA)
+		{
+			for(int j = i;j < MAX_ENCOUNTERS;++j)
+			{
+				if(encounters[j].objIDs[1] == objIdB)
+				{
+					encounters[j].objIDs[0] == -1;
+					encounters[j].objIDs[1] == -1;
+					break;	//The assumption is that there will be only one encounter between two unique objects
+				}
+			}
+		}
+		else if(encounters[i].objIDs[0] == objIdB)
+		{
+			for(int j = i;j < MAX_ENCOUNTERS;++j)
+			{
+				if(encounters[j].objIDs[1] == objIdA)
+				{
+					encounters[j].objIDs[0] == -1;
+					encounters[j].objIDs[1] == -1;
+					break;	//The assumption is that there will be only one encounter between two unique objects
+				}
+			}
+		}
+	}
 }
 
-int SweepAndPrune::AddBox(int objId, objType type, double minX, double maxX, double minY, double maxY)
+int SweepAndPrune::AddBox(objType type, double minX, double maxX, double minY, double maxY)
 {
-    // I'll fill this one out since it shows how to set up the various structures
-
+	int boxID = -1;
     // add box
-    boxes[numBoxes].objID = objId;
-    boxes[numBoxes].vals[0][0] = minX;
-    boxes[numBoxes].vals[0][1] = minY;
-    boxes[numBoxes].vals[1][0] = maxX;
-    boxes[numBoxes].vals[1][1] = maxY;
+	for(int i=0;i < MAXAABBS;++i)
+	{
+		if(boxes[i].objID == -1)	//Find the first empty cell
+		{
+			boxes[i].objID = i;
+			boxes[i].vals[0][0] = minX;
+			boxes[i].vals[0][1] = minY;
+			boxes[i].vals[1][0] = maxX;
+			boxes[i].vals[1][1] = maxY;
 
-    // add endpoints
-    endpoints[2*numBoxes][0].type = 0;
-    endpoints[2*numBoxes][0].boxId = numBoxes;
-    endpoints[2*numBoxes+1][0].type = 1;
-    endpoints[2*numBoxes+1][0].boxId = numBoxes;
-    endpoints[2*numBoxes][1].type = 0;
-    endpoints[2*numBoxes][1].boxId = numBoxes;
-    endpoints[2*numBoxes+1][1].type = 1;
-    endpoints[2*numBoxes+1][1].boxId = numBoxes;
+			// add endpoints
+			endpoints[2*i][0].type = 0;		//xmin
+			endpoints[2*i][0].boxId = i;
+			endpoints[2*i+1][0].type = 1;	//xmax
+			endpoints[2*i+1][0].boxId = i;
+			endpoints[2*i][1].type = 0;		//ymin
+			endpoints[2*i][1].boxId = i;
+			endpoints[2*i+1][1].type = 1;	//ymax
+			endpoints[2*i+1][1].boxId = i;
+
+			boxID = i;
+		}
+	}
+
     // note that its not important to insert these in their correct sorted value position
     // as I havn't since the next call to Update() will sort that out for us.
 
-    numBoxes += 1;
+    ++numBoxes;
 
     // return the id of this box so that objects know which box to update when they move
-    return numBoxes-1;
+    return boxID;
 }
 
 
@@ -132,8 +243,26 @@ void SweepAndPrune::RemoveBox(int boxId)
 {
     // Remove the box with the corresponding id being careful to remove all its
     // endpoints as well as any encounters relating to this boxes object
-}
+	boxes[boxId].objID = -1;
+	endpoints[2*boxId][0].boxId = -1;
+	endpoints[2*boxId+1][0].boxId = -1;
+	endpoints[2*boxId][1].boxId = -1;
+	endpoints[2*boxId+1][1].boxId = -1;
 
+	for(int i=0;i < MAX_ENCOUNTERS;++i)
+	{
+		if(encounters[i].objIDs[0] == boxId)
+		{
+			this->RemoveEncounter(boxId, encounters[i].objIDs[1]);
+		}
+		else if(encounters[i].objIDs[1] == boxId)
+		{
+			this->RemoveEncounter(boxId, encounters[i].objIDs[0]);
+		}
+	}
+
+	--numBoxes;
+}
 
 void SweepAndPrune::UpdateBox(int boxId, objType type, double minX, double maxX, double minY, double maxY)
 {
@@ -141,4 +270,9 @@ void SweepAndPrune::UpdateBox(int boxId, objType type, double minX, double maxX,
     // Whenever an object moves it should call this to update its collision box(es)
     // Each object will know which boxId to pass in since it should store the boxId value
     // returned when AddBox() is called.
+	boxes[boxId].type = type;
+	boxes[boxId].vals[0][0] = minX;
+	boxes[boxId].vals[0][1] = minY;
+	boxes[boxId].vals[1][0] = maxX;
+	boxes[boxId].vals[1][1] = maxY;
 }

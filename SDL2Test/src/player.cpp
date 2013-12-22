@@ -20,7 +20,7 @@ Player::Player(SpriteSheet *playerSheet, InputCfg *p_inputCfg, int p_id)
 	playerState.downpressed = false;
 	playerState.uppressed = false;
 
-	playerBox.objID = playerID;	//IDs for all other types of collidables will begin with numbers > MAX_PLAYERS
+	//playerBox.objID will get set when it is added later
 	playerBox.type = PLAYER;
 	
 	pstate.pos.set(PLAYER_INITIAL_X, PLAYER_INITIAL_Y, 0);
@@ -256,4 +256,9 @@ void Player::drawAABB(SDL_Renderer *rend)
 	corners[4].y = playerBox.vals[0][1];
 
 	SDL_RenderDrawLines(rend, corners, 5);
+}
+
+AABB Player::outputAABB()
+{
+	return playerBox;
 }

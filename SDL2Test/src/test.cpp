@@ -38,6 +38,7 @@
 #include "animobj.h"
 #include "player.h"
 #include "timekeep.h"
+#include "collision.h"
 
 int main(int argc, char **argv)
 {
@@ -79,6 +80,8 @@ int main(int argc, char **argv)
 
 	InputCfg inputConfig(rend, &mainText, &fontDraw);	//Helper to configure input for each player
 
+	SweepAndPrune collider;
+
 	std::vector<Player> players;
 
 	players.resize(MAXPLAYERS);
@@ -104,16 +107,22 @@ int main(int argc, char **argv)
 
 	std::string playername;
 
-	//Construct player select menu
 	playerSelect.SetTitle("Select player:");
 	playerSelect.DefineCursor("*");
 	for(int i=0;i < MAXPLAYERS;++i)
 	{
 		if(players[i].getPid() != 0)	//Is a valid player
 		{
+			//Construct player select menu
 			playername.assign("Player ");
 			playername.append(std::to_string(i));
 			playerSelect.InsertItem(playername, i, players[i].getPid(), &fontDraw);
+			//Add player collision data
+			collider.AddBox(players[i].outputAABB().type,
+				players[i].outputAABB().vals[0][0],
+				players[i].outputAABB().vals[0][1],
+				players[i].outputAABB().vals[1][0],
+				players[i].outputAABB().vals[1][1]);
 		}
 	}
 
@@ -131,6 +140,12 @@ int main(int argc, char **argv)
 		keyPressed[i] = false;
 
 	/*DEBUGGING INFO STUFF*/
+	std::string coll;
+
+	SDL_Rect collPos;
+	collPos.x = 0;
+	collPos.y = 400;
+
 	std::string fps;
 
 	SDL_Rect fpsPos;
@@ -286,8 +301,6 @@ int main(int argc, char **argv)
 		mainText.ReceiveString(accum, accumPos);
 
 		//Now start doing expensive stuff
-		//Doing "collision detection" here: (WRONG: DO IT IN FIXED TIMESTEP AREA)
-
 		while(accumulator >= dt)	//The fixed timestep area is in this while loop
 		{
 			accumulator -= dt;
@@ -299,6 +312,18 @@ int main(int argc, char **argv)
 					players[i].verlet(dt);
 					players[i].SelectAnim();
 					players[i].reportVel(vel);
+
+					//Update player collision data
+					collider.UpdateBox(players[i].outputAABB().objID, players[i].outputAABB().type,
+						players[i].outputAABB().vals[0][0],
+						players[i].outputAABB().vals[0][1],
+						players[i].outputAABB().vals[1][0],
+						players[i].outputAABB().vals[1][1]);
+
+					//Update collisions
+					collider.Update();
+					collider.ResolveEncounters(&coll);
+					mainText.ReceiveString(coll, collPos);
 				}
 			}
 			mainText.ReceiveString(vel, velPos);
