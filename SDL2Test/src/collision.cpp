@@ -38,7 +38,7 @@ void SweepAndPrune::Update()
 	for(int axis = 0;axis < 2;++axis)
 	{
 		//go through each endpoint in turn
-		for(int j = 1;j < numBoxes*2;++j)
+		for(int j = 1;j < 2*MAXAABBS;++j)
 		{
 			int keyType = endpoints[j][axis].type;
 			int keyBoxId = endpoints[j][axis].boxId;
@@ -46,7 +46,7 @@ void SweepAndPrune::Update()
 			//get the min val if this is a startPoint else get the max val
 			double keyVal = boxes[keyBoxId].vals[keyType][axis];
 
-			//compare the keybal to the value one before it in the array (our comparison value) and
+			//compare the keyval to the value one before it in the array (our comparison value) and
 			//swap places if need be. Keep doing this until no more swaps are needed or until we
 			//reach the start of the array.
 			int i = j-1;
@@ -180,8 +180,8 @@ void SweepAndPrune::RemoveEncounter(int objIdA, int objIdB)
 			{
 				if(encounters[j].objIDs[1] == objIdB)
 				{
-					encounters[j].objIDs[0] == -1;
-					encounters[j].objIDs[1] == -1;
+					encounters[j].objIDs[0] = -1;
+					encounters[j].objIDs[1] = -1;
 					break;	//The assumption is that there will be only one encounter between two unique objects
 				}
 			}
@@ -192,8 +192,8 @@ void SweepAndPrune::RemoveEncounter(int objIdA, int objIdB)
 			{
 				if(encounters[j].objIDs[1] == objIdA)
 				{
-					encounters[j].objIDs[0] == -1;
-					encounters[j].objIDs[1] == -1;
+					encounters[j].objIDs[0] = -1;
+					encounters[j].objIDs[1] = -1;
 					break;	//The assumption is that there will be only one encounter between two unique objects
 				}
 			}
