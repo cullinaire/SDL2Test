@@ -38,9 +38,10 @@ class InputMap
 public:
 	InputMap();
 	void ClearMap();
-	int DefineInput(SDL_Scancode scancode, gameInput desiredInput);
+	SDL_Scancode DefineInput(SDL_Scancode scancode, gameInput desiredInput);
 	gameInput returnInput(SDL_Scancode scancode);
 	std::string returnInputName(gameInput input);
+	gameInput stringToInput(const std::string nameString);
 	SDL_Scancode returnScancode(gameInput input);
 	void populateStatus(Menu &statusMenu);
 private:

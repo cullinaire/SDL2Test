@@ -1,0 +1,7 @@
+#key binding file
+#Format: [gameInput][SDL_Scancode]
+
+[MOVE_LEFT][SDL_SCANCODE_A]
+[MOVE_RIGHT][SDL_SCANCODE_D]
+[MOVE_UP][SDL_SCANCODE_W]
+[MOVE_DOWN][SDL_SCANCODE_S]

@@ -15,7 +15,7 @@ void InputMap::ClearMap()
 //Define a game input by inputting a keyboard code to associate with it
 //The playerInput index location corresponds to the numeric value of the
 //scancode according to the SDL_Scancode enum
-int InputMap::DefineInput(SDL_Scancode scancode, gameInput desiredInput)
+SDL_Scancode InputMap::DefineInput(SDL_Scancode scancode, gameInput desiredInput)
 {
 	//Clear the old key-input mapping, if any
 	for(int i=0;i < MAXINPUTS;++i)
@@ -67,6 +67,30 @@ std::string InputMap::returnInputName(gameInput input)
 		break;
 	}
 	return "somethingwentwrong";
+}
+
+gameInput InputMap::stringToInput(const std::string nameString)
+{
+	if(nameString.compare("MOVE_LEFT") == 0)
+	{
+		return MOVE_LEFT;
+	}
+	else if(nameString.compare("MOVE_RIGHT") == 0)
+	{
+		return MOVE_RIGHT;
+	}
+	else if(nameString.compare("MOVE_UP") == 0)
+	{
+		return MOVE_UP;
+	}
+	else if(nameString.compare("MOVE_DOWN") == 0)
+	{
+		return MOVE_DOWN;
+	}
+	else
+	{
+		return UNDEFINED;
+	}
 }
 
 SDL_Scancode InputMap::returnScancode(gameInput input)

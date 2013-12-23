@@ -176,6 +176,86 @@ void InputCfg::assignInput(SDL_Scancode scancode, gameInput p_currentInput)
 	this->assignInput(scancode);
 }
 
+void InputCfg::assignInput(const std::string bindFilename)
+{
+	std::ifstream binddeffile;
+	binddeffile.open(bindFilename, std::ios::in);
+	std::string::iterator itr;
+
+	if(binddeffile.is_open())
+	{
+		std::string line, element;
+		while(std::getline(binddeffile, line))
+		{
+			//if the line begins with #, it's a comment, do nothing
+			//Also skip blank lines
+			if(line[0] != '#' && line.size() > 0)
+			{
+				for(itr = line.begin();itr != line.end();++itr)
+				{
+					if(*itr != ' ' && *itr != '\t')	//skip initial whitespace (incl. tabs)
+						break;
+				}
+				if(*itr == '[')	//denotes beginning of keybind definition
+					++itr;
+				for(;itr != line.end();++itr)	//begin reading values
+				{
+					if(*itr == ']')	//end of gameInput
+					{
+						currentInput = e_playerMap->stringToInput(element);
+						currentIndex = (int)currentInput;
+						element.clear();
+						itr++;
+						break;
+					}
+					element.push_back(*itr);
+				}
+
+				if(*itr == '[')	//denotes beginning of scancode block
+					++itr;
+				else
+					++itr;	//keep going until [ is found
+				for(;itr != line.end();++itr)	//begin reading values
+				{
+					if(*itr == ']')	//end of scancode block
+					{
+						//This is a hack for now since I can't get SDL_GetScancodeFromName to work
+						//Hopefully I can get an answer on the forums soon...
+						SDL_Scancode scancode;
+						if(element.compare("SDL_SCANCODE_LEFT") == 0)
+							scancode = SDL_SCANCODE_LEFT;
+						else if(element.compare("SDL_SCANCODE_RIGHT") == 0)
+							scancode = SDL_SCANCODE_RIGHT;
+						else if(element.compare("SDL_SCANCODE_UP") == 0)
+							scancode = SDL_SCANCODE_UP;
+						else if(element.compare("SDL_SCANCODE_DOWN") == 0)
+							scancode = SDL_SCANCODE_DOWN;
+						else if(element.compare("SDL_SCANCODE_W") == 0)
+							scancode = SDL_SCANCODE_W;
+						else if(element.compare("SDL_SCANCODE_S") == 0)
+							scancode = SDL_SCANCODE_S;
+						else if(element.compare("SDL_SCANCODE_A") == 0)
+							scancode = SDL_SCANCODE_A;
+						else if(element.compare("SDL_SCANCODE_D") == 0)
+							scancode = SDL_SCANCODE_D;
+						else if(element.compare("SDL_SCANCODE_I") == 0)
+							scancode = SDL_SCANCODE_I;
+						else if(element.compare("SDL_SCANCODE_J") == 0)
+							scancode = SDL_SCANCODE_J;
+						else if(element.compare("SDL_SCANCODE_K") == 0)
+							scancode = SDL_SCANCODE_K;
+						else if(element.compare("SDL_SCANCODE_L") == 0)
+							scancode = SDL_SCANCODE_L;
+						this->assignInput(scancode);
+						element.clear();
+						break;
+					}
+					element.push_back(*itr);
+				}
+			}
+		}
+	}
+}
 InputCfg::~InputCfg()
 {
 	delete inputMenu;

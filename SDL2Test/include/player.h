@@ -53,6 +53,7 @@ public:
 	void relocate(int x, int y);
 	void configInput(SDL_Scancode lastKey, bool *waitingForInput, bool *menuactive);
 	void assignInput(SDL_Scancode lastKey);
+	void assignInput(const std::string keybindFilename);
 	std::string getInputName(SDL_Scancode lastKey);
 	void processKeyDown(SDL_Scancode p_scancode, bool *keyPressed);
 	void processKeyUp(SDL_Scancode p_scancode, bool *keyPressed);

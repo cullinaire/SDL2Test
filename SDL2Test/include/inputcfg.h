@@ -15,6 +15,8 @@
 #include "menu.h"
 #include <string>
 #include <list>
+#include <fstream>
+#include <iostream>
 
 typedef struct assignedInput
 {
@@ -33,6 +35,7 @@ public:
 	void processInput(SDL_Scancode lastKey, bool *waitingForInput, bool *menuactive);
 	void assignInput(SDL_Scancode scancode);
 	void assignInput(SDL_Scancode scancode, gameInput p_currentInput);
+	void assignInput(const std::string bindFilename);
 	~InputCfg();
 private:
 	Menu *inputMenu;

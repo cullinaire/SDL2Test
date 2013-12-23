@@ -126,6 +126,10 @@ int main(int argc, char **argv)
 		}
 	}
 
+	players[1].assignInput("../assets/player1bind.def");
+	players[3].assignInput("../assets/player2bind.def");
+	players[5].assignInput("../assets/player3bind.def");
+
 	SDL_Event ev;
 	SDL_Scancode lastKey;	//Keeps track of last key pressed
 

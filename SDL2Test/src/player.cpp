@@ -34,6 +34,7 @@ Player::Player(SpriteSheet *playerSheet, InputCfg *p_inputCfg, int p_id)
 	moveForce.zero();
 
 	e_inputCfg = p_inputCfg;
+	e_inputCfg->assignPlayerMap(&keyMap);
 
 	playerAnim.loadSheet(playerSheet);
 	playerAnim.defineAnim("../assets/hatmanani.def");
@@ -77,7 +78,14 @@ void Player::configInput(SDL_Scancode lastKey, bool *waitingForInput, bool *menu
 
 void Player::assignInput(SDL_Scancode lastKey)
 {
+	e_inputCfg->assignPlayerMap(&keyMap);
 	e_inputCfg->assignInput(lastKey);
+}
+
+void Player::assignInput(const std::string keybindFilename)
+{
+	e_inputCfg->assignPlayerMap(&keyMap);
+	e_inputCfg->assignInput(keybindFilename);
 }
 
 std::string Player::getInputName(SDL_Scancode lastKey)
