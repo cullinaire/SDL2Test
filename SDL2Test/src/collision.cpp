@@ -2,6 +2,15 @@
 
 bool collide(const AABB boxA, const AABB boxB)
 {
+	std::cout << "Testing collision..." << std::endl;
+	std::cout << "AminX: " << boxA.vals[0][0] <<
+		" AminY: " << boxA.vals[0][1] <<
+		" AmaxX: " << boxA.vals[1][0] <<
+		" AmaxY: " << boxA.vals[1][1] << std::endl;
+	std::cout << "BmaxX: " << boxB.vals[1][0] <<
+		" BmaxY: " << boxB.vals[1][1] <<
+		" BminX: " << boxB.vals[0][0] <<
+		" BminY: " << boxB.vals[0][1] << std::endl;
 	if(boxA.vals[1][0] < boxB.vals[0][0]) { return false; }
     if(boxA.vals[0][0] > boxB.vals[1][0]) { return false; }
     if(boxA.vals[1][1] < boxB.vals[0][1]) { return false; }
@@ -130,13 +139,10 @@ void SweepAndPrune::Update()
 				continue;
 		}
 		
-		int i = 0;
-		int j = 1;
-		
-		while(j < 2*MAXAABBS)
+		while(secondGoodIndex < 2*MAXAABBS)
 		{
-			i = firstGoodIndex;
-			j = secondGoodIndex;
+			int i = firstGoodIndex;
+			int j = secondGoodIndex;
 
 			int keyType = endpoints[j][axis].type;
 			int keyBoxId = endpoints[j][axis].boxId;
@@ -167,7 +173,7 @@ void SweepAndPrune::Update()
 				//are leaving contact so remove any encounters relating to these objects
 				if((compType == 0) && (keyType == 1))
 				{
-					std::cout << "Removing encounter! (collision ended)" << std::endl;
+					//std::cout << "Removing encounter! (collision ended)" << std::endl;
 					RemoveEncounter(compBoxId, keyBoxId);
 				}
 				else
@@ -180,7 +186,7 @@ void SweepAndPrune::Update()
 						//to be sure of collision we must do an intersection test
 						if(collide(boxes[compBoxId], boxes[keyBoxId]))
 						{
-							std::cout << "Adding encounter! (collision detected)" << std::endl;
+							//std::cout << "Adding encounter! (collision detected)" << std::endl;
 							AddEncounter(compBoxId, keyBoxId);	//these AABBs now intersect
 						}
 					}
@@ -193,7 +199,15 @@ void SweepAndPrune::Update()
 				endpoints[j][axis].boxId = compBoxId;
 				endpoints[i][axis].boxId = keyBoxId;
 
+				std::cout << "Swapping endpoints. Axis: ";
+				if(axis == 0)
+					std::cout << "X, ";
+				else
+					std::cout << "Y, ";
+				std::cout << "IDs: " << keyBoxId << " and " << compBoxId << std::endl;
+
 				//we must decrement i so that we continue searching down the array
+				j = i;	//j is always the next valid endpt after i
 				while(i >= 0)
 				{
 					--i;
@@ -204,16 +218,15 @@ void SweepAndPrune::Update()
 
 			//find the next valid secondGoodIndex, if any
 			firstGoodIndex = secondGoodIndex;	//"increment" firstGoodIndex to next valid endpoint
-			++j;
-			while(j < 2*MAXAABBS)
+			++secondGoodIndex;
+			while(secondGoodIndex < 2*MAXAABBS)
 			{
-				if(endpoints[j][axis].boxId != -1)
+				if(endpoints[secondGoodIndex][axis].boxId != -1)
 				{
-					secondGoodIndex = j;
 					break;
 				}
 				else
-					++j;
+					++secondGoodIndex;
 			}
 		}
 	}
