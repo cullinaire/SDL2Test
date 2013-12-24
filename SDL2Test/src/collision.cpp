@@ -9,6 +9,67 @@ bool collide(const AABB boxA, const AABB boxB)
     return true;
 }
 
+void drawBoundingBox(SDL_Renderer *rend, AABB box)
+{
+	SDL_SetRenderDrawColor(rend, 255, 0, 0, 255);	//Set AABB if visible to red
+	SDL_Point corners[5];
+	//upper left corner
+	corners[0].x = box.vals[0][0];	//minX
+	corners[0].y = box.vals[0][1];	//minY
+
+	//lower left corner
+	corners[1].x = box.vals[0][0];	//minX
+	corners[1].y = box.vals[1][1];	//maxY
+
+	//lower right corner
+	corners[2].x = box.vals[1][0];	//maxX
+	corners[2].y = box.vals[1][1];	//maxY
+
+	//upper right corner
+	corners[3].x = box.vals[1][0];	//maxX
+	corners[3].y = box.vals[0][1];	//minY
+
+	//upper left corner
+	corners[4].x = box.vals[0][0];	//minX
+	corners[4].y = box.vals[0][1];	//minY
+
+	SDL_RenderDrawLines(rend, corners, 5);
+}
+
+void SweepAndPrune::drawBoundingBoxes(SDL_Renderer *rend)
+{
+	SDL_SetRenderDrawColor(rend, 255, 0, 0, 255);	//Set AABB if visible to red
+	SDL_Point corners[5];
+
+	for(int i=0;i < MAXAABBS;++i)
+	{
+		if(boxes[i].objID != -1)
+		{
+			//upper left corner
+			corners[0].x = boxes[i].vals[0][0];	//minX
+			corners[0].y = boxes[i].vals[0][1];	//minY
+
+			//lower left corner
+			corners[1].x = boxes[i].vals[0][0];	//minX
+			corners[1].y = boxes[i].vals[1][1];	//maxY
+
+			//lower right corner
+			corners[2].x = boxes[i].vals[1][0];	//maxX
+			corners[2].y = boxes[i].vals[1][1];	//maxY
+
+			//upper right corner
+			corners[3].x = boxes[i].vals[1][0];	//maxX
+			corners[3].y = boxes[i].vals[0][1];	//minY
+
+			//upper left corner
+			corners[4].x = boxes[i].vals[0][0];	//minX
+			corners[4].y = boxes[i].vals[0][1];	//minY
+
+			SDL_RenderDrawLines(rend, corners, 5);
+		}
+	}
+}
+
 SweepAndPrune::SweepAndPrune()
 {
 	numBoxes = 0;
@@ -26,6 +87,14 @@ SweepAndPrune::SweepAndPrune()
 		//Also sanitize this one just in case
 		possibleDupes[i] = 0;
 	}
+
+	for(int axis = 0;axis < 2;++axis)
+	{
+		for(int j=1;j < 2*MAXAABBS;++j)
+		{
+			endpoints[j][axis].boxId = -1;
+		}
+	}
 }
 
 SweepAndPrune::~SweepAndPrune()
@@ -38,8 +107,37 @@ void SweepAndPrune::Update()
 	for(int axis = 0;axis < 2;++axis)
 	{
 		//go through each endpoint in turn
+		int firstGoodIndex;
+		bool fgiFound = false;
+		int secondGoodIndex;
 		for(int j = 1;j < 2*MAXAABBS;++j)
 		{
+			if(endpoints[j-1][axis].boxId != -1 && !fgiFound)
+			{
+				firstGoodIndex = j-1;	//establish the first valid endpoint in array
+				fgiFound = true;	//Stop looking for a valid first point once one is found
+			}
+			else
+				continue;	//skip until one is found
+
+			//obviously only start looking for the 2nd pt once 1st is found
+			if(endpoints[j][axis].boxId != -1 && fgiFound)
+			{
+				secondGoodIndex = j;
+				break;
+			}
+			else
+				continue;
+		}
+		
+		int i = 0;
+		int j = 1;
+		
+		while(j < 2*MAXAABBS)
+		{
+			i = firstGoodIndex;
+			j = secondGoodIndex;
+
 			int keyType = endpoints[j][axis].type;
 			int keyBoxId = endpoints[j][axis].boxId;
 
@@ -49,7 +147,6 @@ void SweepAndPrune::Update()
 			//compare the keyval to the value one before it in the array (our comparison value) and
 			//swap places if need be. Keep doing this until no more swaps are needed or until we
 			//reach the start of the array.
-			int i = j-1;
 			while(i >= 0)
 			{
 				//get our comparison value in the same way we got the key value
@@ -88,14 +185,33 @@ void SweepAndPrune::Update()
 				}
 
 				//finally we must swap the points
-				endpoints[i+1][axis].type = compType;
+				endpoints[j][axis].type = compType;
 				endpoints[i][axis].type = keyType;
 
-				endpoints[i+1][axis].boxId = compBoxId;
+				endpoints[j][axis].boxId = compBoxId;
 				endpoints[i][axis].boxId = keyBoxId;
 
 				//we must decrement i so that we continue searching down the array
-				--i;
+				while(i >= 0)
+				{
+					--i;
+					if(endpoints[i][axis].boxId != -1)
+						break;
+				}
+			}
+
+			//find the next valid secondGoodIndex, if any
+			firstGoodIndex = secondGoodIndex;	//"increment" firstGoodIndex to next valid endpoint
+			++j;
+			while(j < 2*MAXAABBS)
+			{
+				if(endpoints[j][axis].boxId != -1)
+				{
+					secondGoodIndex = j;
+					break;
+				}
+				else
+					++j;
 			}
 		}
 	}
@@ -201,7 +317,7 @@ void SweepAndPrune::RemoveEncounter(int objIdA, int objIdB)
 	}
 }
 
-int SweepAndPrune::AddBox(objType type, double minX, double maxX, double minY, double maxY)
+int SweepAndPrune::AddBox(objType type, double minX, double minY, double maxX, double maxY)
 {
 	int boxID = -1;
     // add box
@@ -210,6 +326,7 @@ int SweepAndPrune::AddBox(objType type, double minX, double maxX, double minY, d
 		if(boxes[i].objID == -1)	//Find the first empty cell
 		{
 			boxes[i].objID = i;
+			boxes[i].type = type;
 			boxes[i].vals[0][0] = minX;
 			boxes[i].vals[0][1] = minY;
 			boxes[i].vals[1][0] = maxX;
@@ -226,6 +343,7 @@ int SweepAndPrune::AddBox(objType type, double minX, double maxX, double minY, d
 			endpoints[2*i+1][1].boxId = i;
 
 			boxID = i;
+			break;	//forgot this earlier...
 		}
 	}
 
@@ -264,7 +382,7 @@ void SweepAndPrune::RemoveBox(int boxId)
 	--numBoxes;
 }
 
-void SweepAndPrune::UpdateBox(int boxId, objType type, double minX, double maxX, double minY, double maxY)
+void SweepAndPrune::UpdateBox(int boxId, objType type, double minX, double minY, double maxX, double maxY)
 {
     // Replace the vals of the box with the inputted boxId
     // Whenever an object moves it should call this to update its collision box(es)

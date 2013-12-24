@@ -1,6 +1,11 @@
 #ifndef COLLISION_H_
 #define COLLISION_H_
 
+#ifdef __linux
+	#include "SDL2/SDL.h"
+#elif _WIN32
+	#include "SDL.h"
+#endif
 #define MAX_ENCOUNTERS	256
 #define MAXAABBS	256
 //collision.h - structs and routines to support collision detection
@@ -51,6 +56,8 @@ public:
 	void RemoveBox(int boxId);
 	void UpdateBox(int boxId, objType type, double minX, double maxX, double minY, double maxY);
 
+	void drawBoundingBoxes(SDL_Renderer *rend);
+
 private:
 	Encounter encounters[MAX_ENCOUNTERS];	//A store of encounters this frame
 	int possibleDupes[MAX_ENCOUNTERS];	//scratch pad for duplicate finding
@@ -61,17 +68,7 @@ private:
 	int numBoxes;	//current number of AABBs to deal with
 };
 
-//class Collider
-//{
-//public:
-//	Collider();
-//	void Update();
-//	void InsertBox(const AABB newBox);
-//	void RemoveBox(const int id);
-//private:
-//	std::vector<AABB> boxesToConsider[MAXAABBS];
-//};
-
 bool collide(const AABB boxA, const AABB boxB);
+void drawBoundingBox(SDL_Renderer *rend, AABB box);
 
 #endif

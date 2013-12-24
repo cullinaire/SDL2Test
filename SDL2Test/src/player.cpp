@@ -243,27 +243,15 @@ int Player::getPid()
 	return playerID;
 }
 
+void Player::setObjId(int newId)
+{
+	playerBox.objID = newId;
+}
+
 void Player::reportVel(std::string &velstr)
 {
 	velstr.assign("Velocity: ");
 	velstr.append(std::to_string(pstate.vel.length()));
-}
-
-void Player::drawAABB(SDL_Renderer *rend)
-{
-	SDL_Point corners[5];
-	corners[0].x = playerBox.vals[0][0];
-	corners[0].y = playerBox.vals[0][1];
-	corners[1].x = playerBox.vals[0][0];
-	corners[1].y = playerBox.vals[1][1];
-	corners[2].x = playerBox.vals[1][0];
-	corners[2].y = playerBox.vals[1][1];
-	corners[3].x = playerBox.vals[1][0];
-	corners[3].y = playerBox.vals[0][1];
-	corners[4].x = playerBox.vals[0][0];
-	corners[4].y = playerBox.vals[0][1];
-
-	SDL_RenderDrawLines(rend, corners, 5);
 }
 
 AABB Player::outputAABB()

@@ -118,11 +118,11 @@ int main(int argc, char **argv)
 			playername.append(std::to_string(i));
 			playerSelect.InsertItem(playername, i, players[i].getPid(), &fontDraw);
 			//Add player collision data
-			collider.AddBox(players[i].outputAABB().type,
+			players[i].setObjId(collider.AddBox(players[i].outputAABB().type,
 				players[i].outputAABB().vals[0][0],
 				players[i].outputAABB().vals[0][1],
 				players[i].outputAABB().vals[1][0],
-				players[i].outputAABB().vals[1][1]);
+				players[i].outputAABB().vals[1][1]));
 		}
 	}
 
@@ -202,8 +202,6 @@ int main(int argc, char **argv)
 				}
 				else if(playerSelectMenu)
 				{
-					/*for(int i=0;i<numplayers;++i)
-						players[i].configInput(lastKey, &waitingForInput, &menuactive);*/
 					switch(lastKey)
 					{
 					case SDL_SCANCODE_UP:
@@ -323,14 +321,16 @@ int main(int argc, char **argv)
 						players[i].outputAABB().vals[0][1],
 						players[i].outputAABB().vals[1][0],
 						players[i].outputAABB().vals[1][1]);
-
-					//Update collisions
-					collider.Update();
-					collider.ResolveEncounters(&coll);
-					mainText.ReceiveString(coll, collPos);
 				}
 			}
+
+			//Update collisions
+			collider.Update();
+			collider.ResolveEncounters(&coll);
+
+			mainText.ReceiveString(coll, collPos);
 			mainText.ReceiveString(vel, velPos);
+
 			t += dt;
 		}
 
@@ -352,8 +352,7 @@ int main(int argc, char **argv)
 				players[i].Interpolate(alpha);	//Was putting this before the renderclear like a dummy
 				if(drawAABBs)	//Draw collision AABB if toggled
 				{
-					SDL_SetRenderDrawColor(rend, 255, 0, 0, 255);	//Set AABB if visible to red
-					players[i].drawAABB(rend);
+					collider.drawBoundingBoxes(rend);
 				}
 			}
 		}
