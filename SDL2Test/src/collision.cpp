@@ -167,6 +167,7 @@ void SweepAndPrune::Update()
 				//are leaving contact so remove any encounters relating to these objects
 				if((compType == 0) && (keyType == 1))
 				{
+					std::cout << "Removing encounter! (collision ended)" << std::endl;
 					RemoveEncounter(compBoxId, keyBoxId);
 				}
 				else
@@ -179,6 +180,7 @@ void SweepAndPrune::Update()
 						//to be sure of collision we must do an intersection test
 						if(collide(boxes[compBoxId], boxes[keyBoxId]))
 						{
+							std::cout << "Adding encounter! (collision detected)" << std::endl;
 							AddEncounter(compBoxId, keyBoxId);	//these AABBs now intersect
 						}
 					}
@@ -361,6 +363,8 @@ void SweepAndPrune::RemoveBox(int boxId)
 {
     // Remove the box with the corresponding id being careful to remove all its
     // endpoints as well as any encounters relating to this boxes object
+
+	//THIS IS NOT GOING TO WORK SINCE THE ENDPOINTS WILL LIKELY HAVE BEEN SWAPPED!!!
 	boxes[boxId].objID = -1;
 	endpoints[2*boxId][0].boxId = -1;
 	endpoints[2*boxId+1][0].boxId = -1;

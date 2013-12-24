@@ -11,6 +11,7 @@
 //collision.h - structs and routines to support collision detection
 //collision code adapted from http://cokane.com/shmupdevarchive/index.php/topic,1635.0.html
 #include <string>
+#include <iostream>
 
 typedef enum objType
 {
