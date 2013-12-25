@@ -62,7 +62,7 @@ public:
 	void Interpolate(const double alpha);
 	void SelectAnim();
 	int getPid();
-	void setObjId(int newId);
+	void setBoxId(int newId);
 	void reportVel(std::string &velstr);
 	AABB outputAABB();
 

@@ -1,5 +1,10 @@
 #include "collision.h"
 
+bool Endpoint::operator<(const int val)
+{
+	return this->val < val;
+}
+
 bool collide(const AABB boxA, const AABB boxB)
 {
 	std::cout << "Testing collision..." << std::endl;
@@ -52,7 +57,7 @@ void SweepAndPrune::drawBoundingBoxes(SDL_Renderer *rend)
 
 	for(int i=0;i < MAXAABBS;++i)
 	{
-		if(boxes[i].objID != -1)
+		if(boxes[i].boxId != -1)
 		{
 			//upper left corner
 			corners[0].x = boxes[i].vals[0][0];	//minX
@@ -84,9 +89,17 @@ SweepAndPrune::SweepAndPrune()
 	numBoxes = 0;
 	numEncounters = 0;
 
+	encounters.resize(MAX_ENCOUNTERS);
+	possibleDupes.resize(MAX_ENCOUNTERS);
+
+	boxes.resize(MAXAABBS);
+
+	endpointsX.resize(2*MAXAABBS);
+	endpointsY.resize(2*MAXAABBS);
+
 	for(int i=0;i < MAXAABBS;++i)
 	{
-		boxes[i].objID = -1;	//This marks the array cell as empty
+		boxes[i].boxId = -1;	//This marks the array cell as empty
 	}
 
 	for(int i=0;i < MAX_ENCOUNTERS;++i)
@@ -97,12 +110,9 @@ SweepAndPrune::SweepAndPrune()
 		possibleDupes[i] = 0;
 	}
 
-	for(int axis = 0;axis < 2;++axis)
+	for(int j=0;j < 2*MAXAABBS;++j)
 	{
-		for(int j=1;j < 2*MAXAABBS;++j)
-		{
-			endpoints[j][axis].boxId = -1;
-		}
+		endpointsX[j].boxId = -1;
 	}
 }
 
@@ -112,124 +122,8 @@ SweepAndPrune::~SweepAndPrune()
 
 void SweepAndPrune::Update()
 {
-	//sort lists on each axis
-	for(int axis = 0;axis < 2;++axis)
-	{
-		//go through each endpoint in turn
-		int firstGoodIndex;
-		bool fgiFound = false;
-		int secondGoodIndex;
-		for(int j = 1;j < 2*MAXAABBS;++j)
-		{
-			if(endpoints[j-1][axis].boxId != -1 && !fgiFound)
-			{
-				firstGoodIndex = j-1;	//establish the first valid endpoint in array
-				fgiFound = true;	//Stop looking for a valid first point once one is found
-			}
-			else
-				continue;	//skip until one is found
+	//Do X axis stuff first
 
-			//obviously only start looking for the 2nd pt once 1st is found
-			if(endpoints[j][axis].boxId != -1 && fgiFound)
-			{
-				secondGoodIndex = j;
-				break;
-			}
-			else
-				continue;
-		}
-		
-		while(secondGoodIndex < 2*MAXAABBS)
-		{
-			int i = firstGoodIndex;
-			int j = secondGoodIndex;
-
-			int keyType = endpoints[j][axis].type;
-			int keyBoxId = endpoints[j][axis].boxId;
-
-			//get the min val if this is a startPoint else get the max val
-			double keyVal = boxes[keyBoxId].vals[keyType][axis];
-
-			//compare the keyval to the value one before it in the array (our comparison value) and
-			//swap places if need be. Keep doing this until no more swaps are needed or until we
-			//reach the start of the array.
-			while(i >= 0)
-			{
-				//get our comparison value in the same way we got the key value
-				int compType = endpoints[i][axis].type;
-				int compBoxId = endpoints[i][axis].boxId;
-				int compVal = boxes[compBoxId].vals[compType][axis];
-
-				if(compVal < keyVal)
-				{
-					//these values are in the correct order so break out of this while loop
-					break;
-				}
-
-				//these vals are swapping places which relates to a change in the state of the scene
-				//so update our encounter list accordingly
-
-				//if an endpoint is swapping to the left on a startpoint then we know these objects
-				//are leaving contact so remove any encounters relating to these objects
-				if((compType == 0) && (keyType == 1))
-				{
-					//std::cout << "Removing encounter! (collision ended)" << std::endl;
-					RemoveEncounter(compBoxId, keyBoxId);
-				}
-				else
-				{
-					//else if a startpoint is swapping to the left of an endpoint, these objects might
-					//be colliding
-					if((compType == 1) && (keyType == 0))
-					{
-						//this only tells us that they overlap on one axis
-						//to be sure of collision we must do an intersection test
-						if(collide(boxes[compBoxId], boxes[keyBoxId]))
-						{
-							//std::cout << "Adding encounter! (collision detected)" << std::endl;
-							AddEncounter(compBoxId, keyBoxId);	//these AABBs now intersect
-						}
-					}
-				}
-
-				//finally we must swap the points
-				endpoints[j][axis].type = compType;
-				endpoints[i][axis].type = keyType;
-
-				endpoints[j][axis].boxId = compBoxId;
-				endpoints[i][axis].boxId = keyBoxId;
-
-				std::cout << "Swapping endpoints. Axis: ";
-				if(axis == 0)
-					std::cout << "X, ";
-				else
-					std::cout << "Y, ";
-				std::cout << "IDs: " << keyBoxId << " and " << compBoxId << std::endl;
-
-				//we must decrement i so that we continue searching down the array
-				j = i;	//j is always the next valid endpt after i
-				while(i >= 0)
-				{
-					--i;
-					if(endpoints[i][axis].boxId != -1)
-						break;
-				}
-			}
-
-			//find the next valid secondGoodIndex, if any
-			firstGoodIndex = secondGoodIndex;	//"increment" firstGoodIndex to next valid endpoint
-			++secondGoodIndex;
-			while(secondGoodIndex < 2*MAXAABBS)
-			{
-				if(endpoints[secondGoodIndex][axis].boxId != -1)
-				{
-					break;
-				}
-				else
-					++secondGoodIndex;
-			}
-		}
-	}
 }
 
 void SweepAndPrune::ResolveEncounters(std::string *collmsg)
@@ -292,6 +186,8 @@ void SweepAndPrune::AddEncounter(int objIdA, int objIdB)
 			{
 				encounters[i].objIDs[0] = objIdA;
 				encounters[i].objIDs[1] = objIdB;
+				++numEncounters;
+				break;	//Forgot this again...
 			}
 		}
 	}
@@ -313,6 +209,7 @@ void SweepAndPrune::RemoveEncounter(int objIdA, int objIdB)
 				{
 					encounters[j].objIDs[0] = -1;
 					encounters[j].objIDs[1] = -1;
+					--numEncounters;
 					break;	//The assumption is that there will be only one encounter between two unique objects
 				}
 			}
@@ -325,6 +222,7 @@ void SweepAndPrune::RemoveEncounter(int objIdA, int objIdB)
 				{
 					encounters[j].objIDs[0] = -1;
 					encounters[j].objIDs[1] = -1;
+					--numEncounters;
 					break;	//The assumption is that there will be only one encounter between two unique objects
 				}
 			}
@@ -338,9 +236,9 @@ int SweepAndPrune::AddBox(objType type, double minX, double minY, double maxX, d
     // add box
 	for(int i=0;i < MAXAABBS;++i)
 	{
-		if(boxes[i].objID == -1)	//Find the first empty cell
+		if(boxes[i].boxId == -1)	//Find the first empty cell
 		{
-			boxes[i].objID = i;
+			boxes[i].boxId = i;
 			boxes[i].type = type;
 			boxes[i].vals[0][0] = minX;
 			boxes[i].vals[0][1] = minY;
@@ -348,16 +246,24 @@ int SweepAndPrune::AddBox(objType type, double minX, double minY, double maxX, d
 			boxes[i].vals[1][1] = maxY;
 
 			// add endpoints
-			endpoints[2*i][0].type = 0;		//xmin
-			endpoints[2*i][0].boxId = i;
-			endpoints[2*i+1][0].type = 1;	//xmax
-			endpoints[2*i+1][0].boxId = i;
-			endpoints[2*i][1].type = 0;		//ymin
-			endpoints[2*i][1].boxId = i;
-			endpoints[2*i+1][1].type = 1;	//ymax
-			endpoints[2*i+1][1].boxId = i;
+			endpointsX[2*i].type = 0;		//xmin
+			endpointsX[2*i].boxId = i;
+			endpointsX[2*i].val = minX;
+
+			endpointsX[2*i+1].type = 1;		//xmax
+			endpointsX[2*i+1].boxId = i;
+			endpointsX[2*i+1].val = maxX;
+
+			endpointsY[2*i].type = 0;		//ymin
+			endpointsY[2*i].boxId = i;
+			endpointsY[2*i].val = minY;
+
+			endpointsY[2*i+1].type = 1;		//ymax
+			endpointsY[2*i+1].boxId = i;
+			endpointsY[2*i+1].val = maxY;
 
 			boxID = i;
+			boxes[i].endptId = 2*i;
 			break;	//forgot this earlier...
 		}
 	}
@@ -378,11 +284,11 @@ void SweepAndPrune::RemoveBox(int boxId)
     // endpoints as well as any encounters relating to this boxes object
 
 	//THIS IS NOT GOING TO WORK SINCE THE ENDPOINTS WILL LIKELY HAVE BEEN SWAPPED!!!
-	boxes[boxId].objID = -1;
-	endpoints[2*boxId][0].boxId = -1;
-	endpoints[2*boxId+1][0].boxId = -1;
-	endpoints[2*boxId][1].boxId = -1;
-	endpoints[2*boxId+1][1].boxId = -1;
+	boxes[boxId].boxId = -1;
+	endpointsX[boxes[boxId].endptId].boxId = -1;
+	endpointsX[boxes[boxId].endptId+1].boxId = -1;
+	endpointsY[boxes[boxId].endptId].boxId = -1;
+	endpointsY[boxes[boxId].endptId+1].boxId = -1;
 
 	for(int i=0;i < MAX_ENCOUNTERS;++i)
 	{

@@ -243,9 +243,9 @@ int Player::getPid()
 	return playerID;
 }
 
-void Player::setObjId(int newId)
+void Player::setBoxId(int newId)
 {
-	playerBox.objID = newId;
+	playerBox.boxId = newId;
 }
 
 void Player::reportVel(std::string &velstr)
