@@ -118,11 +118,12 @@ int main(int argc, char **argv)
 			playername.append(std::to_string(i));
 			playerSelect.InsertItem(playername, i, players[i].getPid(), &fontDraw);
 			//Add player collision data
-			players[i].setBoxId(collider.AddBox(players[i].outputAABB().type,
+			/*players[i].setBoxId(collider.AddBox(players[i].outputAABB().type,
 				players[i].outputAABB().vals[0][0],
 				players[i].outputAABB().vals[0][1],
 				players[i].outputAABB().vals[1][0],
-				players[i].outputAABB().vals[1][1]));
+				players[i].outputAABB().vals[1][1]));*/
+			collider.Add(players[i].outputAABB());
 		}
 	}
 
@@ -316,17 +317,23 @@ int main(int argc, char **argv)
 					players[i].reportVel(vel);
 
 					//Update player collision data
-					collider.UpdateBox(players[i].outputAABB().boxId, players[i].outputAABB().type,
-						players[i].outputAABB().vals[0][0],
-						players[i].outputAABB().vals[0][1],
-						players[i].outputAABB().vals[1][0],
-						players[i].outputAABB().vals[1][1]);
+					//collider.UpdateBox(players[i].outputAABB().boxId, players[i].outputAABB().type,
+						//players[i].outputAABB().vals[0][0],
+						//players[i].outputAABB().vals[0][1],
+						//players[i].outputAABB().vals[1][0],
+						//players[i].outputAABB().vals[1][1]);
 				}
+			}
+			
+			//Do collision update AFTER *all* players have moved
+			for(int i=0;i<MAXPLAYERS;++i)
+			{
+				collider.Update(players[i].outputAABB());
 			}
 
 			//Update collisions
-			collider.Update();
-			collider.ResolveEncounters(&coll);
+			//collider.Update();
+			//collider.ResolveEncounters(&coll);
 
 			mainText.ReceiveString(coll, collPos);
 			mainText.ReceiveString(vel, velPos);

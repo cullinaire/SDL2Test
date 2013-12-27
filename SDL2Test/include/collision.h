@@ -6,8 +6,14 @@
 #elif _WIN32
 	#include "SDL.h"
 #endif
+
 #define MAX_ENCOUNTERS	256
 #define MAXAABBS	256
+#define MAXENDPT	1
+#define MINENDPT	0
+#define XAXIS		0
+#define	YAXIS		1
+
 //collision.h - structs and routines to support collision detection
 //collision code adapted from http://cokane.com/shmupdevarchive/index.php/topic,1635.0.html
 //Collision structure: AABBs, Endpoints, and Encounters
@@ -48,9 +54,8 @@ typedef struct Encounter
 typedef struct Endpoint
 {
 	int type;	// 0 = startPoint (min extreme), 1 = endPoint (max extreme)
-	int boxId;	// id of the box this endpoint belongs to
-	int val;	// The current value of the endpoint - used for sorting
-	bool operator<(const int val);
+	int boxId;	// id of the box this endpoint belongs to.
+				//Remember that this is not the index to the endpoint array since it is sorted and persistent
 } Endpoint;
 
 class SweepAndPrune
@@ -58,15 +63,16 @@ class SweepAndPrune
 public:
 	SweepAndPrune();
 	~SweepAndPrune();
-	void Update();
-	void ResolveEncounters(std::string *collmsg);
+	void Update(const AABB box);
+	void Add(const AABB box);
+	//void ResolveEncounters(std::string *collmsg);
 
-	void AddEncounter(int objIdA, int objIdB);
-    void RemoveEncounter(int objIdA, int objIdB);
+	/*void AddEncounter(int objIdA, int objIdB);
+    void RemoveEncounter(int objIdA, int objIdB);*/
 
-	int AddBox(objType type, double minX, double maxX, double minY, double maxY);
-	void RemoveBox(int boxId);
-	void UpdateBox(int boxId, objType type, double minX, double maxX, double minY, double maxY);
+	//int AddBox(objType type, double minX, double maxX, double minY, double maxY);
+	//void RemoveBox(int boxId);
+	//void UpdateBox(int boxId, objType type, double minX, double maxX, double minY, double maxY);
 
 	void drawBoundingBoxes(SDL_Renderer *rend);
 
