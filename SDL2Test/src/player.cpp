@@ -48,14 +48,14 @@ Player::Player(SpriteSheet *playerSheet, InputCfg *p_inputCfg, int p_id)
 //Right now the actual player width and height (full sprite size) is 11 and 24 (subject to change,
 //check the spritesheet definition files!)
 //Remember that the x,y coord of the player is the upper left corner of the sprite.
-//X increases to the right and Y increases to the bottom.
+//X increases to the right and Y increases to the bottom. (THIS DISTINCTION IS CRITICAL)
 //Make sure to update these whenever the player changes position!!!
 void Player::updateAABB(int x, int y)
 {
 	playerBox.vals[0][0] = x+2;		//minX
-	playerBox.vals[0][1] = y+24-3;	//minY
+	playerBox.vals[0][1] = y+2;		//minY
 	playerBox.vals[1][0] = x+11-2;	//maxX
-	playerBox.vals[1][1] = y+2;		//maxY
+	playerBox.vals[1][1] = y+24-3;	//maxY
 }
 
 void Player::relocate(int x, int y)
