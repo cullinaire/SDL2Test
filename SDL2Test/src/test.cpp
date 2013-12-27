@@ -123,7 +123,7 @@ int main(int argc, char **argv)
 				players[i].outputAABB().vals[0][1],
 				players[i].outputAABB().vals[1][0],
 				players[i].outputAABB().vals[1][1]));*/
-			collider.Add(players[i].outputAABB());
+			players[i].setBoxId(collider.Add(players[i].outputAABB()));
 		}
 	}
 
@@ -328,7 +328,10 @@ int main(int argc, char **argv)
 			//Do collision update AFTER *all* players have moved
 			for(int i=0;i<MAXPLAYERS;++i)
 			{
-				collider.Update(players[i].outputAABB());
+				if(players[i].getPid() != 0)
+				{
+					collider.Update(players[i].outputAABB());
+				}
 			}
 
 			//Update collisions

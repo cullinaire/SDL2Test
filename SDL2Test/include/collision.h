@@ -64,7 +64,7 @@ public:
 	SweepAndPrune();
 	~SweepAndPrune();
 	void Update(const AABB box);
-	void Add(const AABB box);
+	int Add(const AABB box);
 	//void ResolveEncounters(std::string *collmsg);
 
 	/*void AddEncounter(int objIdA, int objIdB);

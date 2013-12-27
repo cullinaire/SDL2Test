@@ -108,6 +108,7 @@ SweepAndPrune::SweepAndPrune()
 	for(int j=0;j < 2*MAXAABBS;++j)
 	{
 		endpointsX[j].boxId = -1;
+		endpointsY[j].boxId = -1;
 	}
 }
 
@@ -130,11 +131,16 @@ void SweepAndPrune::Update(const AABB box)
 	boxes[box.boxId].vals[MAXENDPT][YAXIS] = box.vals[MAXENDPT][YAXIS];
 
 	int j = 0;
+	int i = 0;
 
 	//Do X axis stuff first
 	for(int keyIdx=1;keyIdx < 2*MAXAABBS;++keyIdx)
 	{
-		int i = keyIdx;
+		i = keyIdx;
+
+		//Just for now
+		if(endpointsX[i].boxId == -1)
+			break;
 
 		while(i > 0)
 		{
@@ -156,22 +162,22 @@ void SweepAndPrune::Update(const AABB box)
 				if(keyType == MAXENDPT && compType == MAXENDPT)	//just swap, not an indication of collison
 				{
 					//do nothing
-					std::cout << "Max passes Max, doing nothing" << std::endl;
+					std::cout << "X:Max passes Max, doing nothing" << std::endl;
 				}
 				else if(keyType == MAXENDPT && compType == MINENDPT)	//if MAX is now less than MIN, chances are objects now stop overlapping
 				{
 					//do something about removing an encounter if necessary
-					std::cout << "Max passes min, remove" << std::endl;
+					std::cout << "X:Max passes min, remove" << std::endl;
 				}
 				else if(keyType == MINENDPT && compType == MAXENDPT)	//if a box's MIN is less than another's MAX, chances are there is a new overlap
 				{
 					//investigate further to see if there is an actual collision
-					std::cout << "Min passes max, add" << std::endl;
+					std::cout << "X:Min passes max, add" << std::endl;
 				}
 				else if(keyType == MINENDPT && compType == MINENDPT)	//just swap, not an indication of collision
 				{
 					//do nothing
-					std::cout << "Min passes Min, doing nothing" << std::endl;
+					std::cout << "X:Min passes Min, doing nothing" << std::endl;
 				}
 
 				//now swap
@@ -186,11 +192,72 @@ void SweepAndPrune::Update(const AABB box)
 			--i;
 		}
 	}
+
+	//Do Y axis stuff now
+	for(int keyIdx=1;keyIdx < 2*MAXAABBS;++keyIdx)
+	{
+		i = keyIdx;
+
+		//Just for now
+		if(endpointsY[i].boxId == -1)
+			break;
+
+		while(i > 0)
+		{
+			//Get key values
+			int keyType = endpointsY[i].type;
+			int keyId = endpointsY[i].boxId;
+			double keyVal = boxes[endpointsY[i].boxId].vals[keyType][YAXIS];	//second 0 is x axis
+
+			j = i-1;
+		
+			//Get comparison values
+			int compType = endpointsY[j].type;
+			int compId = endpointsY[j].boxId;
+			double compVal = boxes[endpointsY[j].boxId].vals[compType][YAXIS];
+
+			if(keyVal < compVal)	//need to swap at this point
+			{
+				//Will optimize the following later based on likelihood of occurrence
+				if(keyType == MAXENDPT && compType == MAXENDPT)	//just swap, not an indication of collison
+				{
+					//do nothing
+					std::cout << "Y:Max passes Max, doing nothing" << std::endl;
+				}
+				else if(keyType == MAXENDPT && compType == MINENDPT)	//if MAX is now less than MIN, chances are objects now stop overlapping
+				{
+					//do something about removing an encounter if necessary
+					std::cout << "Y:Max passes min, remove" << std::endl;
+				}
+				else if(keyType == MINENDPT && compType == MAXENDPT)	//if a box's MIN is less than another's MAX, chances are there is a new overlap
+				{
+					//investigate further to see if there is an actual collision
+					std::cout << "Y:Min passes max, add" << std::endl;
+				}
+				else if(keyType == MINENDPT && compType == MINENDPT)	//just swap, not an indication of collision
+				{
+					//do nothing
+					std::cout << "Y:Min passes Min, doing nothing" << std::endl;
+				}
+
+				//now swap
+				endpointsY[i].type = compType;
+				endpointsY[i].boxId = compId;
+
+				endpointsY[j].type = keyType;
+				endpointsY[j].boxId = keyId;
+			}
+
+			//Decrement i to see if further swaps are needed
+			--i;
+		}
+	}
 }
 
-void SweepAndPrune::Add(const AABB box)
+int SweepAndPrune::Add(const AABB box)
 {
-	bool minAdded = false;
+	bool minXAdded = false;
+	bool minYAdded = false;
 	//Add a new box to the collection. Also needs to properly add the endpoints.
 	//This is accomplished by calling update()
 	for(int i=0;i < MAXAABBS;++i)
@@ -211,7 +278,7 @@ void SweepAndPrune::Add(const AABB box)
 			{
 				if(endpointsX[j].boxId == -1)
 				{
-					if(minAdded)
+					if(minXAdded)
 					{
 						endpointsX[j].boxId = boxes[i].boxId;
 						endpointsX[j].type = MAXENDPT;
@@ -219,13 +286,26 @@ void SweepAndPrune::Add(const AABB box)
 					}
 					endpointsX[j].boxId = boxes[i].boxId;
 					endpointsX[j].type = MINENDPT;
-					minAdded = true;
+					minXAdded = true;
+				}
+
+				if(endpointsY[j].boxId == -1)
+				{
+					if(minYAdded)
+					{
+						endpointsY[j].boxId = boxes[i].boxId;
+						endpointsY[j].type = MAXENDPT;
+						break;
+					}
+					endpointsY[j].boxId = boxes[i].boxId;
+					endpointsY[j].type = MINENDPT;
+					minYAdded = true;
 				}
 			}
 
 			this->Update(boxes[i]);
 
-			break;
+			return boxes[i].boxId;
 		}
 	}
 }
