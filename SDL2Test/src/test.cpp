@@ -22,6 +22,7 @@
 //function is waiting, but continue on with the rest of the loop. If the player finally enters the
 //key, then do whatever with it.
 #define MAXPLAYERS	8
+#define EMPTY_PLAYER	-1
 #ifdef __linux
 	#include "SDL2/SDL.h"
 #elif _WIN32
@@ -74,6 +75,8 @@ int main(int argc, char **argv)
 
 	SpriteSheet mensheet("../assets/men.bmp", rend, "../assets/hatman.def");
 
+	SpriteSheet itemsheet("../assets/men.bmp", rend, "../assets/pickups.def");
+
 	BMPText fontDraw(&arcadeFont);	//Default system font for debug msgs
 
 	TxtLayer mainText(&fontDraw);	//Txtlayer which will carry all printed text for each frame
@@ -86,7 +89,7 @@ int main(int argc, char **argv)
 
 	players.resize(MAXPLAYERS);
 
-	Player emptyPlayer(0);
+	Player emptyPlayer(EMPTY_PLAYER);
 
 	for(int i=0;i<MAXPLAYERS;++i)
 	{
@@ -111,7 +114,7 @@ int main(int argc, char **argv)
 	playerSelect.DefineCursor("*");
 	for(int i=0;i < MAXPLAYERS;++i)
 	{
-		if(players[i].getPid() != 0)	//Is a valid player
+		if(players[i].getPid() != EMPTY_PLAYER)	//Is a valid player
 		{
 			//Construct player select menu
 			playername.assign("Player ");
@@ -250,12 +253,25 @@ int main(int argc, char **argv)
 							else
 								drawAABBs = false;
 							break;
+						case SDL_SCANCODE_F2:	//To add dummy players
+							for(int i=0;i<MAXPLAYERS;++i)
+							{
+								if(players[i].getPid() == EMPTY_PLAYER)	//Is empty slot
+								{
+									players[i] = Player(&mensheet, &inputConfig, i);
+									players[i].relocate(players[1].outputAABB().vals[MINENDPT][XAXIS] + 64,
+										players[1].outputAABB().vals[MINENDPT][YAXIS] + 64);
+									players[i].setBoxId(collider.Add(players[i].outputAABB()));
+									break;
+								}
+							}
+							break;
 						default:
 							break;
 						}
 						for(int i=0;i<MAXPLAYERS;++i)
 						{
-							if(players[i].getPid() != 0)	//Is a valid player
+							if(players[i].getPid() != EMPTY_PLAYER)	//Is a valid player
 							{
 								players[i].processKeyDown(lastKey, keyPressed);
 							}
@@ -272,7 +288,7 @@ int main(int argc, char **argv)
 				{
 					for(int i=0;i<MAXPLAYERS;++i)
 					{
-						if(players[i].getPid() != 0)	//Is a valid player
+						if(players[i].getPid() != EMPTY_PLAYER)	//Is a valid player
 						{
 							players[i].processKeyUp(lastKey, keyPressed);
 						}
@@ -309,7 +325,7 @@ int main(int argc, char **argv)
 			accumulator -= dt;
 			for(int i=0;i<MAXPLAYERS;++i)
 			{
-				if(players[i].getPid() != 0)	//Is a valid player
+				if(players[i].getPid() != EMPTY_PLAYER)	//Is a valid player
 				{
 					players[i].modifyForces(t+dt);
 					players[i].verlet(dt);
@@ -328,7 +344,7 @@ int main(int argc, char **argv)
 			//Do collision update AFTER *all* players have moved
 			for(int i=0;i<MAXPLAYERS;++i)
 			{
-				if(players[i].getPid() != 0)
+				if(players[i].getPid() != EMPTY_PLAYER)
 				{
 					collider.Update(players[i].outputAABB());
 				}
@@ -357,7 +373,7 @@ int main(int argc, char **argv)
 		//Draw stuff now
 		for(int i=0;i<MAXPLAYERS;++i)
 		{
-			if(players[i].getPid() != 0)	//Is a valid player
+			if(players[i].getPid() != EMPTY_PLAYER)	//Is a valid player
 			{
 				players[i].Interpolate(alpha);	//Was putting this before the renderclear like a dummy
 				if(drawAABBs)	//Draw collision AABB if toggled

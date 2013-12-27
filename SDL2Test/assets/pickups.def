@@ -1,0 +1,7 @@
+#items.def - sprite definition file for pickups
+
+#pie
+
+{
+	[2, 27, 7, 5]
+}
