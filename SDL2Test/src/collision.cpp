@@ -130,13 +130,10 @@ void SweepAndPrune::Update(const AABB box)
 	boxes[box.boxId].vals[MAXENDPT][XAXIS] = box.vals[MAXENDPT][XAXIS];
 	boxes[box.boxId].vals[MAXENDPT][YAXIS] = box.vals[MAXENDPT][YAXIS];
 
-	int j = 0;
-	int i = 0;
-
 	//Do X axis stuff first
 	for(int keyIdx=1;keyIdx < 2*MAXAABBS;++keyIdx)
 	{
-		i = keyIdx;
+		int i = keyIdx;
 
 		//Just for now
 		if(endpointsX[i].boxId == -1)
@@ -149,7 +146,7 @@ void SweepAndPrune::Update(const AABB box)
 			int keyId = endpointsX[i].boxId;
 			double keyVal = boxes[endpointsX[i].boxId].vals[keyType][XAXIS];	//second 0 is x axis
 
-			j = i-1;
+			int j = i-1;
 		
 			//Get comparison values
 			int compType = endpointsX[j].type;
@@ -196,7 +193,7 @@ void SweepAndPrune::Update(const AABB box)
 	//Do Y axis stuff now
 	for(int keyIdx=1;keyIdx < 2*MAXAABBS;++keyIdx)
 	{
-		i = keyIdx;
+		int i = keyIdx;
 
 		//Just for now
 		if(endpointsY[i].boxId == -1)
@@ -209,7 +206,7 @@ void SweepAndPrune::Update(const AABB box)
 			int keyId = endpointsY[i].boxId;
 			double keyVal = boxes[endpointsY[i].boxId].vals[keyType][YAXIS];	//second 0 is x axis
 
-			j = i-1;
+			int j = i-1;
 		
 			//Get comparison values
 			int compType = endpointsY[j].type;
