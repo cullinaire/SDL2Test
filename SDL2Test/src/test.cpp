@@ -99,12 +99,12 @@ int main(int argc, char **argv)
 	//Adding players. Player id determines which vector index they will occupy. Of course later additions will
 	//be done by player input.
 
-	players[1] = Player(&mensheet, &inputConfig, 1);
-	players[3] = Player(&mensheet, &inputConfig, 3);
-	players[5] = Player(&mensheet, &inputConfig, 5);
+	players[0] = Player(&mensheet, &inputConfig, 1);
+	players[1] = Player(&mensheet, &inputConfig, 3);
+	players[2] = Player(&mensheet, &inputConfig, 5);
 
-	players[5].relocate(64, 64);
-	players[3].relocate(128, 128);
+	players[1].relocate(64, 64);
+	players[2].relocate(128, 128);
 
 	Menu playerSelect = Menu(&mainText);
 
@@ -121,18 +121,13 @@ int main(int argc, char **argv)
 			playername.append(std::to_string(i));
 			playerSelect.InsertItem(playername, i, players[i].getPid(), &fontDraw);
 			//Add player collision data
-			/*players[i].setBoxId(collider.AddBox(players[i].outputAABB().type,
-				players[i].outputAABB().vals[0][0],
-				players[i].outputAABB().vals[0][1],
-				players[i].outputAABB().vals[1][0],
-				players[i].outputAABB().vals[1][1]));*/
 			players[i].setBoxId(collider.Add(players[i].outputAABB()));
 		}
 	}
 
-	players[1].assignInput("../assets/player1bind.def");
-	players[3].assignInput("../assets/player2bind.def");
-	players[5].assignInput("../assets/player3bind.def");
+	players[0].assignInput("../assets/player1bind.def");
+	players[1].assignInput("../assets/player2bind.def");
+	players[2].assignInput("../assets/player3bind.def");
 
 	SDL_Event ev;
 	SDL_Scancode lastKey;	//Keeps track of last key pressed
@@ -271,8 +266,8 @@ int main(int argc, char **argv)
 							{
 								if(players[i].getPid() != EMPTY_PLAYER)
 								{
+									collider.Remove(players[i].getBoxId());
 									players[i] = Player(EMPTY_PLAYER);
-									collider.Remove(i);
 									break;
 								}
 							}
@@ -342,13 +337,6 @@ int main(int argc, char **argv)
 					players[i].verlet(dt);
 					players[i].SelectAnim();
 					players[i].reportVel(vel);
-
-					//Update player collision data
-					//collider.UpdateBox(players[i].outputAABB().boxId, players[i].outputAABB().type,
-						//players[i].outputAABB().vals[0][0],
-						//players[i].outputAABB().vals[0][1],
-						//players[i].outputAABB().vals[1][0],
-						//players[i].outputAABB().vals[1][1]);
 				}
 			}
 			
@@ -360,10 +348,6 @@ int main(int argc, char **argv)
 					collider.Update(players[i].outputAABB());
 				}
 			}
-
-			//Update collisions
-			//collider.Update();
-			//collider.ResolveEncounters(&coll);
 
 			mainText.ReceiveString(coll, collPos);
 			mainText.ReceiveString(vel, velPos);
@@ -408,7 +392,6 @@ int main(int argc, char **argv)
 		mainText.Clear();
 		//End draw stuff
 		SDL_RenderPresent(rend);
-		//SDL_Delay(200);	//Don't peg the CPU
 	}
 
 	//Deinitialization

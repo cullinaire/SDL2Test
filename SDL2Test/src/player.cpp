@@ -248,6 +248,11 @@ void Player::setBoxId(int newId)
 	playerBox.boxId = newId;
 }
 
+int Player::getBoxId()
+{
+	return playerBox.boxId;
+}
+
 void Player::reportVel(std::string &velstr)
 {
 	velstr.assign("Velocity: ");

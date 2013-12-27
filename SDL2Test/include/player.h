@@ -63,6 +63,7 @@ public:
 	void SelectAnim();
 	int getPid();
 	void setBoxId(int newId);
+	int getBoxId();
 	void reportVel(std::string &velstr);
 	AABB outputAABB();
 
