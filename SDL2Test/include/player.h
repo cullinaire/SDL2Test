@@ -9,7 +9,7 @@
 
 #define PLAYER_INITIAL_X	32
 #define PLAYER_INITIAL_Y	32
-#define DEF_FORCE			100
+#define DEF_FORCE			70
 #define DEF_FRIC			0.95
 
 #ifdef __linux

@@ -159,22 +159,22 @@ void SweepAndPrune::Update(const AABB box)
 				if(keyType == MAXENDPT && compType == MAXENDPT)	//just swap, not an indication of collison
 				{
 					//do nothing
-					std::cout << "X:Max passes Max, doing nothing" << std::endl;
+					//std::cout << "X:Max passes Max, doing nothing" << std::endl;
 				}
 				else if(keyType == MAXENDPT && compType == MINENDPT)	//if MAX is now less than MIN, chances are objects now stop overlapping
 				{
 					//do something about removing an encounter if necessary
-					std::cout << "X:Max passes min, remove" << std::endl;
+					//std::cout << "X:Max passes min, remove" << std::endl;
 				}
 				else if(keyType == MINENDPT && compType == MAXENDPT)	//if a box's MIN is less than another's MAX, chances are there is a new overlap
 				{
 					//investigate further to see if there is an actual collision
-					std::cout << "X:Min passes max, add" << std::endl;
+					//std::cout << "X:Min passes max, add" << std::endl;
 				}
 				else if(keyType == MINENDPT && compType == MINENDPT)	//just swap, not an indication of collision
 				{
 					//do nothing
-					std::cout << "X:Min passes Min, doing nothing" << std::endl;
+					//std::cout << "X:Min passes Min, doing nothing" << std::endl;
 				}
 
 				//now swap
@@ -183,6 +183,27 @@ void SweepAndPrune::Update(const AABB box)
 
 				endpointsX[j].type = keyType;
 				endpointsX[j].boxId = keyId;
+
+				//if(keyType == MAXENDPT)
+				//	std::cout << "Max endpt of box ";
+				//else
+				//	std::cout << "Min endpt of box ";
+				//
+				//std::cout << keyId << " at index " << j << " got swapped with ";
+
+				//if(compType == MAXENDPT)
+				//	std::cout << "Max endpt of box ";
+				//else
+				//	std::cout << "Min endpt of box ";
+
+				//std::cout << compId << " at index " << i << std::endl;
+
+				//std::cout << "[";
+				//for(int k=0;k < 10;++k)
+				//{
+				//	std::cout << endpointsX[k].boxId;
+				//}
+				//std::cout << "]" << std::endl;
 			}
 
 			//Decrement i to see if further swaps are needed
@@ -253,12 +274,12 @@ void SweepAndPrune::Update(const AABB box)
 
 int SweepAndPrune::Add(const AABB box)
 {
-	bool minXAdded = false;
-	bool minYAdded = false;
 	//Add a new box to the collection. Also needs to properly add the endpoints.
 	//This is accomplished by calling update()
 	for(int i=0;i < MAXAABBS;++i)
 	{
+		bool minXAdded = false;
+		bool minYAdded = false;
 		if(boxes[i].boxId == -1)	//found an empty spot
 		{
 			boxes[i].boxId = i;
@@ -286,23 +307,30 @@ int SweepAndPrune::Add(const AABB box)
 					minXAdded = true;
 				}
 
-				if(endpointsY[j].boxId == -1)
-				{
-					if(minYAdded)
-					{
-						endpointsY[j].boxId = boxes[i].boxId;
-						endpointsY[j].type = MAXENDPT;
-						break;
-					}
-					endpointsY[j].boxId = boxes[i].boxId;
-					endpointsY[j].type = MINENDPT;
-					minYAdded = true;
-				}
+				//if(endpointsY[j].boxId == -1)
+				//{
+				//	if(minYAdded)
+				//	{
+				//		endpointsY[j].boxId = boxes[i].boxId;
+				//		endpointsY[j].type = MAXENDPT;
+				//		break;
+				//	}
+				//	endpointsY[j].boxId = boxes[i].boxId;
+				//	endpointsY[j].type = MINENDPT;
+				//	minYAdded = true;
+				//}
 			}
 
-			this->Update(boxes[i]);
+			//std::cout << "{";
+			//	for(int k=0;k < 10;++k)
+			//	{
+			//		std::cout << endpointsX[k].boxId;
+			//	}
+			//	std::cout << "}" << std::endl;
 
-			return boxes[i].boxId;
+			//this->Update(boxes[i]);
+
+			//return boxes[i].boxId;
 		}
 	}
 }
