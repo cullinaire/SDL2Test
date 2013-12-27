@@ -191,64 +191,64 @@ void SweepAndPrune::Update(const AABB box)
 	}
 
 	//Do Y axis stuff now
-	for(int keyIdx=1;keyIdx < 2*MAXAABBS;++keyIdx)
-	{
-		int i = keyIdx;
+	//for(int keyIdx=1;keyIdx < 2*MAXAABBS;++keyIdx)
+	//{
+	//	int i = keyIdx;
 
-		//Just for now
-		if(endpointsY[i].boxId == -1)
-			break;
+	//	//Just for now
+	//	if(endpointsY[i].boxId == -1)
+	//		break;
 
-		while(i > 0)
-		{
-			//Get key values
-			int keyType = endpointsY[i].type;
-			int keyId = endpointsY[i].boxId;
-			double keyVal = boxes[endpointsY[i].boxId].vals[keyType][YAXIS];	//second 0 is x axis
+	//	while(i > 0)
+	//	{
+	//		//Get key values
+	//		int keyType = endpointsY[i].type;
+	//		int keyId = endpointsY[i].boxId;
+	//		double keyVal = boxes[endpointsY[i].boxId].vals[keyType][YAXIS];	//second 0 is x axis
 
-			int j = i-1;
-		
-			//Get comparison values
-			int compType = endpointsY[j].type;
-			int compId = endpointsY[j].boxId;
-			double compVal = boxes[endpointsY[j].boxId].vals[compType][YAXIS];
+	//		int j = i-1;
+	//	
+	//		//Get comparison values
+	//		int compType = endpointsY[j].type;
+	//		int compId = endpointsY[j].boxId;
+	//		double compVal = boxes[endpointsY[j].boxId].vals[compType][YAXIS];
 
-			if(keyVal < compVal)	//need to swap at this point
-			{
-				//Will optimize the following later based on likelihood of occurrence
-				if(keyType == MAXENDPT && compType == MAXENDPT)	//just swap, not an indication of collison
-				{
-					//do nothing
-					std::cout << "Y:Max passes Max, doing nothing" << std::endl;
-				}
-				else if(keyType == MAXENDPT && compType == MINENDPT)	//if MAX is now less than MIN, chances are objects now stop overlapping
-				{
-					//do something about removing an encounter if necessary
-					std::cout << "Y:Max passes min, remove" << std::endl;
-				}
-				else if(keyType == MINENDPT && compType == MAXENDPT)	//if a box's MIN is less than another's MAX, chances are there is a new overlap
-				{
-					//investigate further to see if there is an actual collision
-					std::cout << "Y:Min passes max, add" << std::endl;
-				}
-				else if(keyType == MINENDPT && compType == MINENDPT)	//just swap, not an indication of collision
-				{
-					//do nothing
-					std::cout << "Y:Min passes Min, doing nothing" << std::endl;
-				}
+	//		if(keyVal < compVal)	//need to swap at this point
+	//		{
+	//			//Will optimize the following later based on likelihood of occurrence
+	//			if(keyType == MAXENDPT && compType == MAXENDPT)	//just swap, not an indication of collison
+	//			{
+	//				//do nothing
+	//				std::cout << "Y:Max passes Max, doing nothing" << std::endl;
+	//			}
+	//			else if(keyType == MAXENDPT && compType == MINENDPT)	//if MAX is now less than MIN, chances are objects now stop overlapping
+	//			{
+	//				//do something about removing an encounter if necessary
+	//				std::cout << "Y:Max passes min, remove" << std::endl;
+	//			}
+	//			else if(keyType == MINENDPT && compType == MAXENDPT)	//if a box's MIN is less than another's MAX, chances are there is a new overlap
+	//			{
+	//				//investigate further to see if there is an actual collision
+	//				std::cout << "Y:Min passes max, add" << std::endl;
+	//			}
+	//			else if(keyType == MINENDPT && compType == MINENDPT)	//just swap, not an indication of collision
+	//			{
+	//				//do nothing
+	//				std::cout << "Y:Min passes Min, doing nothing" << std::endl;
+	//			}
 
-				//now swap
-				endpointsY[i].type = compType;
-				endpointsY[i].boxId = compId;
+	//			//now swap
+	//			endpointsY[i].type = compType;
+	//			endpointsY[i].boxId = compId;
 
-				endpointsY[j].type = keyType;
-				endpointsY[j].boxId = keyId;
-			}
+	//			endpointsY[j].type = keyType;
+	//			endpointsY[j].boxId = keyId;
+	//		}
 
-			//Decrement i to see if further swaps are needed
-			--i;
-		}
-	}
+	//		//Decrement i to see if further swaps are needed
+	//		--i;
+	//	}
+	//}
 }
 
 int SweepAndPrune::Add(const AABB box)

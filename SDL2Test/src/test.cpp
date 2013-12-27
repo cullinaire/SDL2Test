@@ -97,8 +97,8 @@ int main(int argc, char **argv)
 	//be done by player input.
 
 	players[1] = Player(&mensheet, &inputConfig, 1);
-	players[5] = Player(&mensheet, &inputConfig, 5);
 	players[3] = Player(&mensheet, &inputConfig, 3);
+	players[5] = Player(&mensheet, &inputConfig, 5);
 
 	players[5].relocate(64, 64);
 	players[3].relocate(128, 128);
