@@ -341,6 +341,38 @@ int SweepAndPrune::Add(const AABB box)
 	}
 }
 
+void SweepAndPrune::Remove(const int boxId)
+{
+	//Removes box from boxes array, as well as endpoints and encounters
+	//Initially the endpoints to be removed are just set to a special value
+	//which is very large. This causes them to be bubbled to the end of the
+	//endpoints array when Update() is called. At that point the endpoints
+	//are removed from the end and there will be no holes in the array.
+	//As for encounters, I'm still deciding what would be the best way since
+	//the pair manager hasn't even been implemented yet.
+
+	//Set the values to an off limit (hopefully) value
+	boxes[boxId].vals[MINENDPT][XAXIS] = ABSURDLY_HIGH;
+	boxes[boxId].vals[MINENDPT][YAXIS] = ABSURDLY_HIGH;
+	boxes[boxId].vals[MAXENDPT][XAXIS] = ABSURDLY_HIGH;
+	boxes[boxId].vals[MAXENDPT][YAXIS] = ABSURDLY_HIGH;
+	
+	this->Update(boxes[boxId]);
+
+	for(int i=0;i<2*MAXAABBS;++i)
+	{
+		//Hopefully these two will be at the end of the valid values now
+		if(endpointsX[i].boxId == boxId)
+			endpointsX[i].boxId = -1;
+		//Repeat once more since there will always be two endpoints
+		if(endpointsX[i].boxId == boxId)
+		{
+			endpointsX[i].boxId = -1;
+			break;
+		}
+	}
+}
+
 //void SweepAndPrune::ResolveEncounters(std::string *collmsg)
 //{
 //	collmsg->assign("No collisions right now");

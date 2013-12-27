@@ -7,6 +7,7 @@
 	#include "SDL.h"
 #endif
 
+#define ABSURDLY_HIGH	9000*9000	//Hopefully that'll cover any resolution
 #define MAX_ENCOUNTERS	256
 #define MAXAABBS	256
 #define MAXENDPT	1
@@ -65,6 +66,7 @@ public:
 	~SweepAndPrune();
 	void Update(const AABB box);
 	int Add(const AABB box);
+	void Remove(const int boxId);
 	//void ResolveEncounters(std::string *collmsg);
 
 	/*void AddEncounter(int objIdA, int objIdB);

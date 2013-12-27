@@ -266,6 +266,17 @@ int main(int argc, char **argv)
 								}
 							}
 							break;
+						case SDL_SCANCODE_F3:	//To remove dummy players starting from id 7
+							for(int i=MAXPLAYERS-1;i>=0;--i)
+							{
+								if(players[i].getPid() != EMPTY_PLAYER)
+								{
+									players[i] = Player(EMPTY_PLAYER);
+									collider.Remove(i);
+									break;
+								}
+							}
+							break;
 						default:
 							break;
 						}
