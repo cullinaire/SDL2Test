@@ -30,6 +30,7 @@
 #endif
 #include <iostream>
 #include <vector>
+#include <cstdlib>
 #include "logger.h"
 #include "sprite.h"
 #include "gfxtext.h"
@@ -96,12 +97,11 @@ int main(int argc, char **argv)
 		players[i] = emptyPlayer;
 	}
 
-	//Adding players. Player id determines which vector index they will occupy. Of course later additions will
-	//be done by player input.
+	//Adding players.
 
-	players[0] = Player(&mensheet, &inputConfig, 1);
-	players[1] = Player(&mensheet, &inputConfig, 3);
-	players[2] = Player(&mensheet, &inputConfig, 5);
+	players[0] = Player(&mensheet, &inputConfig, 0);
+	players[1] = Player(&mensheet, &inputConfig, 1);
+	players[2] = Player(&mensheet, &inputConfig, 2);
 
 	players[1].relocate(64, 64);
 	players[2].relocate(128, 128);
@@ -194,8 +194,6 @@ int main(int argc, char **argv)
 				if(waitingForInput)
 				{
 					//do the key assignment here
-					/*for(int i=0;i<numplayers;++i)
-						players[i].assignInput(lastKey);*/
 					players[activePlayerId].assignInput(lastKey);
 					waitingForInput = false;
 				}
@@ -254,8 +252,8 @@ int main(int argc, char **argv)
 								if(players[i].getPid() == EMPTY_PLAYER)	//Is empty slot
 								{
 									players[i] = Player(&mensheet, &inputConfig, i);
-									players[i].relocate(players[1].outputAABB().vals[MINENDPT][XAXIS] + 64,
-										players[1].outputAABB().vals[MINENDPT][YAXIS] + 64);
+									players[i].relocate(players[1].outputAABB().vals[MINENDPT][XAXIS] + (rand() % 640),
+										players[1].outputAABB().vals[MINENDPT][YAXIS] + (rand() % 480));
 									players[i].setBoxId(collider.Add(players[i].outputAABB()));
 									break;
 								}
