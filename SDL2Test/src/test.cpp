@@ -250,11 +250,16 @@ int main(int argc, char **argv)
 							break;
 						case SDL_SCANCODE_F2:	//Add players
 							newId = rand() % MAXPLAYERS-1;
-							while(newId < 0)
+							while(newId < 0 || players.PlayerExists(newId))
 							{
 								newId = rand() % MAXPLAYERS-1;
 							}
 							players.Add(newId, collider, mensheet, inputConfig);
+							if(newId == 1)
+							{
+								players.AssignInput(newId, "../assets/player1bind.def");
+							}
+
 							//for(int i=0;i<MAXPLAYERS;++i)
 							//{
 							//	if(players[i].getPid() == EMPTY_PLAYER)	//Is empty slot
@@ -269,7 +274,7 @@ int main(int argc, char **argv)
 							break;
 						case SDL_SCANCODE_F3:	//To remove dummy players starting from id 7
 							newId = rand() % MAXPLAYERS-1;
-							while(newId < 0)
+							while(newId < 0 || !players.PlayerExists(newId))
 							{
 								newId = rand() % MAXPLAYERS-1;
 							}
@@ -288,6 +293,8 @@ int main(int argc, char **argv)
 							break;
 						}
 
+						keyPressed[lastKey] = true;
+						players.ProcessInput(true, lastKey, keyPressed);
 						//for(int i=0;i<MAXPLAYERS;++i)
 						//{
 						//	if(players[i].getPid() != EMPTY_PLAYER)	//Is a valid player
@@ -295,8 +302,6 @@ int main(int argc, char **argv)
 						//		players[i].processKeyDown(lastKey, keyPressed);
 						//	}
 						//}
-
-						keyPressed[lastKey] = true;
 					}
 				}
 			}
@@ -304,6 +309,7 @@ int main(int argc, char **argv)
 			{
 				lastKey = ev.key.keysym.scancode;	//This might be the fix
 				keyPressed[lastKey] = false;
+				players.ProcessInput(false, lastKey, keyPressed);
 				//if(!playerSelectMenu && !inputMenu)
 				//{
 				//	for(int i=0;i<MAXPLAYERS;++i)
@@ -343,7 +349,7 @@ int main(int argc, char **argv)
 		while(accumulator >= dt)	//The fixed timestep area is in this while loop
 		{
 			accumulator -= dt;
-			players.Update(t, dt);
+			players.Update(t, dt, collider);
 			//for(int i=0;i<MAXPLAYERS;++i)
 			//{
 			//	if(players[i].getPid() != EMPTY_PLAYER)	//Is a valid player

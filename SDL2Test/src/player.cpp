@@ -290,7 +290,7 @@ void PlayerGroup::Add(int id, SweepAndPrune &collider, SpriteSheet &playerSheet,
 	if(players[id]->getPid() == emptyPlayer.getPid())
 	{
 		Player *newPlayer = new Player(&playerSheet, &playerCfg, id);
-		newPlayer->relocate(rand() % 640, rand() % 480);
+		newPlayer->relocate(rand() % 600, rand() % 400);
 		players[id] = newPlayer;
 		players[id]->setBoxId(collider.Add(newPlayer->outputAABB()));
 		++numActive;
@@ -319,7 +319,7 @@ void PlayerGroup::Render(double alpha)
 	}
 }
 
-void PlayerGroup::Update(double t, double dt)
+void PlayerGroup::Update(double t, double dt, SweepAndPrune &collider)
 {
 	for(int i=0;i < MAXPLAYERS;++i)
 	{
@@ -328,6 +328,46 @@ void PlayerGroup::Update(double t, double dt)
 			players[i]->modifyForces(t+dt);
 			players[i]->verlet(dt);
 			players[i]->SelectAnim();
+		}
+	}
+
+	//Collision update
+	for(int i=0;i < MAXPLAYERS;++i)
+	{
+		if(players[i]->getPid() != emptyPlayer.getPid())
+		{
+			collider.Update(players[i]->outputAABB());
+		}
+	}
+}
+
+void PlayerGroup::AssignInput(int id, const std::string defPath)
+{
+	if(players[id]->getPid() != emptyPlayer.getPid())
+	{
+		players[id]->assignInput(defPath);
+	}
+}
+
+bool PlayerGroup::PlayerExists(int id)
+{
+	if(players[id]->getPid() != emptyPlayer.getPid())
+		return true;
+	else
+		return false;
+}
+
+void PlayerGroup::ProcessInput(bool DownElseUp, SDL_Scancode scancode, bool *keyPressed)
+{
+	for(int i=0;i<MAXPLAYERS;++i)
+	{
+		if(DownElseUp)	//Keydown event
+		{
+			players[i]->processKeyDown(scancode, keyPressed);
+		}
+		else
+		{
+			players[i]->processKeyUp(scancode, keyPressed);
 		}
 	}
 }

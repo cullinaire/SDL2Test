@@ -93,7 +93,10 @@ public:
 	void Add(int id, SweepAndPrune &collider, SpriteSheet &playerSheet, InputCfg &playerCfg);
 	void Remove(int id, SweepAndPrune &collider);
 	void Render(double alpha);
-	void Update(double t, double dt);
+	void Update(double t, double dt, SweepAndPrune &collider);
+	void AssignInput(int id, const std::string defPath);
+	bool PlayerExists(int id);
+	void ProcessInput(bool DownElseUp, SDL_Scancode scancode, bool *keyPressed);
 private:
 	int numActive;
 	Player *players[MAXPLAYERS];
