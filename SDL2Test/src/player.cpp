@@ -263,3 +263,71 @@ AABB Player::outputAABB()
 {
 	return playerBox;
 }
+
+PlayerGroup::PlayerGroup()
+{
+	numActive = 0;
+	emptyPlayer = Player(EMPTY_PLAYER);
+	for(int i=0;i < MAXPLAYERS;++i)
+	{
+		players[i] = &emptyPlayer;
+	}
+}
+
+PlayerGroup::~PlayerGroup()
+{
+	for(int i=0;i<MAXPLAYERS;++i)
+	{
+		if(players[i]->getPid() != emptyPlayer.getPid())
+		{
+			delete players[i];
+		}
+	}
+}
+
+void PlayerGroup::Add(int id, SweepAndPrune &collider, SpriteSheet &playerSheet, InputCfg &playerCfg)
+{
+	if(players[id]->getPid() == emptyPlayer.getPid())
+	{
+		Player *newPlayer = new Player(&playerSheet, &playerCfg, id);
+		newPlayer->relocate(rand() % 640, rand() % 480);
+		players[id] = newPlayer;
+		players[id]->setBoxId(collider.Add(newPlayer->outputAABB()));
+		++numActive;
+	}
+}
+
+void PlayerGroup::Remove(int id, SweepAndPrune &collider)
+{
+	if(players[id]->getPid() != emptyPlayer.getPid())
+	{
+		collider.Remove(players[id]->getBoxId());
+		delete players[id];
+		players[id] = &emptyPlayer;
+		--numActive;
+	}
+}
+
+void PlayerGroup::Render(double alpha)
+{
+	for(int i=0;i < MAXPLAYERS;++i)
+	{
+		if(players[i]->getPid() != emptyPlayer.getPid())
+		{
+			players[i]->Interpolate(alpha);
+		}
+	}
+}
+
+void PlayerGroup::Update(double t, double dt)
+{
+	for(int i=0;i < MAXPLAYERS;++i)
+	{
+		if(players[i]->getPid() != emptyPlayer.getPid())
+		{
+			players[i]->modifyForces(t+dt);
+			players[i]->verlet(dt);
+			players[i]->SelectAnim();
+		}
+	}
+}

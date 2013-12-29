@@ -21,8 +21,7 @@
 //to enter a key, the main loop must not spin around that point. Set a variable noting that the
 //function is waiting, but continue on with the rest of the loop. If the player finally enters the
 //key, then do whatever with it.
-#define MAXPLAYERS	8
-#define EMPTY_PLAYER	-1
+
 #ifdef __linux
 	#include "SDL2/SDL.h"
 #elif _WIN32
@@ -86,48 +85,50 @@ int main(int argc, char **argv)
 
 	SweepAndPrune collider;
 
-	std::vector<Player> players;
+	PlayerGroup players;
 
-	players.resize(MAXPLAYERS);
+	//std::vector<Player> players;
 
-	Player emptyPlayer(EMPTY_PLAYER);
+	//players.resize(MAXPLAYERS);
 
-	for(int i=0;i<MAXPLAYERS;++i)
-	{
-		players[i] = emptyPlayer;
-	}
+	//Player emptyPlayer(EMPTY_PLAYER);
 
-	//Adding players.
+	//for(int i=0;i<MAXPLAYERS;++i)
+	//{
+	//	players[i] = emptyPlayer;
+	//}
 
-	players[0] = Player(&mensheet, &inputConfig, 0);
-	players[1] = Player(&mensheet, &inputConfig, 1);
-	players[2] = Player(&mensheet, &inputConfig, 2);
+	////Adding players.
 
-	players[1].relocate(64, 64);
-	players[2].relocate(128, 128);
+	//players[0] = Player(&mensheet, &inputConfig, 0);
+	//players[1] = Player(&mensheet, &inputConfig, 1);
+	//players[2] = Player(&mensheet, &inputConfig, 2);
 
-	Menu playerSelect = Menu(&mainText);
+	//players[1].relocate(64, 64);
+	//players[2].relocate(128, 128);
 
-	std::string playername;
+	//Menu playerSelect = Menu(&mainText);
 
-	playerSelect.SetTitle("Select player:");
-	playerSelect.DefineCursor("*");
-	for(int i=0;i < MAXPLAYERS;++i)
-	{
-		if(players[i].getPid() != EMPTY_PLAYER)	//Is a valid player
-		{
-			//Construct player select menu
-			playername.assign("Player ");
-			playername.append(std::to_string(i));
-			playerSelect.InsertItem(playername, i, players[i].getPid(), &fontDraw);
-			//Add player collision data
-			players[i].setBoxId(collider.Add(players[i].outputAABB()));
-		}
-	}
+	//std::string playername;
 
-	players[0].assignInput("../assets/player1bind.def");
-	players[1].assignInput("../assets/player2bind.def");
-	players[2].assignInput("../assets/player3bind.def");
+	//playerSelect.SetTitle("Select player:");
+	//playerSelect.DefineCursor("*");
+	//for(int i=0;i < MAXPLAYERS;++i)
+	//{
+	//	if(players[i].getPid() != EMPTY_PLAYER)	//Is a valid player
+	//	{
+	//		//Construct player select menu
+	//		playername.assign("Player ");
+	//		playername.append(std::to_string(i));
+	//		playerSelect.InsertItem(playername, i, players[i].getPid(), &fontDraw);
+	//		//Add player collision data
+	//		players[i].setBoxId(collider.Add(players[i].outputAABB()));
+	//	}
+	//}
+
+	//players[0].assignInput("../assets/player1bind.def");
+	//players[1].assignInput("../assets/player2bind.def");
+	//players[2].assignInput("../assets/player3bind.def");
 
 	SDL_Event ev;
 	SDL_Scancode lastKey;	//Keeps track of last key pressed
@@ -194,7 +195,7 @@ int main(int argc, char **argv)
 				if(waitingForInput)
 				{
 					//do the key assignment here
-					players[activePlayerId].assignInput(lastKey);
+					//players[activePlayerId].assignInput(lastKey);
 					waitingForInput = false;
 				}
 				else if(playerSelectMenu)
@@ -202,18 +203,18 @@ int main(int argc, char **argv)
 					switch(lastKey)
 					{
 					case SDL_SCANCODE_UP:
-						playerSelect.MoveCursor(false);
+						//playerSelect.MoveCursor(false);
 						break;
 					case SDL_SCANCODE_DOWN:
-						playerSelect.MoveCursor(true);
+						//playerSelect.MoveCursor(true);
 						break;
 					case SDL_SCANCODE_RETURN:
 						inputMenu = true;
 						playerSelectMenu = false;
-						activePlayerId = playerSelect.ExecuteItem();
+						//activePlayerId = playerSelect.ExecuteItem();
 						lastKey = SDL_SCANCODE_F24;	//Just a placeholder to prevent inputmenu from processing the return
 						//configinput will reset inputMenu to false upon exit
-						players[activePlayerId].configInput(lastKey, &waitingForInput, &inputMenu);
+						//players[activePlayerId].configInput(lastKey, &waitingForInput, &inputMenu);
 						break;
 					case SDL_SCANCODE_ESCAPE:
 						playerSelectMenu = false;
@@ -224,7 +225,7 @@ int main(int argc, char **argv)
 				}
 				else if(inputMenu)
 				{
-					players[activePlayerId].configInput(lastKey, &waitingForInput, &inputMenu);
+					//players[activePlayerId].configInput(lastKey, &waitingForInput, &inputMenu);
 					if(!inputMenu)
 						playerSelectMenu = true;
 				}
@@ -232,6 +233,7 @@ int main(int argc, char **argv)
 				{
 					if(keyPressed[lastKey] == false)
 					{
+						int newId = 0;
 						switch(lastKey)
 						{
 						case SDL_SCANCODE_ESCAPE:
@@ -246,21 +248,33 @@ int main(int argc, char **argv)
 							else
 								drawAABBs = false;
 							break;
-						case SDL_SCANCODE_F2:	//To add dummy players
-							for(int i=0;i<MAXPLAYERS;++i)
+						case SDL_SCANCODE_F2:	//Add players
+							newId = rand() % MAXPLAYERS-1;
+							while(newId < 0)
 							{
-								if(players[i].getPid() == EMPTY_PLAYER)	//Is empty slot
-								{
-									players[i] = Player(&mensheet, &inputConfig, i);
-									players[i].relocate(players[1].outputAABB().vals[MINENDPT][XAXIS] + (rand() % 640),
-										players[1].outputAABB().vals[MINENDPT][YAXIS] + (rand() % 480));
-									players[i].setBoxId(collider.Add(players[i].outputAABB()));
-									break;
-								}
+								newId = rand() % MAXPLAYERS-1;
 							}
+							players.Add(newId, collider, mensheet, inputConfig);
+							//for(int i=0;i<MAXPLAYERS;++i)
+							//{
+							//	if(players[i].getPid() == EMPTY_PLAYER)	//Is empty slot
+							//	{
+							//		players[i] = Player(&mensheet, &inputConfig, i);
+							//		players[i].relocate(players[1].outputAABB().vals[MINENDPT][XAXIS] + (rand() % 640),
+							//			players[1].outputAABB().vals[MINENDPT][YAXIS] + (rand() % 480));
+							//		players[i].setBoxId(collider.Add(players[i].outputAABB()));
+							//		break;
+							//	}
+							//}
 							break;
 						case SDL_SCANCODE_F3:	//To remove dummy players starting from id 7
-							for(int i=MAXPLAYERS-1;i>=0;--i)
+							newId = rand() % MAXPLAYERS-1;
+							while(newId < 0)
+							{
+								newId = rand() % MAXPLAYERS-1;
+							}
+							players.Remove(newId, collider);
+							/*for(int i=MAXPLAYERS-1;i>=0;--i)
 							{
 								if(players[i].getPid() != EMPTY_PLAYER)
 								{
@@ -268,18 +282,20 @@ int main(int argc, char **argv)
 									players[i] = Player(EMPTY_PLAYER);
 									break;
 								}
-							}
+							}*/
 							break;
 						default:
 							break;
 						}
-						for(int i=0;i<MAXPLAYERS;++i)
-						{
-							if(players[i].getPid() != EMPTY_PLAYER)	//Is a valid player
-							{
-								players[i].processKeyDown(lastKey, keyPressed);
-							}
-						}
+
+						//for(int i=0;i<MAXPLAYERS;++i)
+						//{
+						//	if(players[i].getPid() != EMPTY_PLAYER)	//Is a valid player
+						//	{
+						//		players[i].processKeyDown(lastKey, keyPressed);
+						//	}
+						//}
+
 						keyPressed[lastKey] = true;
 					}
 				}
@@ -288,16 +304,16 @@ int main(int argc, char **argv)
 			{
 				lastKey = ev.key.keysym.scancode;	//This might be the fix
 				keyPressed[lastKey] = false;
-				if(!playerSelectMenu && !inputMenu)
-				{
-					for(int i=0;i<MAXPLAYERS;++i)
-					{
-						if(players[i].getPid() != EMPTY_PLAYER)	//Is a valid player
-						{
-							players[i].processKeyUp(lastKey, keyPressed);
-						}
-					}
-				}
+				//if(!playerSelectMenu && !inputMenu)
+				//{
+				//	for(int i=0;i<MAXPLAYERS;++i)
+				//	{
+				//		if(players[i].getPid() != EMPTY_PLAYER)	//Is a valid player
+				//		{
+				//			players[i].processKeyUp(lastKey, keyPressed);
+				//		}
+				//	}
+				//}
 			}
 		}
 
@@ -327,25 +343,26 @@ int main(int argc, char **argv)
 		while(accumulator >= dt)	//The fixed timestep area is in this while loop
 		{
 			accumulator -= dt;
-			for(int i=0;i<MAXPLAYERS;++i)
-			{
-				if(players[i].getPid() != EMPTY_PLAYER)	//Is a valid player
-				{
-					players[i].modifyForces(t+dt);
-					players[i].verlet(dt);
-					players[i].SelectAnim();
-					players[i].reportVel(vel);
-				}
-			}
+			players.Update(t, dt);
+			//for(int i=0;i<MAXPLAYERS;++i)
+			//{
+			//	if(players[i].getPid() != EMPTY_PLAYER)	//Is a valid player
+			//	{
+			//		players[i].modifyForces(t+dt);
+			//		players[i].verlet(dt);
+			//		players[i].SelectAnim();
+			//		players[i].reportVel(vel);
+			//	}
+			//}
 			
 			//Do collision update AFTER *all* players have moved
-			for(int i=0;i<MAXPLAYERS;++i)
+			/*for(int i=0;i<MAXPLAYERS;++i)
 			{
 				if(players[i].getPid() != EMPTY_PLAYER)
 				{
 					collider.Update(players[i].outputAABB());
 				}
-			}
+			}*/
 
 			mainText.ReceiveString(coll, collPos);
 			mainText.ReceiveString(vel, velPos);
@@ -364,19 +381,22 @@ int main(int argc, char **argv)
 		SDL_SetRenderDrawColor(rend, 0, 0, 0, 255);	//Set back to black if AABB set to red
 		SDL_RenderClear(rend);
 		//Draw stuff now
-		for(int i=0;i<MAXPLAYERS;++i)
-		{
-			if(players[i].getPid() != EMPTY_PLAYER)	//Is a valid player
-			{
-				players[i].Interpolate(alpha);	//Was putting this before the renderclear like a dummy
-				if(drawAABBs)	//Draw collision AABB if toggled
-				{
-					collider.drawBoundingBoxes(rend);
-				}
-			}
-		}
+		players.Render(alpha);
+		if(drawAABBs)
+			collider.drawBoundingBoxes(rend);
+		//for(int i=0;i<MAXPLAYERS;++i)
+		//{
+		//	if(players[i].getPid() != EMPTY_PLAYER)	//Is a valid player
+		//	{
+		//		players[i].Interpolate(alpha);	//Was putting this before the renderclear like a dummy
+		//		if(drawAABBs)	//Draw collision AABB if toggled
+		//		{
+		//			collider.drawBoundingBoxes(rend);
+		//		}
+		//	}
+		//}
 
-		if(playerSelectMenu)
+		/*if(playerSelectMenu)
 		{
 			playerSelect.OutputMenu(128, 128);
 		}
@@ -384,7 +404,7 @@ int main(int argc, char **argv)
 		{
 			inputConfig.showMenu();
 			inputConfig.showStatus();
-		}
+		}*/
 
 		mainText.OutputFrame(rend);	//Draw text last
 		mainText.Clear();

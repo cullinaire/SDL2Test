@@ -11,13 +11,17 @@
 #define PLAYER_INITIAL_Y	32
 #define DEF_FORCE			70
 #define DEF_FRIC			0.95
+#define EMPTY_PLAYER		-1
+#define MAXPLAYERS			8
 
 #ifdef __linux
 	#include "SDL2/SDL.h"
 #elif _WIN32
 	#include "SDL.h"
 #endif
+
 #include <string>
+#include <cstdlib>
 #include "inputmap.h"
 #include "inputcfg.h"
 #include "animobj.h"
@@ -79,6 +83,21 @@ private:
 	void updateAABB(int x, int y);
 	State pstate;
 	State previous;
+};
+
+class PlayerGroup
+{
+public:
+	PlayerGroup();
+	~PlayerGroup();
+	void Add(int id, SweepAndPrune &collider, SpriteSheet &playerSheet, InputCfg &playerCfg);
+	void Remove(int id, SweepAndPrune &collider);
+	void Render(double alpha);
+	void Update(double t, double dt);
+private:
+	int numActive;
+	Player *players[MAXPLAYERS];
+	Player emptyPlayer;
 };
 
 #endif
