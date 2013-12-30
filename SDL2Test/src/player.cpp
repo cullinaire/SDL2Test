@@ -222,11 +222,11 @@ void Player::Interpolate(const double alpha)
 	playerAnim.outputCurFrame();
 }
 
-void Player::SelectAnim()
+void Player::SelectAnim(double t)
 {
 	if(pstate.vel.length() > 1)
 	{
-		playerAnim.playAnim(0);
+		playerAnim.playAnim(0, t);
 		if(pstate.vel.length() < 30)
 			playerAnim.changeSpeed(2);
 		else if(pstate.vel.length() < 100)
@@ -235,7 +235,7 @@ void Player::SelectAnim()
 			playerAnim.changeSpeed(0.5);
 	}
 	else
-		playerAnim.playAnim(1);
+		playerAnim.playAnim(1, t);
 }
 
 int Player::getPid()
@@ -308,13 +308,14 @@ void PlayerGroup::Remove(int id, SweepAndPrune &collider)
 	}
 }
 
-void PlayerGroup::Render(double alpha)
+void PlayerGroup::Render(double alpha, double t)
 {
 	for(int i=0;i < MAXPLAYERS;++i)
 	{
 		if(players[i]->getPid() != emptyPlayer.getPid())
 		{
 			players[i]->Interpolate(alpha);
+			players[i]->SelectAnim(t);
 		}
 	}
 }
@@ -327,7 +328,6 @@ void PlayerGroup::Update(double t, double dt, SweepAndPrune &collider)
 		{
 			players[i]->modifyForces(t+dt);
 			players[i]->verlet(dt);
-			players[i]->SelectAnim();
 		}
 	}
 

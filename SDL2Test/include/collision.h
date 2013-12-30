@@ -37,7 +37,6 @@ typedef enum objType
 typedef struct AABB
 {
 	int boxId;	//Index in box array
-	int endptId;	//Index in endpoint array
 	objType type;	//Identity of the owner
 	double vals[2][2];	//corners of the AABB
 
@@ -67,10 +66,10 @@ public:
 	void Update(const AABB box);
 	int Add(const AABB box);
 	void Remove(const int boxId);
-	//void ResolveEncounters(std::string *collmsg);
 
-	/*void AddEncounter(int objIdA, int objIdB);
-    void RemoveEncounter(int objIdA, int objIdB);*/
+	void ResolveEncounters();
+	void AddEncounter(int objIdA, int objIdB);
+    void RemoveEncounter(int objIdA, int objIdB);
 
 	//int AddBox(objType type, double minX, double maxX, double minY, double maxY);
 	//void RemoveBox(int boxId);

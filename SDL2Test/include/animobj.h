@@ -19,7 +19,7 @@
 
 typedef struct aniFrame
 {
-	Uint32 duration;	//in ms
+	double duration;	//in ms
 	int frameID;	//used by SheetInfo to determine which cell to draw
 } aniFrame;
 
@@ -41,7 +41,7 @@ public:
 	void defineAnim(std::string anifilename);
 	void startAnim();
 	void stopAnim();
-	void playAnim(int index);
+	void playAnim(int index, double t);
 	void outputCurFrame();
 	void changeSpeed(double mult);
 	void updateLoc(int x, int y);
@@ -52,7 +52,7 @@ private:
 	bool forwards;		//direction animation is playing in - only used if backNforth is true
 	bool isbNf;		//mode is back and forth
 	double speedFactor;	//Multiplied by frame duration to vary playback speed
-	Uint32 elapsed;
+	double elapsed;
 	int curAnimIndex;
 	int curAnimFrameID;
 	SDL_Rect dst;

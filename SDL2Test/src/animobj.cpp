@@ -122,12 +122,12 @@ void AnimObj::stopAnim()
 	playing = false;
 }
 
-void AnimObj::playAnim(int index)
+void AnimObj::playAnim(int index, double t)
 {
 	if(curAnimIndex != index)	//Prevent repeat calls from interrupting animation
 	{
 		curAnimIndex = index;
-		elapsed = SDL_GetTicks();
+		elapsed = t*1000;
 		for(selAnim = animations.begin();selAnim != animations.end();++selAnim)
 		{
 			if(selAnim->index == index)	//Found the animation to play
@@ -141,9 +141,9 @@ void AnimObj::playAnim(int index)
 
 	if(playing)
 	{
-		if(SDL_GetTicks() - elapsed >= drawFrame->duration*speedFactor)
+		if(t - elapsed >= drawFrame->duration*speedFactor)
 		{
-			elapsed = SDL_GetTicks();
+			elapsed = t*1000;
 			//I can't use iterators here because they just simply will not work
 			//Which is odd, since their values have not changed since startAnim was called.
 			//Oh well I guess.

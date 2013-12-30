@@ -163,14 +163,17 @@ void SweepAndPrune::Update(const AABB box)
 				else if(keyType == MAXENDPT && compType == MINENDPT)	//if MAX is now less than MIN, chances are objects now stop overlapping
 				{
 					//do something about removing an encounter if necessary
-					//std::cout << "X:Max passes min, remove" << std::endl;
+					//std::cout << "XMax of id " << keyId << " now less than XMin of " << compId << ", remove encounter." << std::endl;
+					this->RemoveEncounter(keyId, compId);
 				}
 				else if(keyType == MINENDPT && compType == MAXENDPT)	//if a box's MIN is less than another's MAX, chances are there is a new overlap
 				{
 					//investigate further to see if there is an actual collision
 					//std::cout << "X:Min passes max, add" << std::endl;
 					if(collide(boxes[keyId], boxes[compId]))
-						std::cout << "COLLISION!!!" << std::endl;
+					{
+						this->AddEncounter(keyId, compId);
+					}
 				}
 				else if(keyType == MINENDPT && compType == MINENDPT)	//just swap, not an indication of collision
 				{
@@ -246,14 +249,17 @@ void SweepAndPrune::Update(const AABB box)
 				else if(keyType == MAXENDPT && compType == MINENDPT)	//if MAX is now less than MIN, chances are objects now stop overlapping
 				{
 					//do something about removing an encounter if necessary
-					//std::cout << "Y:Max passes min, remove" << std::endl;
+					//std::cout << "YMax of id " << keyId << " now less than YMin of " << compId << ", remove encounter." << std::endl;
+					this->RemoveEncounter(keyId, compId);
 				}
 				else if(keyType == MINENDPT && compType == MAXENDPT)	//if a box's MIN is less than another's MAX, chances are there is a new overlap
 				{
 					//investigate further to see if there is an actual collision
 					//std::cout << "Y:Min passes max, add" << std::endl;
 					if(collide(boxes[keyId], boxes[compId]))
-						std::cout << "COLLISION!!!" << std::endl;
+					{
+						this->AddEncounter(keyId, compId);
+					}
 				}
 				else if(keyType == MINENDPT && compType == MINENDPT)	//just swap, not an indication of collision
 				{
@@ -273,6 +279,8 @@ void SweepAndPrune::Update(const AABB box)
 			--i;
 		}
 	}
+
+	this->ResolveEncounters();
 }
 
 int SweepAndPrune::Add(const AABB box)
@@ -373,109 +381,127 @@ void SweepAndPrune::Remove(const int boxId)
 	}
 }
 
-//void SweepAndPrune::ResolveEncounters(std::string *collmsg)
-//{
-//	collmsg->assign("No collisions right now");
-//    // Iterate through your encounter list and trigger collision resolution code
-//    // for each pair of objects in there
-//	for(int i=0;i < MAX_ENCOUNTERS;++i)
-//	{
-//		if(encounters[i].objIDs[0] != -1)
-//		{
-//			collmsg->assign("Collision detected");
-//		}
-//	}
-//}
+void SweepAndPrune::ResolveEncounters()
+{
+    // Iterate through your encounter list and trigger collision resolution code
+    // for each pair of objects in there
+	for(int i=0;i < MAX_ENCOUNTERS;++i)
+	{
+		if(encounters[i].objIDs[0] != -1)
+		{
+			switch(boxes[encounters[i].objIDs[0]].type)
+			{
+			case PLAYER:
+				if(boxes[encounters[i].objIDs[1]].type == PLAYER)
+				{
+					std::cout << "Player " << boxes[encounters[i].objIDs[0]].boxId
+						<< " struck Player " << boxes[encounters[i].objIDs[1]].boxId << " with his body. Shocking!"
+						<< std::endl;
+				}
+				break;
+			default:
+				break;
+			}
+		}
+	}
+}
+
+void SweepAndPrune::AddEncounter(int objIdA, int objIdB)
+{
+    // Add encounter between the inputted objects to the list
+    // being careful not to duplicate existing ecounters
+
+	//first look for duplicates. This step marks down possible points of duplication
+	int numActualDupes = 0;
+	int numPossibleDupes = 0;
+	for(int i=0;i < MAX_ENCOUNTERS;++i)
+	{
+		if(encounters[i].objIDs[0] == objIdA || encounters[i].objIDs[0] == objIdB)
+		{
+			possibleDupes[numPossibleDupes] = i;
+			++numPossibleDupes;
+		}
+	}
+
+	//std::cout << numPossibleDupes << " possible duplicate encounters found." << std::endl;
+
+	//Next we check each of these points to see if any are dupes
+	for(int i=0;i < numPossibleDupes;++i)
+	{
+		//The reason the following check is valid is that the 0 index of objIDs was already marked as one
+		//of the two parameter IDs. Since it is impossible (better check) to have an encounter with the same
+		//ID repeated, the other ID in index 1 must be the other parameter ID. Further, only indexes with
+		//one of the parameters is checked so there is no danger of marking a valid encounter as a dupe
+		//(i.e. an encounter with index 0 being a totally different object)
+		if(encounters[possibleDupes[i]].objIDs[1] == objIdA || encounters[possibleDupes[i]].objIDs[1] == objIdB)
+		{
+			++numActualDupes;
+		}
+	}
+
+	if(numActualDupes >= 1)
+	{
+		//Don't add encounter!...in fact if the number is GREATER than 1, there is a problem and might want
+		//to raise an exception...
+		//std::cout << "Number of actual dupes found: " << numActualDupes << std::endl;
+	}
+	else
+	{
+		//No dupes so add the encounter already in the first empty slot
+		for(int i=0;i < MAX_ENCOUNTERS;++i)
+		{
+			if(encounters[i].objIDs[0] == -1)
+			{
+				encounters[i].objIDs[0] = objIdA;
+				encounters[i].objIDs[1] = objIdB;
+				++numEncounters;
+				//std::cout << "No dupes found, adding encounter between ids " << objIdA << " and " << objIdB << std::endl;
+				break;	//Forgot this again...
+			}
+		}
+	}
+}
 
 
-//void SweepAndPrune::AddEncounter(int objIdA, int objIdB)
-//{
-//    // Add encounter between the inputted objects to the list
-//    // being careful not to duplicate existing ecounters
-//
-//	//first look for duplicates. This step marks down possible points of duplication
-//	int numActualDupes = 0;
-//	int numPossibleDupes = 0;
-//	for(int i=0;i < MAX_ENCOUNTERS;++i)
-//	{
-//		if(encounters[i].objIDs[0] == objIdA || encounters[i].objIDs[0] == objIdB)
-//		{
-//			possibleDupes[numPossibleDupes] = i;
-//			++numPossibleDupes;
-//		}
-//	}
-//
-//	//Next we check each of these points to see if any are dupes
-//	for(int i=0;i < numPossibleDupes;++i)
-//	{
-//		//The reason the following check is valid is that the 0 index of objIDs was already marked as one
-//		//of the two parameter IDs. Since it is impossible (better check) to have an encounter with the same
-//		//ID repeated, the other ID in index 1 must be the other parameter ID. Further, only indexes with
-//		//one of the parameters is checked so there is no danger of marking a valid encounter as a dupe
-//		//(i.e. an encounter with index 0 being a totally different object)
-//		if(encounters[possibleDupes[i]].objIDs[1] == objIdA || encounters[possibleDupes[i]].objIDs[1] == objIdB)
-//		{
-//			++numActualDupes;
-//		}
-//	}
-//
-//	if(numActualDupes >= 1)
-//	{
-//		//Don't add encounter!...in fact if the number is GREATER than 1, there is a problem and might want
-//		//to raise an exception...
-//	}
-//	else
-//	{
-//		//No dupes so add the encounter already in the first empty slot
-//		for(int i=0;i < MAX_ENCOUNTERS;++i)
-//		{
-//			if(encounters[i].objIDs[0] == -1)
-//			{
-//				encounters[i].objIDs[0] = objIdA;
-//				encounters[i].objIDs[1] = objIdB;
-//				++numEncounters;
-//				break;	//Forgot this again...
-//			}
-//		}
-//	}
-//}
-//
-//
-//void SweepAndPrune::RemoveEncounter(int objIdA, int objIdB)
-//{
-//    // Remove encounter between the inputted objects from the
-//    // list if it exists (order of parameters do not matter)
-//	// Worst case scenario will iterate all elements of encounters array once
-//	for(int i=0;i < MAX_ENCOUNTERS;++i)
-//	{
-//		if(encounters[i].objIDs[0] == objIdA)
-//		{
-//			for(int j = i;j < MAX_ENCOUNTERS;++j)
-//			{
-//				if(encounters[j].objIDs[1] == objIdB)
-//				{
-//					encounters[j].objIDs[0] = -1;
-//					encounters[j].objIDs[1] = -1;
-//					--numEncounters;
-//					break;	//The assumption is that there will be only one encounter between two unique objects
-//				}
-//			}
-//		}
-//		else if(encounters[i].objIDs[0] == objIdB)
-//		{
-//			for(int j = i;j < MAX_ENCOUNTERS;++j)
-//			{
-//				if(encounters[j].objIDs[1] == objIdA)
-//				{
-//					encounters[j].objIDs[0] = -1;
-//					encounters[j].objIDs[1] = -1;
-//					--numEncounters;
-//					break;	//The assumption is that there will be only one encounter between two unique objects
-//				}
-//			}
-//		}
-//	}
-//}
+void SweepAndPrune::RemoveEncounter(int objIdA, int objIdB)
+{
+    // Remove encounter between the inputted objects from the
+    // list if it exists (order of parameters do not matter)
+	// Worst case scenario will iterate all elements of encounters array once
+	for(int i=0;i < MAX_ENCOUNTERS;++i)
+	{
+		if(encounters[i].objIDs[0] == objIdA)
+		{
+			for(int j = i;j < MAX_ENCOUNTERS;++j)
+			{
+				if(encounters[j].objIDs[1] == objIdB)
+				{
+					encounters[j].objIDs[0] = -1;
+					encounters[j].objIDs[1] = -1;
+					--numEncounters;
+					/*std::cout << "Encounter between ids " << objIdA << " and " << objIdB
+						<< " has been removed. Numencounters = " << numEncounters << std::endl;*/
+					break;	//The assumption is that there will be only one encounter between two unique objects
+				}
+			}
+		}
+		else if(encounters[i].objIDs[0] == objIdB)
+		{
+			for(int j = i;j < MAX_ENCOUNTERS;++j)
+			{
+				if(encounters[j].objIDs[1] == objIdA)
+				{
+					encounters[j].objIDs[0] = -1;
+					encounters[j].objIDs[1] = -1;
+					--numEncounters;
+					/*std::cout << "Encounter between ids " << objIdA << " and " << objIdB
+						<< " has been removed. Numencounters = " << numEncounters << std::endl;*/
+					break;	//The assumption is that there will be only one encounter between two unique objects
+				}
+			}
+		}
+	}
+}
 
 //int SweepAndPrune::AddBox(objType type, double minX, double minY, double maxX, double maxY)
 //{

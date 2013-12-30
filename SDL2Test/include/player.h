@@ -64,15 +64,17 @@ public:
 	void modifyForces(double t);
 	void verlet(double dt);
 	void Interpolate(const double alpha);
-	void SelectAnim();
+	void SelectAnim(double t);
 	int getPid();
 	void setBoxId(int newId);
 	int getBoxId();
 	void reportVel(std::string &velstr);
+	void applyImpulse(float duration);
 	AABB outputAABB();
 
 private:
 	int playerID;
+	cml::vector3d impulse;
 	cml::vector3d moveForce;
 	cml::vector3d dampForce;
 	PlayerState playerState;
@@ -92,7 +94,7 @@ public:
 	~PlayerGroup();
 	void Add(int id, SweepAndPrune &collider, SpriteSheet &playerSheet, InputCfg &playerCfg);
 	void Remove(int id, SweepAndPrune &collider);
-	void Render(double alpha);
+	void Render(double alpha, double t);
 	void Update(double t, double dt, SweepAndPrune &collider);
 	void AssignInput(int id, const std::string defPath);
 	bool PlayerExists(int id);

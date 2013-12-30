@@ -387,7 +387,7 @@ int main(int argc, char **argv)
 		SDL_SetRenderDrawColor(rend, 0, 0, 0, 255);	//Set back to black if AABB set to red
 		SDL_RenderClear(rend);
 		//Draw stuff now
-		players.Render(alpha);
+		players.Render(alpha, t);
 		if(drawAABBs)
 			collider.drawBoundingBoxes(rend);
 		//for(int i=0;i<MAXPLAYERS;++i)
