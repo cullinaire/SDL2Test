@@ -141,7 +141,7 @@ void AnimObj::playAnim(int index, double t)
 
 	if(playing)
 	{
-		if(t - elapsed >= drawFrame->duration*speedFactor)
+		if(t*1000 - elapsed >= drawFrame->duration*speedFactor)
 		{
 			elapsed = t*1000;
 			//I can't use iterators here because they just simply will not work

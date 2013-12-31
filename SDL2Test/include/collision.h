@@ -28,6 +28,8 @@
 #include <vector>
 #include <algorithm>
 
+class Player;
+
 typedef enum objType
 {
 	PLAYER,
@@ -67,7 +69,7 @@ public:
 	int Add(const AABB box);
 	void Remove(const int boxId);
 
-	void ResolveEncounters();
+	void ResolveEncounters(Player **players);
 	void AddEncounter(int objIdA, int objIdB);
     void RemoveEncounter(int objIdA, int objIdB);
 

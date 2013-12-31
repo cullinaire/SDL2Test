@@ -69,11 +69,14 @@ public:
 	void setBoxId(int newId);
 	int getBoxId();
 	void reportVel(std::string &velstr);
-	void applyImpulse(float duration);
+	void applyImpulse(double duration, cml::vector3d direction, double magnitude);
 	AABB outputAABB();
 
 private:
 	int playerID;
+	double elapsed;
+	double impDuration;	//in s
+	bool impulseActive;
 	cml::vector3d impulse;
 	cml::vector3d moveForce;
 	cml::vector3d dampForce;
@@ -92,7 +95,7 @@ class PlayerGroup
 public:
 	PlayerGroup();
 	~PlayerGroup();
-	void Add(int id, SweepAndPrune &collider, SpriteSheet &playerSheet, InputCfg &playerCfg);
+	int Add(int id, SweepAndPrune &collider, SpriteSheet &playerSheet, InputCfg &playerCfg);
 	void Remove(int id, SweepAndPrune &collider);
 	void Render(double alpha, double t);
 	void Update(double t, double dt, SweepAndPrune &collider);

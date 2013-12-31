@@ -31,6 +31,11 @@ Player::Player(SpriteSheet *playerSheet, InputCfg *p_inputCfg, int p_id)
 
 	pstate.mass = 0.1;
 
+	elapsed = -1;
+	impDuration = 0;
+	impulseActive = false;
+
+	impulse.zero();
 	moveForce.zero();
 
 	e_inputCfg = p_inputCfg;
@@ -192,6 +197,22 @@ void Player::modifyForces(double t)
 		}
 	}
 
+	//Apply impulses if any
+	if(impulseActive)
+	{
+		if(elapsed < 0)	//Countdown not started yet
+		{
+			elapsed = t;
+		}
+		if(t - elapsed < impDuration)
+			moveForce += impulse;
+		else
+		{
+			elapsed = -1;
+			impulseActive = false;
+		}
+	}
+
 	pstate.vel *= DEF_FRIC;	//Not really a force here, but apply friction to slow to stop
 }
 
@@ -259,6 +280,15 @@ void Player::reportVel(std::string &velstr)
 	velstr.append(std::to_string(pstate.vel.length()));
 }
 
+void Player::applyImpulse(double duration, cml::vector3d direction, double magnitude)
+{
+	impulse = direction;
+	impulse.normalize();
+	impulse *= magnitude;
+	impulseActive = true;
+	impDuration = duration;
+}
+
 AABB Player::outputAABB()
 {
 	return playerBox;
@@ -285,7 +315,7 @@ PlayerGroup::~PlayerGroup()
 	}
 }
 
-void PlayerGroup::Add(int id, SweepAndPrune &collider, SpriteSheet &playerSheet, InputCfg &playerCfg)
+int PlayerGroup::Add(int id, SweepAndPrune &collider, SpriteSheet &playerSheet, InputCfg &playerCfg)
 {
 	if(players[id]->getPid() == emptyPlayer.getPid())
 	{
@@ -294,7 +324,9 @@ void PlayerGroup::Add(int id, SweepAndPrune &collider, SpriteSheet &playerSheet,
 		players[id] = newPlayer;
 		players[id]->setBoxId(collider.Add(newPlayer->outputAABB()));
 		++numActive;
+		return 0;
 	}
+	return -1;
 }
 
 void PlayerGroup::Remove(int id, SweepAndPrune &collider)
@@ -322,21 +354,23 @@ void PlayerGroup::Render(double alpha, double t)
 
 void PlayerGroup::Update(double t, double dt, SweepAndPrune &collider)
 {
+	//Do collision update first since it may affect the forces on the bodies
+	for(int i=0;i < MAXPLAYERS;++i)
+	{
+		if(players[i]->getPid() != emptyPlayer.getPid())
+		{
+			collider.Update(players[i]->outputAABB());
+		}
+	}
+
+	collider.ResolveEncounters(players);
+
 	for(int i=0;i < MAXPLAYERS;++i)
 	{
 		if(players[i]->getPid() != emptyPlayer.getPid())
 		{
 			players[i]->modifyForces(t+dt);
 			players[i]->verlet(dt);
-		}
-	}
-
-	//Collision update
-	for(int i=0;i < MAXPLAYERS;++i)
-	{
-		if(players[i]->getPid() != emptyPlayer.getPid())
-		{
-			collider.Update(players[i]->outputAABB());
 		}
 	}
 }

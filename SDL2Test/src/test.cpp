@@ -254,7 +254,9 @@ int main(int argc, char **argv)
 							{
 								newId = rand() % MAXPLAYERS-1;
 							}
+
 							players.Add(newId, collider, mensheet, inputConfig);
+
 							if(newId == 1)
 							{
 								players.AssignInput(newId, "../assets/player1bind.def");
@@ -350,31 +352,12 @@ int main(int argc, char **argv)
 		{
 			accumulator -= dt;
 			players.Update(t, dt, collider);
-			//for(int i=0;i<MAXPLAYERS;++i)
-			//{
-			//	if(players[i].getPid() != EMPTY_PLAYER)	//Is a valid player
-			//	{
-			//		players[i].modifyForces(t+dt);
-			//		players[i].verlet(dt);
-			//		players[i].SelectAnim();
-			//		players[i].reportVel(vel);
-			//	}
-			//}
-			
-			//Do collision update AFTER *all* players have moved
-			/*for(int i=0;i<MAXPLAYERS;++i)
-			{
-				if(players[i].getPid() != EMPTY_PLAYER)
-				{
-					collider.Update(players[i].outputAABB());
-				}
-			}*/
 
 			mainText.ReceiveString(coll, collPos);
 			mainText.ReceiveString(vel, velPos);
 
 			t += dt;
-		}
+		}	//END FIXED TIMESTEP SECTION
 
 		time.assign("sysCounter: ");
 		time.append(std::to_string(sysCounter));
@@ -384,39 +367,22 @@ int main(int argc, char **argv)
 		const double alpha = accumulator / dt;
 
 		//DRAWING SECTION/////////////////////////////////////////////////////
+		//Prepare screen
 		SDL_SetRenderDrawColor(rend, 0, 0, 0, 255);	//Set back to black if AABB set to red
 		SDL_RenderClear(rend);
+
 		//Draw stuff now
 		players.Render(alpha, t);
+
 		if(drawAABBs)
 			collider.drawBoundingBoxes(rend);
-		//for(int i=0;i<MAXPLAYERS;++i)
-		//{
-		//	if(players[i].getPid() != EMPTY_PLAYER)	//Is a valid player
-		//	{
-		//		players[i].Interpolate(alpha);	//Was putting this before the renderclear like a dummy
-		//		if(drawAABBs)	//Draw collision AABB if toggled
-		//		{
-		//			collider.drawBoundingBoxes(rend);
-		//		}
-		//	}
-		//}
-
-		/*if(playerSelectMenu)
-		{
-			playerSelect.OutputMenu(128, 128);
-		}
-		else if(inputMenu)
-		{
-			inputConfig.showMenu();
-			inputConfig.showStatus();
-		}*/
 
 		mainText.OutputFrame(rend);	//Draw text last
 		mainText.Clear();
-		//End draw stuff
+
+		//Output results to screen
 		SDL_RenderPresent(rend);
-	}
+	}	//END MAIN LOOP
 
 	//Deinitialization
 	SDL_DestroyRenderer(rend);

@@ -2,15 +2,6 @@
 
 bool collide(const AABB boxA, const AABB boxB)
 {
-	//std::cout << "Testing collision..." << std::endl;
-	//std::cout << "AminX: " << boxA.vals[0][0] <<
-	//	" AminY: " << boxA.vals[0][1] <<
-	//	" AmaxX: " << boxA.vals[1][0] <<
-	//	" AmaxY: " << boxA.vals[1][1] << std::endl;
-	//std::cout << "BmaxX: " << boxB.vals[1][0] <<
-	//	" BmaxY: " << boxB.vals[1][1] <<
-	//	" BminX: " << boxB.vals[0][0] <<
-	//	" BminY: " << boxB.vals[0][1] << std::endl;
 	if(boxA.vals[MAXENDPT][XAXIS] < boxB.vals[MINENDPT][XAXIS]) { return false; }
 	if(boxA.vals[MINENDPT][XAXIS] > boxB.vals[MAXENDPT][XAXIS]) { return false; }
 	if(boxA.vals[MAXENDPT][YAXIS] < boxB.vals[MINENDPT][YAXIS]) { return false; }
@@ -187,27 +178,6 @@ void SweepAndPrune::Update(const AABB box)
 
 				endpointsX[j].type = keyType;
 				endpointsX[j].boxId = keyId;
-
-				//if(keyType == MAXENDPT)
-				//	std::cout << "Max endpt of box ";
-				//else
-				//	std::cout << "Min endpt of box ";
-				//
-				//std::cout << keyId << " at index " << j << " got swapped with ";
-
-				//if(compType == MAXENDPT)
-				//	std::cout << "Max endpt of box ";
-				//else
-				//	std::cout << "Min endpt of box ";
-
-				//std::cout << compId << " at index " << i << std::endl;
-
-				//std::cout << "[";
-				//for(int k=0;k < 10;++k)
-				//{
-				//	std::cout << endpointsX[k].boxId;
-				//}
-				//std::cout << "]" << std::endl;
 			}
 
 			//Decrement i to see if further swaps are needed
@@ -279,8 +249,6 @@ void SweepAndPrune::Update(const AABB box)
 			--i;
 		}
 	}
-
-	this->ResolveEncounters();
 }
 
 int SweepAndPrune::Add(const AABB box)
@@ -335,18 +303,12 @@ int SweepAndPrune::Add(const AABB box)
 				}
 			}
 
-			//std::cout << "{";
-			//	for(int k=0;k < 10;++k)
-			//	{
-			//		std::cout << endpointsX[k].boxId;
-			//	}
-			//	std::cout << "}" << std::endl;
-
 			this->Update(boxes[i]);
 
 			return boxes[i].boxId;
 		}
 	}
+	return -1;	//Shouldn't ever get here!
 }
 
 void SweepAndPrune::Remove(const int boxId)
@@ -381,22 +343,26 @@ void SweepAndPrune::Remove(const int boxId)
 	}
 }
 
-void SweepAndPrune::ResolveEncounters()
+void SweepAndPrune::ResolveEncounters(Player **players)
 {
     // Iterate through your encounter list and trigger collision resolution code
     // for each pair of objects in there
+
+	AABB a, b;
+
 	for(int i=0;i < MAX_ENCOUNTERS;++i)
 	{
+		a = boxes[encounters[i].objIDs[0]];
+		b = boxes[encounters[i].objIDs[1]];
+
 		if(encounters[i].objIDs[0] != -1)
 		{
-			switch(boxes[encounters[i].objIDs[0]].type)
+			switch(a.type)
 			{
 			case PLAYER:
-				if(boxes[encounters[i].objIDs[1]].type == PLAYER)
+				if(b.type == PLAYER)
 				{
-					std::cout << "Player " << boxes[encounters[i].objIDs[0]].boxId
-						<< " struck Player " << boxes[encounters[i].objIDs[1]].boxId << " with his body. Shocking!"
-						<< std::endl;
+					players[3]->applyImpulse();
 				}
 				break;
 			default:
