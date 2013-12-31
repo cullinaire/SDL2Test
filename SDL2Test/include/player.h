@@ -22,6 +22,8 @@
 
 #include <string>
 #include <cstdlib>
+#include <random>
+#include <chrono>
 #include "inputmap.h"
 #include "inputcfg.h"
 #include "animobj.h"
@@ -68,7 +70,7 @@ public:
 	int getPid();
 	void setBoxId(int newId);
 	int getBoxId();
-	void reportVel(std::string &velstr);
+	void reportForce(std::string &forceStr);
 	void applyImpulse(double duration, cml::vector3d direction, double magnitude);
 	AABB outputAABB();
 
@@ -79,6 +81,7 @@ private:
 	bool impulseActive;
 	cml::vector3d impulse;
 	cml::vector3d moveForce;
+	cml::vector3d finalForce;
 	cml::vector3d dampForce;
 	PlayerState playerState;
 	InputMap keyMap;
@@ -95,13 +98,16 @@ class PlayerGroup
 public:
 	PlayerGroup();
 	~PlayerGroup();
-	int Add(int id, SweepAndPrune &collider, SpriteSheet &playerSheet, InputCfg &playerCfg);
+	bool Add(int id, SweepAndPrune &collider, SpriteSheet &playerSheet, InputCfg &playerCfg);
 	void Remove(int id, SweepAndPrune &collider);
 	void Render(double alpha, double t);
-	void Update(double t, double dt, SweepAndPrune &collider);
+	void Update(double t, double dt, SweepAndPrune &collider, std::string &forceStr);
 	void AssignInput(int id, const std::string defPath);
 	bool PlayerExists(int id);
+	bool is_Full();
+	bool is_Empty();
 	void ProcessInput(bool DownElseUp, SDL_Scancode scancode, bool *keyPressed);
+	void RandomImpulse();
 private:
 	int numActive;
 	Player *players[MAXPLAYERS];

@@ -184,18 +184,21 @@ void Player::modifyForces(double t)
 	else
 		moveForce[1] = 0;	//likewise...
 
-	if(moveForce.length() > 0)	//Convert to unit vector then scale by desired magnitude
+	//Process move force
+	if(moveForce[0] != 0 || moveForce[1] != 0)	//do not normalize vector if it is zero!
 	{
 		moveForce.normalize();
-		if(!playerState.downpressed && !playerState.uppressed && !playerState.leftpressed && !playerState.rightpressed)
-		{
-			moveForce.zero();	//If no movement keys are pressed, stop applying force
-		}
-		else
-		{
-			moveForce *= DEF_FORCE;
-		}
+		moveForce *= DEF_FORCE;
 	}
+	//if(!playerState.downpressed && !playerState.uppressed && !playerState.leftpressed && !playerState.rightpressed)
+	//{
+	//	moveForce.zero();	//If no movement keys are pressed, stop applying force
+	//}
+	//else
+	//{
+	//	moveForce.normalize();
+	//	moveForce *= DEF_FORCE;
+	//}
 
 	//Apply impulses if any
 	if(impulseActive)
@@ -204,16 +207,12 @@ void Player::modifyForces(double t)
 		{
 			elapsed = t;
 		}
-		if(t - elapsed < impDuration)
-			moveForce += impulse;
-		else
+		if(t - elapsed > impDuration)
 		{
 			elapsed = -1;
 			impulseActive = false;
 		}
 	}
-
-	pstate.vel *= DEF_FRIC;	//Not really a force here, but apply friction to slow to stop
 }
 
 void Player::verlet(double dt)
@@ -226,13 +225,20 @@ void Player::verlet(double dt)
 
 	pstate.pos += pstate.vel * dt + (0.5f * lastAcc * dt * dt);
 
-	cml::vector3d newAcc = moveForce / pstate.mass;
+	finalForce = moveForce;
+
+	if(impulseActive)
+		finalForce = moveForce + impulse;
+
+	cml::vector3d newAcc = finalForce / pstate.mass;
 
 	cml::vector3d avgAcc = (lastAcc + newAcc) / 2;
 
 	pstate.acc = newAcc;
 
 	pstate.vel += avgAcc * dt;
+
+	pstate.vel *= DEF_FRIC;	//Not really a force here, but apply friction to slow to stop
 }
 
 void Player::Interpolate(const double alpha)
@@ -274,10 +280,12 @@ int Player::getBoxId()
 	return playerBox.boxId;
 }
 
-void Player::reportVel(std::string &velstr)
+void Player::reportForce(std::string &forceStr)
 {
-	velstr.assign("Velocity: ");
-	velstr.append(std::to_string(pstate.vel.length()));
+	forceStr.assign("FinalForce X: ");
+	forceStr.append(std::to_string(finalForce[0]));
+	forceStr.append(", Y: ");
+	forceStr.append(std::to_string(finalForce[1]));
 }
 
 void Player::applyImpulse(double duration, cml::vector3d direction, double magnitude)
@@ -308,35 +316,37 @@ PlayerGroup::~PlayerGroup()
 {
 	for(int i=0;i<MAXPLAYERS;++i)
 	{
-		if(players[i]->getPid() != emptyPlayer.getPid())
+		if(this->PlayerExists(i))
 		{
 			delete players[i];
 		}
 	}
 }
 
-int PlayerGroup::Add(int id, SweepAndPrune &collider, SpriteSheet &playerSheet, InputCfg &playerCfg)
+bool PlayerGroup::Add(int id, SweepAndPrune &collider, SpriteSheet &playerSheet, InputCfg &playerCfg)
 {
-	if(players[id]->getPid() == emptyPlayer.getPid())
+	if(!this->PlayerExists(id))
 	{
 		Player *newPlayer = new Player(&playerSheet, &playerCfg, id);
 		newPlayer->relocate(rand() % 600, rand() % 400);
 		players[id] = newPlayer;
 		players[id]->setBoxId(collider.Add(newPlayer->outputAABB()));
 		++numActive;
-		return 0;
+		std::cout << "Numactive: " << numActive << std::endl;
+		return true;
 	}
-	return -1;
+	return false;
 }
 
 void PlayerGroup::Remove(int id, SweepAndPrune &collider)
 {
-	if(players[id]->getPid() != emptyPlayer.getPid())
+	if(this->PlayerExists(id))
 	{
 		collider.Remove(players[id]->getBoxId());
 		delete players[id];
 		players[id] = &emptyPlayer;
 		--numActive;
+		std::cout << "Numactive: " << numActive << std::endl;
 	}
 }
 
@@ -344,7 +354,7 @@ void PlayerGroup::Render(double alpha, double t)
 {
 	for(int i=0;i < MAXPLAYERS;++i)
 	{
-		if(players[i]->getPid() != emptyPlayer.getPid())
+		if(this->PlayerExists(i))
 		{
 			players[i]->Interpolate(alpha);
 			players[i]->SelectAnim(t);
@@ -352,27 +362,30 @@ void PlayerGroup::Render(double alpha, double t)
 	}
 }
 
-void PlayerGroup::Update(double t, double dt, SweepAndPrune &collider)
+void PlayerGroup::Update(double t, double dt, SweepAndPrune &collider, std::string &forceStr)
 {
 	//Do collision update first since it may affect the forces on the bodies
 	for(int i=0;i < MAXPLAYERS;++i)
 	{
-		if(players[i]->getPid() != emptyPlayer.getPid())
+		if(this->PlayerExists(i))
 		{
 			collider.Update(players[i]->outputAABB());
 		}
 	}
 
-	collider.ResolveEncounters(players);
+	collider.ResolveEncounters();
 
 	for(int i=0;i < MAXPLAYERS;++i)
 	{
-		if(players[i]->getPid() != emptyPlayer.getPid())
+		if(this->PlayerExists(i))
 		{
 			players[i]->modifyForces(t+dt);
 			players[i]->verlet(dt);
+
+			if(i == 1)
+				players[i]->reportForce(forceStr);
 		}
-	}
+	}	
 }
 
 void PlayerGroup::AssignInput(int id, const std::string defPath)
@@ -391,17 +404,60 @@ bool PlayerGroup::PlayerExists(int id)
 		return false;
 }
 
+bool PlayerGroup::is_Full()
+{
+	if(numActive == MAXPLAYERS)
+		return true;
+	else
+		return false;
+}
+
+bool PlayerGroup::is_Empty()
+{
+	if(numActive == 0)
+		return true;
+	else
+		return false;
+}
+
 void PlayerGroup::ProcessInput(bool DownElseUp, SDL_Scancode scancode, bool *keyPressed)
 {
 	for(int i=0;i<MAXPLAYERS;++i)
 	{
-		if(DownElseUp)	//Keydown event
+		if(this->PlayerExists(i))
 		{
-			players[i]->processKeyDown(scancode, keyPressed);
+			if(DownElseUp)	//Keydown event
+			{
+				players[i]->processKeyDown(scancode, keyPressed);
+			}
+			else
+			{
+				players[i]->processKeyUp(scancode, keyPressed);
+			}
 		}
-		else
+	}
+}
+
+void PlayerGroup::RandomImpulse()
+{
+	std::default_random_engine generator;
+	std::uniform_real_distribution<double> duration(1.0, 2.0);
+	std::uniform_real_distribution<double> direction(-50.0, 50.0);
+	std::uniform_real_distribution<double> magnitude(10.0, 30.0);
+
+	for(int i=0;i<MAXPLAYERS;++i)
+	{
+		unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+		generator.seed(seed);
+		cml::vector3d randDir(direction(generator), direction(generator), direction(generator));
+		double randMag = magnitude(generator);
+		double randDuration = duration(generator);
+
+		std::cout << "RandMag: " << randMag << " RandDur: " << randDuration << std::endl;
+
+		if(this->PlayerExists(i))
 		{
-			players[i]->processKeyUp(scancode, keyPressed);
+			players[i]->applyImpulse(randDuration, randDir, randMag);
 		}
 	}
 }

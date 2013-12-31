@@ -115,6 +115,8 @@ void SweepAndPrune::Update(const AABB box)
 	//1. endpoints that belong to the same box obviously will never swap, since they are
 	//always in order. So no need to worry about intersecting a box with itself.
 
+	// Also this method can be used to filter encounters that shouldn't be processed, such as bullet/bullet
+
 	boxes[box.boxId].type = box.type;
 	boxes[box.boxId].vals[MINENDPT][XAXIS] = box.vals[MINENDPT][XAXIS];
 	boxes[box.boxId].vals[MINENDPT][YAXIS] = box.vals[MINENDPT][YAXIS];
@@ -343,7 +345,7 @@ void SweepAndPrune::Remove(const int boxId)
 	}
 }
 
-void SweepAndPrune::ResolveEncounters(Player **players)
+void SweepAndPrune::ResolveEncounters()
 {
     // Iterate through your encounter list and trigger collision resolution code
     // for each pair of objects in there
@@ -362,7 +364,7 @@ void SweepAndPrune::ResolveEncounters(Player **players)
 			case PLAYER:
 				if(b.type == PLAYER)
 				{
-					players[3]->applyImpulse();
+					
 				}
 				break;
 			default:
@@ -436,7 +438,7 @@ void SweepAndPrune::RemoveEncounter(int objIdA, int objIdB)
 	// Worst case scenario will iterate all elements of encounters array once
 	for(int i=0;i < MAX_ENCOUNTERS;++i)
 	{
-		if(encounters[i].objIDs[0] == objIdA)
+		if(encounters[i].objIDs[0] == objIdA && numEncounters != 0)
 		{
 			for(int j = i;j < MAX_ENCOUNTERS;++j)
 			{
@@ -451,7 +453,7 @@ void SweepAndPrune::RemoveEncounter(int objIdA, int objIdB)
 				}
 			}
 		}
-		else if(encounters[i].objIDs[0] == objIdB)
+		else if(encounters[i].objIDs[0] == objIdB && numEncounters != 0)
 		{
 			for(int j = i;j < MAX_ENCOUNTERS;++j)
 			{

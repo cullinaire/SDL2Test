@@ -28,8 +28,6 @@
 #include <vector>
 #include <algorithm>
 
-class Player;
-
 typedef enum objType
 {
 	PLAYER,
@@ -39,9 +37,10 @@ typedef enum objType
 typedef struct AABB
 {
 	int boxId;	//Index in box array
-	objType type;	//Identity of the owner
+	objType type;	//Type of the owner
 	double vals[2][2];	//corners of the AABB
 
+	// vals[MIN/MAX][AXIS]
 	// vals[0][0] = minX
     // vals[0][1] = minY
     // vals[1][0] = maxX
@@ -69,7 +68,7 @@ public:
 	int Add(const AABB box);
 	void Remove(const int boxId);
 
-	void ResolveEncounters(Player **players);
+	void ResolveEncounters();
 	void AddEncounter(int objIdA, int objIdB);
     void RemoveEncounter(int objIdA, int objIdB);
 

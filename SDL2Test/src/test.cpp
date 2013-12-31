@@ -30,6 +30,8 @@
 #include <iostream>
 #include <vector>
 #include <cstdlib>
+#include <random>
+#include <chrono>
 #include "logger.h"
 #include "sprite.h"
 #include "gfxtext.h"
@@ -87,49 +89,6 @@ int main(int argc, char **argv)
 
 	PlayerGroup players;
 
-	//std::vector<Player> players;
-
-	//players.resize(MAXPLAYERS);
-
-	//Player emptyPlayer(EMPTY_PLAYER);
-
-	//for(int i=0;i<MAXPLAYERS;++i)
-	//{
-	//	players[i] = emptyPlayer;
-	//}
-
-	////Adding players.
-
-	//players[0] = Player(&mensheet, &inputConfig, 0);
-	//players[1] = Player(&mensheet, &inputConfig, 1);
-	//players[2] = Player(&mensheet, &inputConfig, 2);
-
-	//players[1].relocate(64, 64);
-	//players[2].relocate(128, 128);
-
-	//Menu playerSelect = Menu(&mainText);
-
-	//std::string playername;
-
-	//playerSelect.SetTitle("Select player:");
-	//playerSelect.DefineCursor("*");
-	//for(int i=0;i < MAXPLAYERS;++i)
-	//{
-	//	if(players[i].getPid() != EMPTY_PLAYER)	//Is a valid player
-	//	{
-	//		//Construct player select menu
-	//		playername.assign("Player ");
-	//		playername.append(std::to_string(i));
-	//		playerSelect.InsertItem(playername, i, players[i].getPid(), &fontDraw);
-	//		//Add player collision data
-	//		players[i].setBoxId(collider.Add(players[i].outputAABB()));
-	//	}
-	//}
-
-	//players[0].assignInput("../assets/player1bind.def");
-	//players[1].assignInput("../assets/player2bind.def");
-	//players[2].assignInput("../assets/player3bind.def");
-
 	SDL_Event ev;
 	SDL_Scancode lastKey;	//Keeps track of last key pressed
 
@@ -168,7 +127,7 @@ int main(int argc, char **argv)
 	timePos.x = 0;
 	timePos.y = 448;
 
-	std::string vel;
+	std::string moveforce;
 
 	SDL_Rect velPos;
 	velPos.x = 0;
@@ -183,6 +142,11 @@ int main(int argc, char **argv)
 	Uint64 lastCount = sysCounter;	//For getting the difference vs sysCounter
 	double accumulator = 0.0f;
 	
+	//Randomizer Stuff
+	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+	std::default_random_engine generator(seed);
+	std::uniform_int_distribution<int> distrib(0, MAXPLAYERS-1);
+
 	while(!quit)
 	{		
 		while(SDL_PollEvent(&ev))
@@ -249,10 +213,14 @@ int main(int argc, char **argv)
 								drawAABBs = false;
 							break;
 						case SDL_SCANCODE_F2:	//Add players
-							newId = rand() % MAXPLAYERS-1;
-							while(newId < 0 || players.PlayerExists(newId))
+							newId = distrib(generator);
+							while(players.PlayerExists(newId))
 							{
-								newId = rand() % MAXPLAYERS-1;
+								/*seed = std::chrono::system_clock::now().time_since_epoch().count();
+								generator.seed(seed);*/
+								if(players.is_Full())
+									break;
+								newId = distrib(generator);
 							}
 
 							players.Add(newId, collider, mensheet, inputConfig);
@@ -261,35 +229,20 @@ int main(int argc, char **argv)
 							{
 								players.AssignInput(newId, "../assets/player1bind.def");
 							}
-
-							//for(int i=0;i<MAXPLAYERS;++i)
-							//{
-							//	if(players[i].getPid() == EMPTY_PLAYER)	//Is empty slot
-							//	{
-							//		players[i] = Player(&mensheet, &inputConfig, i);
-							//		players[i].relocate(players[1].outputAABB().vals[MINENDPT][XAXIS] + (rand() % 640),
-							//			players[1].outputAABB().vals[MINENDPT][YAXIS] + (rand() % 480));
-							//		players[i].setBoxId(collider.Add(players[i].outputAABB()));
-							//		break;
-							//	}
-							//}
 							break;
 						case SDL_SCANCODE_F3:	//To remove dummy players starting from id 7
-							newId = rand() % MAXPLAYERS-1;
-							while(newId < 0 || !players.PlayerExists(newId))
+							newId = distrib(generator);
+							while(!players.PlayerExists(newId))
 							{
-								newId = rand() % MAXPLAYERS-1;
-							}
-							players.Remove(newId, collider);
-							/*for(int i=MAXPLAYERS-1;i>=0;--i)
-							{
-								if(players[i].getPid() != EMPTY_PLAYER)
-								{
-									collider.Remove(players[i].getBoxId());
-									players[i] = Player(EMPTY_PLAYER);
+								if(players.is_Empty())
 									break;
-								}
-							}*/
+								newId = distrib(generator);
+							}
+
+							players.Remove(newId, collider);
+							break;
+						case SDL_SCANCODE_F4:	//Testing impulse function
+							players.RandomImpulse();
 							break;
 						default:
 							break;
@@ -297,13 +250,6 @@ int main(int argc, char **argv)
 
 						keyPressed[lastKey] = true;
 						players.ProcessInput(true, lastKey, keyPressed);
-						//for(int i=0;i<MAXPLAYERS;++i)
-						//{
-						//	if(players[i].getPid() != EMPTY_PLAYER)	//Is a valid player
-						//	{
-						//		players[i].processKeyDown(lastKey, keyPressed);
-						//	}
-						//}
 					}
 				}
 			}
@@ -312,25 +258,15 @@ int main(int argc, char **argv)
 				lastKey = ev.key.keysym.scancode;	//This might be the fix
 				keyPressed[lastKey] = false;
 				players.ProcessInput(false, lastKey, keyPressed);
-				//if(!playerSelectMenu && !inputMenu)
-				//{
-				//	for(int i=0;i<MAXPLAYERS;++i)
-				//	{
-				//		if(players[i].getPid() != EMPTY_PLAYER)	//Is a valid player
-				//		{
-				//			players[i].processKeyUp(lastKey, keyPressed);
-				//		}
-				//	}
-				//}
 			}
 		}
 
 		//UPDATING SECTION////////////////////////////////////////////////////
 		UpdateTime(sysCounter, currentTime);	//This must be called only once per frame
 		//The following line must be before the two lines after it
-		double frameTime = (double)(sysCounter - lastCount)/SDL_GetPerformanceFrequency();
-		currentTime = SDL_GetPerformanceCounter();
-		lastCount = sysCounter;
+		double frameTime = (double)(sysCounter - lastCount)/SDL_GetPerformanceFrequency();	//1st
+		currentTime = SDL_GetPerformanceCounter();											//2nd
+		lastCount = sysCounter;																//3rd
 
 		if(frameTime > 0.25f)
 			frameTime = 0.25f;	//Max frame time to avoid sprial of death
@@ -351,10 +287,10 @@ int main(int argc, char **argv)
 		while(accumulator >= dt)	//The fixed timestep area is in this while loop
 		{
 			accumulator -= dt;
-			players.Update(t, dt, collider);
+			players.Update(t, dt, collider, moveforce);
 
 			mainText.ReceiveString(coll, collPos);
-			mainText.ReceiveString(vel, velPos);
+			mainText.ReceiveString(moveforce, velPos);
 
 			t += dt;
 		}	//END FIXED TIMESTEP SECTION
