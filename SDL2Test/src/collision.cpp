@@ -354,11 +354,10 @@ void SweepAndPrune::ResolveEncounters()
 
 	for(int i=0;i < MAX_ENCOUNTERS;++i)
 	{
-		a = boxes[encounters[i].objIDs[0]];
-		b = boxes[encounters[i].objIDs[1]];
-
 		if(encounters[i].objIDs[0] != -1)
 		{
+			a = boxes[encounters[i].objIDs[0]];
+			b = boxes[encounters[i].objIDs[1]];
 			switch(a.type)
 			{
 			case PLAYER:
