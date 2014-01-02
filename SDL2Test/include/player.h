@@ -1,11 +1,11 @@
-#ifndef PLAYER_H_
-#define PLAYER_H_
-
 //player.h - encapsulates everything a player needs to do
 //Each player will receive input. In this case just input device button
 //down/up events. These will be translated into actions based on the
 //inputmap defined for that player, and sent to the various animobjs attached
 //to the player.
+
+#ifndef PLAYER_H_
+#define PLAYER_H_
 
 #define PLAYER_INITIAL_X	32
 #define PLAYER_INITIAL_Y	32

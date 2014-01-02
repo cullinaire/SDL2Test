@@ -190,15 +190,6 @@ void Player::modifyForces(double t)
 		moveForce.normalize();
 		moveForce *= DEF_FORCE;
 	}
-	//if(!playerState.downpressed && !playerState.uppressed && !playerState.leftpressed && !playerState.rightpressed)
-	//{
-	//	moveForce.zero();	//If no movement keys are pressed, stop applying force
-	//}
-	//else
-	//{
-	//	moveForce.normalize();
-	//	moveForce *= DEF_FORCE;
-	//}
 
 	//Apply impulses if any
 	if(impulseActive)
@@ -213,6 +204,11 @@ void Player::modifyForces(double t)
 			impulseActive = false;
 		}
 	}
+
+	finalForce = moveForce;
+
+	if(impulseActive)
+		finalForce = moveForce + impulse;
 }
 
 void Player::verlet(double dt)
@@ -224,11 +220,6 @@ void Player::verlet(double dt)
 	cml::vector3d lastAcc = pstate.acc;
 
 	pstate.pos += pstate.vel * dt + (0.5f * lastAcc * dt * dt);
-
-	finalForce = moveForce;
-
-	if(impulseActive)
-		finalForce = moveForce + impulse;
 
 	cml::vector3d newAcc = finalForce / pstate.mass;
 
@@ -373,7 +364,10 @@ void PlayerGroup::Update(double t, double dt, SweepAndPrune &collider, std::stri
 		}
 	}
 
-	collider.ResolveEncounters();
+	for(int i=0;i < MAXPLAYERS;++i)
+	{
+		//collider.ResolveEncounters(players[i]);
+	}
 
 	for(int i=0;i < MAXPLAYERS;++i)
 	{
