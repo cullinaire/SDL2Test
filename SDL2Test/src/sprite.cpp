@@ -55,6 +55,10 @@ Sprite::~Sprite()
 	SDL_DestroyTexture(texture);
 }
 
+SpriteSheet::SpriteSheet()
+{
+}
+
 //Constructor for constant cell size sheets
 SpriteSheet::SpriteSheet(const std::string bmpfilename, SDL_Renderer *renderer, SDL_Rect cell, int row, int col, int total)
 {

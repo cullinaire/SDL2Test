@@ -1,5 +1,9 @@
 #include "inputcfg.h"
 
+InputCfg::InputCfg()
+{
+}
+
 InputCfg::InputCfg(SDL_Renderer *rend, TxtLayer *txtOut, BMPText *bmpFont)
 {
 	textOutput = txtOut;

@@ -27,6 +27,7 @@ typedef struct assignedInput
 class InputCfg
 {
 public:
+	InputCfg();
 	InputCfg(SDL_Renderer *rend, TxtLayer *txtOut, BMPText *bmpFont);
 	void assignPlayerMap(InputMap *p_playerMap);
 	void changeMenuTitle(std::string newTitle);

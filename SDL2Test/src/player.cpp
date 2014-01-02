@@ -301,6 +301,7 @@ PlayerGroup::PlayerGroup()
 	{
 		players[i] = &emptyPlayer;
 	}
+	playerSheet = SpriteSheet("../assets/men.bmp", rend, "../assets/hatman.def");
 }
 
 PlayerGroup::~PlayerGroup()
@@ -314,7 +315,7 @@ PlayerGroup::~PlayerGroup()
 	}
 }
 
-bool PlayerGroup::Add(int id, SweepAndPrune &collider, SpriteSheet &playerSheet, InputCfg &playerCfg)
+bool PlayerGroup::Add(int id, SweepAndPrune &collider, InputCfg &playerCfg)
 {
 	if(!this->PlayerExists(id))
 	{

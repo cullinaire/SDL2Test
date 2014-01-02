@@ -98,7 +98,7 @@ class PlayerGroup
 public:
 	PlayerGroup();
 	~PlayerGroup();
-	bool Add(int id, SweepAndPrune &collider, SpriteSheet &playerSheet, InputCfg &playerCfg);
+	bool Add(int id, SweepAndPrune &collider, InputCfg &playerCfg);
 	void Remove(int id, SweepAndPrune &collider);
 	void Render(double alpha, double t);
 	void Update(double t, double dt, SweepAndPrune &collider, std::string &forceStr);
@@ -112,6 +112,9 @@ private:
 	int numActive;
 	Player *players[MAXPLAYERS];
 	Player emptyPlayer;
+	SpriteSheet playerSheet;
+	InputCfg inputConfig;
+	SDL_Renderer *rend;	//Externally allocated
 };
 
 #endif

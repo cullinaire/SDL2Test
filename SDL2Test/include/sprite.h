@@ -41,6 +41,7 @@ typedef struct SheetInfo
 class SpriteSheet
 {
 public:
+	SpriteSheet();
 	SpriteSheet(const std::string bmpfilename, SDL_Renderer *renderer, SDL_Rect cell, int row, int col, int total);
 	SpriteSheet(const std::string bmpfilename, SDL_Renderer *renderer, const std::string sprdeffilename);
 	SDL_Rect getCellSize(int idx);

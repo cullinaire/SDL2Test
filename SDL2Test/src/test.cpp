@@ -33,15 +33,7 @@
 #include <random>
 #include <chrono>
 #include "logger.h"
-#include "sprite.h"
-#include "gfxtext.h"
-#include "menu.h"
-#include "txtlayer.h"
-#include "inputcfg.h"
-#include "animobj.h"
-#include "player.h"
 #include "timekeep.h"
-#include "collision.h"
 
 int main(int argc, char **argv)
 {
@@ -67,27 +59,27 @@ int main(int argc, char **argv)
 
 	//END OF INIT//////////////////////////////////////////////////////////////
 
-	SDL_Rect fontDim;
-	fontDim.x = 0;
-	fontDim.y = 0;	//color of text: 0 = orange, 8 = gold, 16 = green
-	fontDim.w = 8;
-	fontDim.h = 8;
+	//SDL_Rect fontDim;
+	//fontDim.x = 0;
+	//fontDim.y = 0;	//color of text: 0 = orange, 8 = gold, 16 = green
+	//fontDim.w = 8;
+	//fontDim.h = 8;
 
-	SpriteSheet arcadeFont("../assets/drbrfont.bmp", rend, fontDim, 1, 95, 95);
+	//SpriteSheet arcadeFont("../assets/drbrfont.bmp", rend, fontDim, 1, 95, 95);
 
-	SpriteSheet mensheet("../assets/men.bmp", rend, "../assets/hatman.def");
+	//SpriteSheet mensheet("../assets/men.bmp", rend, "../assets/hatman.def");
 
-	SpriteSheet itemsheet("../assets/men.bmp", rend, "../assets/pickups.def");
+	//SpriteSheet itemsheet("../assets/men.bmp", rend, "../assets/pickups.def");
 
-	BMPText fontDraw(&arcadeFont);	//Default system font for debug msgs
+	//BMPText fontDraw(&arcadeFont);	//Default system font for debug msgs
 
-	TxtLayer mainText(&fontDraw);	//Txtlayer which will carry all printed text for each frame
+	//TxtLayer mainText(&fontDraw);	//Txtlayer which will carry all printed text for each frame
 
-	InputCfg inputConfig(rend, &mainText, &fontDraw);	//Helper to configure input for each player
+	//InputCfg inputConfig(rend, &mainText, &fontDraw);	//Helper to configure input for each player
 
-	SweepAndPrune collider;
+	//SweepAndPrune collider;
 
-	PlayerGroup players;
+	//PlayerGroup players;
 
 	SDL_Event ev;
 	SDL_Scancode lastKey;	//Keeps track of last key pressed
@@ -103,35 +95,35 @@ int main(int argc, char **argv)
 		keyPressed[i] = false;
 
 	/*DEBUGGING INFO STUFF*/
-	std::string coll;
+	//std::string coll;
 
-	SDL_Rect collPos;
-	collPos.x = 0;
-	collPos.y = 400;
+	//SDL_Rect collPos;
+	//collPos.x = 0;
+	//collPos.y = 400;
 
-	std::string fps;
+	//std::string fps;
 
-	SDL_Rect fpsPos;
-	fpsPos.x = 0;
-	fpsPos.y = 416;
+	//SDL_Rect fpsPos;
+	//fpsPos.x = 0;
+	//fpsPos.y = 416;
 
-	std::string accum;
+	//std::string accum;
 
-	SDL_Rect accumPos;
-	accumPos.x = 0;
-	accumPos.y = 432;
+	//SDL_Rect accumPos;
+	//accumPos.x = 0;
+	//accumPos.y = 432;
 
-	std::string time;
+	//std::string time;
 
-	SDL_Rect timePos;
-	timePos.x = 0;
-	timePos.y = 448;
+	//SDL_Rect timePos;
+	//timePos.x = 0;
+	//timePos.y = 448;
 
-	std::string moveforce;
+	//std::string moveforce;
 
-	SDL_Rect velPos;
-	velPos.x = 0;
-	velPos.y = 464;
+	//SDL_Rect velPos;
+	//velPos.x = 0;
+	//velPos.y = 464;
 	/*END DEBUGGING INFO STUFF*/
 
 	double t = 0.0f;
@@ -143,9 +135,9 @@ int main(int argc, char **argv)
 	double accumulator = 0.0f;
 	
 	//Randomizer Stuff
-	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-	std::default_random_engine generator(seed);
-	std::uniform_int_distribution<int> distrib(0, MAXPLAYERS-1);
+	//unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+	//std::default_random_engine generator(seed);
+	//std::uniform_int_distribution<int> distrib(0, MAXPLAYERS-1);
 
 	while(!quit)
 	{		
@@ -213,25 +205,25 @@ int main(int argc, char **argv)
 								drawAABBs = false;
 							break;
 						case SDL_SCANCODE_F2:	//Add players
-							newId = distrib(generator);
-							while(players.PlayerExists(newId))
-							{
-								/*seed = std::chrono::system_clock::now().time_since_epoch().count();
-								generator.seed(seed);*/
-								if(players.is_Full())
-									break;
-								newId = distrib(generator);
-							}
+							//newId = distrib(generator);
+							//while(players.PlayerExists(newId))
+							//{
+							//	/*seed = std::chrono::system_clock::now().time_since_epoch().count();
+							//	generator.seed(seed);*/
+							//	if(players.is_Full())
+							//		break;
+							//	newId = distrib(generator);
+							//}
 
-							players.Add(newId, collider, mensheet, inputConfig);
+							//players.Add(newId, collider, mensheet, inputConfig);
 
-							if(newId == 1)
-							{
-								players.AssignInput(newId, "../assets/player1bind.def");
-							}
+							//if(newId == 1)
+							//{
+							//	players.AssignInput(newId, "../assets/player1bind.def");
+							//}
 							break;
 						case SDL_SCANCODE_F3:	//To remove dummy players starting from id 7
-							newId = distrib(generator);
+							/*newId = distrib(generator);
 							while(!players.PlayerExists(newId))
 							{
 								if(players.is_Empty())
@@ -239,17 +231,17 @@ int main(int argc, char **argv)
 								newId = distrib(generator);
 							}
 
-							players.Remove(newId, collider);
+							players.Remove(newId, collider);*/
 							break;
 						case SDL_SCANCODE_F4:	//Testing impulse function
-							players.RandomImpulse();
+							/*players.RandomImpulse();*/
 							break;
 						default:
 							break;
 						}
 
 						keyPressed[lastKey] = true;
-						players.ProcessInput(true, lastKey, keyPressed);
+						/*players.ProcessInput(true, lastKey, keyPressed);*/
 					}
 				}
 			}
@@ -257,7 +249,7 @@ int main(int argc, char **argv)
 			{
 				lastKey = ev.key.keysym.scancode;	//This might be the fix
 				keyPressed[lastKey] = false;
-				players.ProcessInput(false, lastKey, keyPressed);
+				/*players.ProcessInput(false, lastKey, keyPressed);*/
 			}
 		}
 
@@ -271,34 +263,34 @@ int main(int argc, char **argv)
 		if(frameTime > 0.25f)
 			frameTime = 0.25f;	//Max frame time to avoid sprial of death
 
-		fps.assign("Frametime: ");
-		fps.append(std::to_string(frameTime));
+		//fps.assign("Frametime: ");
+		//fps.append(std::to_string(frameTime));
 
-		mainText.ReceiveString(fps, fpsPos);	//report fps
+		//mainText.ReceiveString(fps, fpsPos);	//report fps
 
 		accumulator += frameTime;
 
-		accum.assign("Accumulator: ");
-		accum.append(std::to_string(accumulator));
+		//accum.assign("Accumulator: ");
+		//accum.append(std::to_string(accumulator));
 
-		mainText.ReceiveString(accum, accumPos);
+		//mainText.ReceiveString(accum, accumPos);
 
 		//Now start doing expensive stuff
 		while(accumulator >= dt)	//The fixed timestep area is in this while loop
 		{
 			accumulator -= dt;
-			players.Update(t, dt, collider, moveforce);
+			//players.Update(t, dt, collider, moveforce);
 
-			mainText.ReceiveString(coll, collPos);
-			mainText.ReceiveString(moveforce, velPos);
+			//mainText.ReceiveString(coll, collPos);
+			//mainText.ReceiveString(moveforce, velPos);
 
 			t += dt;
 		}	//END FIXED TIMESTEP SECTION
 
-		time.assign("sysCounter: ");
-		time.append(std::to_string(sysCounter));
+		//time.assign("sysCounter: ");
+		//time.append(std::to_string(sysCounter));
 
-		mainText.ReceiveString(time, timePos);
+		//mainText.ReceiveString(time, timePos);
 
 		const double alpha = accumulator / dt;
 
@@ -307,14 +299,14 @@ int main(int argc, char **argv)
 		SDL_SetRenderDrawColor(rend, 0, 0, 0, 255);	//Set back to black if AABB set to red
 		SDL_RenderClear(rend);
 
-		//Draw stuff now
-		players.Render(alpha, t);
+		////Draw stuff now
+		//players.Render(alpha, t);
 
-		if(drawAABBs)
-			collider.drawBoundingBoxes(rend);
+		//if(drawAABBs)
+		//	collider.drawBoundingBoxes(rend);
 
-		mainText.OutputFrame(rend);	//Draw text last
-		mainText.Clear();
+		//mainText.OutputFrame(rend);	//Draw text last
+		//mainText.Clear();
 
 		//Output results to screen
 		SDL_RenderPresent(rend);
