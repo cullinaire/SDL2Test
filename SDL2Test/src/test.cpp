@@ -102,38 +102,6 @@ int main(int argc, char **argv)
 	for(int i=0;i < 256;++i)
 		keyPressed[i] = false;
 
-	/*DEBUGGING INFO STUFF*/
-	std::string coll;
-
-	SDL_Rect collPos;
-	collPos.x = 0;
-	collPos.y = 400;
-
-	std::string fps;
-
-	SDL_Rect fpsPos;
-	fpsPos.x = 0;
-	fpsPos.y = 416;
-
-	std::string accum;
-
-	SDL_Rect accumPos;
-	accumPos.x = 0;
-	accumPos.y = 432;
-
-	std::string time;
-
-	SDL_Rect timePos;
-	timePos.x = 0;
-	timePos.y = 448;
-
-	std::string moveforce;
-
-	SDL_Rect velPos;
-	velPos.x = 0;
-	velPos.y = 464;
-	/*END DEBUGGING INFO STUFF*/
-
 	double t = 0.0f;
 	const double dt = 0.01f;	//fixed timestep for physics updates
 
